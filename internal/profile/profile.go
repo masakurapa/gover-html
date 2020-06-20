@@ -16,16 +16,7 @@ type Profiles []Profile
 type Profile struct {
 	FileName string
 	Mode     string
-	Blocks   []Block
-}
-
-type Block struct {
-	StartLine int
-	StartCol  int
-	EndLine   int
-	EndCol    int
-	NumStmt   int
-	Count     int
+	Blocks   Blocks
 }
 
 func Scan(s *bufio.Scanner) (Profiles, error) {
@@ -87,7 +78,7 @@ func toProfiles(files map[string]*Profile) Profiles {
 	return profiles
 }
 
-func filterBlocks(blocks []Block) []Block {
+func filterBlocks(blocks Blocks) Blocks {
 	pbm := make(map[string]Block)
 	for _, b := range blocks {
 		// TODO: やり方考える
@@ -100,7 +91,7 @@ func filterBlocks(blocks []Block) []Block {
 		}
 	}
 
-	pbs := make([]Block, 0, len(pbm))
+	pbs := make(Blocks, 0, len(pbm))
 	for _, b := range pbm {
 		pbs = append(pbs, b)
 	}

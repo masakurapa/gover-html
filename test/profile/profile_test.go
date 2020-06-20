@@ -61,6 +61,27 @@ path/to/dir1/file1.go:4.14,24.34 44 54
 			wantErr: false,
 		},
 		{
+			name: "開始／終了の行とカラムが同じものは、count>1のデータのみにフィルタされること",
+			args: args{
+				s: toScanner(`mode: set
+path/to/dir1/file0.go:2.12,22.32 42 0
+path/to/dir1/file0.go:2.12,22.32 42 52
+path/to/dir1/file0.go:3.13,23.33 43 53
+`),
+			},
+			want: profile.Profiles{
+				cover.Profile{
+					Mode:     "set",
+					FileName: "path/to/dir1/file0.go",
+					Blocks: []cover.ProfileBlock{
+						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumStmt: 42, Count: 52},
+						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumStmt: 43, Count: 53},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "modeが無い場合はエラーが返却される",
 			args: args{
 				s: toScanner(`first line

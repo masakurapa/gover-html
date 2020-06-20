@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/masakurapa/gocover-html/internal/profile"
+	"github.com/masakurapa/go-cover/internal/profile"
 	"golang.org/x/tools/cover"
 )
 
@@ -54,13 +54,13 @@ func makeDirectoryTree(tree profile.Tree) string {
 	tag := ""
 	for _, t := range tree {
 		tag += "<li>" + t.Name
-		if len(t.Child) > 0 {
+		if len(t.SubDirs) > 0 {
 			tag += "<ul>"
 		}
 
-		tag += makeDirectoryTree(t.Child)
+		tag += makeDirectoryTree(t.SubDirs)
 
-		if len(t.Child) > 0 {
+		if len(t.SubDirs) > 0 {
 			tag += "</ul>"
 		}
 		tag += "</li>"

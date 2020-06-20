@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/masakurapa/gocover-html/internal/html"
-	"github.com/masakurapa/gocover-html/internal/profile"
+	"github.com/masakurapa/go-cover/internal/html"
+	"github.com/masakurapa/go-cover/internal/profile"
 )
 
 func main() {

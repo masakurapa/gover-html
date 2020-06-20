@@ -3,7 +3,7 @@ package example_test
 import (
 	"testing"
 
-	"github.com/masakurapa/gocover-html/example"
+	"github.com/masakurapa/go-cover/example"
 )
 
 func TestHoge(t *testing.T) {

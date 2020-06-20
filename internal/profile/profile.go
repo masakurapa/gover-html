@@ -57,10 +57,10 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 		})
 	}
 
-	return sortProfile(files), nil
+	return toProfiles(files), nil
 }
 
-func sortProfile(files map[string]*cover.Profile) Profiles {
+func toProfiles(files map[string]*cover.Profile) Profiles {
 	profiles := make([]cover.Profile, 0, len(files))
 	for _, p := range files {
 		profiles = append(profiles, *p)

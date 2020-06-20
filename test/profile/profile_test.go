@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/masakurapa/gocover-html/internal/profile"
+	"github.com/masakurapa/go-cover/internal/profile"
 	"golang.org/x/tools/cover"
 )
 

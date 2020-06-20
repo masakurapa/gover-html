@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/tools/cover"
@@ -21,6 +22,7 @@ func (prof Profiles) ToTree() Tree {
 		tree.add(strings.Split(p.FileName, "/"), &p)
 	}
 
+	tree.merge()
 	return tree
 }
 
@@ -53,4 +55,19 @@ func (tree *Tree) findNode(name string) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+// 子のディレクトリが1つしか無いものをマージしていく
+func (tree *Tree) merge() {
+	tt := *tree
+	for i, t := range *tree {
+		t.SubDirs.merge()
+
+		if len(t.Profiles) == 0 && len(t.SubDirs) == 1 {
+			sub := t.SubDirs[0]
+			tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
+			tt[i].Profiles = sub.Profiles
+			tt[i].SubDirs = sub.SubDirs
+		}
+	}
 }

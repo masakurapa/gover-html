@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/masakurapa/go-cover/internal/profile"
-	"golang.org/x/tools/cover"
 )
 
 func TestScan(t *testing.T) {
@@ -35,25 +34,25 @@ path/to/dir1/file1.go:4.14,24.34 44 54
 `),
 			},
 			want: profile.Profiles{
-				cover.Profile{
+				profile.Profile{
 					Mode:     "set",
 					FileName: "path/to/dir1/file0.go",
-					Blocks: []cover.ProfileBlock{
+					Blocks: []profile.Block{
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumStmt: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumStmt: 43, Count: 53},
 					},
 				},
-				cover.Profile{
+				profile.Profile{
 					Mode:     "set",
 					FileName: "path/to/dir1/file1.go",
-					Blocks: []cover.ProfileBlock{
+					Blocks: []profile.Block{
 						{StartLine: 4, StartCol: 14, EndLine: 24, EndCol: 34, NumStmt: 44, Count: 54},
 					},
 				},
-				cover.Profile{
+				profile.Profile{
 					Mode:     "set",
 					FileName: "path/to/dir2/file1.go",
-					Blocks: []cover.ProfileBlock{
+					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumStmt: 41, Count: 51},
 					},
 				},
@@ -70,10 +69,10 @@ path/to/dir1/file0.go:3.13,23.33 43 53
 `),
 			},
 			want: profile.Profiles{
-				cover.Profile{
+				profile.Profile{
 					Mode:     "set",
 					FileName: "path/to/dir1/file0.go",
-					Blocks: []cover.ProfileBlock{
+					Blocks: []profile.Block{
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumStmt: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumStmt: 43, Count: 53},
 					},

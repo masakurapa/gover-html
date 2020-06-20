@@ -5,15 +5,14 @@ import (
 	"testing"
 
 	"github.com/masakurapa/go-cover/internal/profile"
-	"golang.org/x/tools/cover"
 )
 
 func TestProfiles_ToTree(t *testing.T) {
 	prof := profile.Profiles{
-		cover.Profile{FileName: "path/to/dir1/file0.go"},
-		cover.Profile{FileName: "path/to/dir1/file1.go"},
-		cover.Profile{FileName: "path/to/dir2/file1.go"},
-		cover.Profile{FileName: "path/to/dir3/sub/file1.go"},
+		profile.Profile{FileName: "path/to/dir1/file0.go"},
+		profile.Profile{FileName: "path/to/dir1/file1.go"},
+		profile.Profile{FileName: "path/to/dir2/file1.go"},
+		profile.Profile{FileName: "path/to/dir3/sub/file1.go"},
 	}
 
 	tests := []struct {
@@ -27,14 +26,14 @@ func TestProfiles_ToTree(t *testing.T) {
 			want: profile.Tree{
 				{Name: "path/to", Profiles: profile.Profiles{}, SubDirs: profile.Tree{
 					{Name: "dir1", Profiles: profile.Profiles{
-						cover.Profile{FileName: "path/to/dir1/file0.go"},
-						cover.Profile{FileName: "path/to/dir1/file1.go"},
+						profile.Profile{FileName: "path/to/dir1/file0.go"},
+						profile.Profile{FileName: "path/to/dir1/file1.go"},
 					}, SubDirs: profile.Tree{}},
 					{Name: "dir2", Profiles: profile.Profiles{
-						cover.Profile{FileName: "path/to/dir2/file1.go"},
+						profile.Profile{FileName: "path/to/dir2/file1.go"},
 					}, SubDirs: profile.Tree{}},
 					{Name: "dir3/sub", Profiles: profile.Profiles{
-						cover.Profile{FileName: "path/to/dir3/sub/file1.go"},
+						profile.Profile{FileName: "path/to/dir3/sub/file1.go"},
 					}, SubDirs: profile.Tree{}},
 				}},
 			},

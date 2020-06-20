@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"github.com/masakurapa/go-cover/internal/profile"
-	"golang.org/x/tools/cover"
 )
 
 func Print(profiles profile.Profiles, tree profile.Tree) {
@@ -73,7 +72,7 @@ func makeDirectoryTree(tree profile.Tree) string {
 	return tag
 }
 
-func coverage(blocks []cover.ProfileBlock) float64 {
+func coverage(blocks []profile.Block) float64 {
 	var total, covered int64
 	for _, b := range blocks {
 		total += int64(b.NumStmt)

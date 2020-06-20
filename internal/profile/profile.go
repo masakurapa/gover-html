@@ -7,16 +7,29 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"golang.org/x/tools/cover"
 )
 
 var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
 
-type Profiles []cover.Profile
+type Profiles []Profile
+
+type Profile struct {
+	FileName string
+	Mode     string
+	Blocks   []Block
+}
+
+type Block struct {
+	StartLine int
+	StartCol  int
+	EndLine   int
+	EndCol    int
+	NumStmt   int
+	Count     int
+}
 
 func Scan(s *bufio.Scanner) (Profiles, error) {
-	files := make(map[string]*cover.Profile)
+	files := make(map[string]*Profile)
 	mode := ""
 
 	for s.Scan() {
@@ -40,14 +53,14 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 		p := files[fileName]
 
 		if p == nil {
-			p = &cover.Profile{
+			p = &Profile{
 				FileName: fileName,
 				Mode:     mode,
 			}
 			files[fileName] = p
 		}
 
-		p.Blocks = append(p.Blocks, cover.ProfileBlock{
+		p.Blocks = append(p.Blocks, Block{
 			StartLine: toInt(m[2]),
 			StartCol:  toInt(m[3]),
 			EndLine:   toInt(m[4]),
@@ -60,8 +73,8 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 	return toProfiles(files), nil
 }
 
-func toProfiles(files map[string]*cover.Profile) Profiles {
-	profiles := make([]cover.Profile, 0, len(files))
+func toProfiles(files map[string]*Profile) Profiles {
+	profiles := make([]Profile, 0, len(files))
 	for _, p := range files {
 		p.Blocks = filterBlocks(p.Blocks)
 		profiles = append(profiles, *p)
@@ -74,8 +87,8 @@ func toProfiles(files map[string]*cover.Profile) Profiles {
 	return profiles
 }
 
-func filterBlocks(blocks []cover.ProfileBlock) []cover.ProfileBlock {
-	pbm := make(map[string]cover.ProfileBlock)
+func filterBlocks(blocks []Block) []Block {
+	pbm := make(map[string]Block)
 	for _, b := range blocks {
 		// TODO: やり方考える
 		k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
@@ -87,7 +100,7 @@ func filterBlocks(blocks []cover.ProfileBlock) []cover.ProfileBlock {
 		}
 	}
 
-	pbs := make([]cover.ProfileBlock, 0, len(pbm))
+	pbs := make([]Block, 0, len(pbm))
 	for _, b := range pbm {
 		pbs = append(pbs, b)
 	}

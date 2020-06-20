@@ -3,8 +3,6 @@ package profile
 import (
 	"fmt"
 	"strings"
-
-	"golang.org/x/tools/cover"
 )
 
 type Tree []Node
@@ -26,7 +24,7 @@ func (prof Profiles) ToTree() Tree {
 	return tree
 }
 
-func (tree *Tree) add(paths []string, p *cover.Profile) {
+func (tree *Tree) add(paths []string, p *Profile) {
 	name := paths[0]
 	nextPaths := paths[1:]
 

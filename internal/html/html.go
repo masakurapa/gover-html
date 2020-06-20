@@ -54,13 +54,18 @@ func makeDirectoryTree(tree profile.Tree) string {
 	tag := ""
 	for _, t := range tree {
 		tag += "<li>" + t.Name
-		if len(t.SubDirs) > 0 {
+		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
 			tag += "<ul>"
 		}
 
 		tag += makeDirectoryTree(t.SubDirs)
 
-		if len(t.SubDirs) > 0 {
+		for _, p := range t.Profiles {
+			_, f := filepath.Split(p.FileName)
+			tag += "<li>" + f + "</li>"
+		}
+
+		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
 			tag += "</ul>"
 		}
 		tag += "</li>"

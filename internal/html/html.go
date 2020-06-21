@@ -1,9 +1,12 @@
 package html
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"go/build"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -21,9 +24,14 @@ func Print(profiles profile.Profiles, tree profile.Tree) {
 			panic(fmt.Sprintf("can't read %q: %v", p.FileName, err))
 		}
 
+		var buf bytes.Buffer
+		if err = escape(&buf, b, p); err != nil {
+			panic(err)
+		}
+
 		files = append(files, TemplateFile{
 			Name:     p.FileName,
-			Body:     template.HTML(b),
+			Body:     template.HTML(buf.String()),
 			Coverage: coverage(p.Blocks),
 		})
 	}
@@ -95,4 +103,25 @@ func findFile(file string) string {
 		panic(fmt.Sprintf("can't find %q: %v", file, err))
 	}
 	return filepath.Join(pkg.Dir, file)
+}
+
+func escape(w io.Writer, body []byte, prof profile.Profile) error {
+	dst := bufio.NewWriter(w)
+
+	for _, b := range body {
+		switch b {
+		case '<':
+			dst.WriteString("&lt;")
+		case '>':
+			dst.WriteString("&gt;")
+		case '&':
+			dst.WriteString("&amp;")
+		case '\t':
+			dst.WriteString("        ")
+		default:
+			dst.WriteByte(b)
+		}
+	}
+
+	return dst.Flush()
 }

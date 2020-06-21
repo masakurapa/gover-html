@@ -74,7 +74,12 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) {
 
 		for _, p := range t.Profiles {
 			_, f := filepath.Split(p.FileName)
-			buf.WriteString(fmt.Sprintf(`<li class="file" onclick="change('file%d');">%s</li>`, p.ID, f))
+			buf.WriteString(fmt.Sprintf(
+				`<li class="file" onclick="change('file%d');">%s (%.1f%%)</li>`,
+				p.ID,
+				f,
+				p.Blocks.Coverage(),
+			))
 		}
 
 		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {

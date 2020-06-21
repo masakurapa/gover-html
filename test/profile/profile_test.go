@@ -35,6 +35,7 @@ path/to/dir1/file1.go:4.14,24.34 44 54
 			},
 			want: profile.Profiles{
 				profile.Profile{
+					ID:       0,
 					Mode:     "set",
 					FileName: "path/to/dir1/file0.go",
 					Blocks: []profile.Block{
@@ -43,6 +44,7 @@ path/to/dir1/file1.go:4.14,24.34 44 54
 					},
 				},
 				profile.Profile{
+					ID:       1,
 					Mode:     "set",
 					FileName: "path/to/dir1/file1.go",
 					Blocks: []profile.Block{
@@ -50,6 +52,7 @@ path/to/dir1/file1.go:4.14,24.34 44 54
 					},
 				},
 				profile.Profile{
+					ID:       2,
 					Mode:     "set",
 					FileName: "path/to/dir2/file1.go",
 					Blocks: []profile.Block{
@@ -70,6 +73,7 @@ path/to/dir1/file0.go:3.13,23.33 43 53
 			},
 			want: profile.Profiles{
 				profile.Profile{
+					ID:       0,
 					Mode:     "set",
 					FileName: "path/to/dir1/file0.go",
 					Blocks: []profile.Block{

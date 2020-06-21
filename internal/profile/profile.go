@@ -14,6 +14,7 @@ var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+)
 type Profiles []Profile
 
 type Profile struct {
+	ID       int
 	FileName string
 	Mode     string
 	Blocks   Blocks
@@ -22,6 +23,7 @@ type Profile struct {
 func Scan(s *bufio.Scanner) (Profiles, error) {
 	files := make(map[string]*Profile)
 	mode := ""
+	id := 1
 
 	for s.Scan() {
 		line := s.Text()
@@ -49,6 +51,7 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 				Mode:     mode,
 			}
 			files[fileName] = p
+			id++
 		}
 
 		p.Blocks = append(p.Blocks, Block{
@@ -74,6 +77,11 @@ func toProfiles(files map[string]*Profile) Profiles {
 	sort.SliceStable(profiles, func(i, j int) bool {
 		return profiles[i].FileName < profiles[j].FileName
 	})
+
+	// ID振る
+	for i := range profiles {
+		profiles[i].ID = i
+	}
 
 	return profiles
 }

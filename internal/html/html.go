@@ -25,7 +25,7 @@ func Print(profiles profile.Profiles, tree profile.Tree) {
 		}
 
 		var buf bytes.Buffer
-		if err = escape(&buf, b, p); err != nil {
+		if err = genSource(&buf, b, p); err != nil {
 			panic(err)
 		}
 
@@ -53,31 +53,35 @@ func Print(profiles profile.Profiles, tree profile.Tree) {
 }
 
 func genDirectoryTree(tree profile.Tree) string {
-	return "<ul>" + makeDirectoryTree(tree) + "</ul>"
+	var buf bytes.Buffer
+	buf.WriteString(`<ul style="padding-left: 0;">`)
+	makeDirectoryTree(&buf, tree)
+	buf.WriteString("</ul>")
+	return buf.String()
 }
 
 // ディレクトリツリーの生成
-func makeDirectoryTree(tree profile.Tree) string {
-	tag := ""
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) {
 	for _, t := range tree {
-		tag += "<li>" + t.Name
+		buf.WriteString("<li>")
+		buf.WriteString(t.Name)
+
 		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
-			tag += "<ul>"
+			buf.WriteString("<ul>")
 		}
 
-		tag += makeDirectoryTree(t.SubDirs)
+		makeDirectoryTree(buf, t.SubDirs)
 
 		for _, p := range t.Profiles {
 			_, f := filepath.Split(p.FileName)
-			tag += "<li>" + f + "</li>"
+			buf.WriteString(fmt.Sprintf(`<li class="file" onclick="change('file%d');">%s</li>`, p.ID, f))
 		}
 
 		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
-			tag += "</ul>"
+			buf.WriteString("</ul>")
 		}
-		tag += "</li>"
+		buf.WriteString("</li>")
 	}
-	return tag
 }
 
 func coverage(blocks []profile.Block) float64 {
@@ -105,10 +109,32 @@ func findFile(file string) string {
 	return filepath.Join(pkg.Dir, file)
 }
 
-func escape(w io.Writer, body []byte, prof profile.Profile) error {
+func genSource(w io.Writer, src []byte, prof profile.Profile) error {
 	dst := bufio.NewWriter(w)
 
-	for _, b := range body {
+	bi := 0
+	si := 0
+	line := 1
+	col := 1
+
+	for si < len(src) {
+		if len(prof.Blocks) > bi {
+			block := prof.Blocks[bi]
+			if block.StartLine == line && block.StartCol == col {
+				if block.Count == 0 {
+					dst.WriteString(`<span class="uncov">`)
+				} else {
+					dst.WriteString(`<span class="cov">`)
+				}
+			}
+			if block.EndLine == line && block.EndCol == col || line > block.EndLine {
+				dst.WriteString(`</span>`)
+				bi++
+				continue
+			}
+		}
+
+		b := src[si]
 		switch b {
 		case '<':
 			dst.WriteString("&lt;")
@@ -121,6 +147,14 @@ func escape(w io.Writer, body []byte, prof profile.Profile) error {
 		default:
 			dst.WriteByte(b)
 		}
+
+		if b == '\n' {
+			line++
+			col = 0
+		}
+
+		si++
+		col++
 	}
 
 	return dst.Flush()

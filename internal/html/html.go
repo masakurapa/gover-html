@@ -8,48 +8,48 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 
 	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-func Print(profiles profile.Profiles, tree profile.Tree) {
+func Print(out io.Writer, profiles profile.Profiles) error {
+	tree := profiles.ToTree()
+
 	files := make([]TemplateFile, 0)
 	for _, p := range profiles {
 
-		file := findFile(p.FileName)
+		file, err := findFile(p.FileName)
+		if err != nil {
+			return err
+		}
+
 		b, err := ioutil.ReadFile(file)
 		if err != nil {
-			panic(fmt.Sprintf("can't read %q: %v", p.FileName, err))
+			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
 
 		var buf bytes.Buffer
 		if err = genSource(&buf, b, p); err != nil {
-			panic(err)
+			return err
 		}
 
 		files = append(files, TemplateFile{
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
-			Coverage: coverage(p.Blocks),
+			Coverage: p.Blocks.Coverage(),
 		})
 	}
 
-	var out *os.File
-	out, err := os.Create("./my_coverage.html")
-	if err != nil {
-		panic(err)
-	}
-
-	err = parsedTemplate.Execute(out, TemplateData{
+	err := parsedTemplate.Execute(out, TemplateData{
 		Tree:  template.HTML(genDirectoryTree(tree)),
 		Files: files,
 	})
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer out.Close()
+
+	return nil
 }
 
 func genDirectoryTree(tree profile.Tree) string {
@@ -89,29 +89,13 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) {
 	}
 }
 
-func coverage(blocks []profile.Block) float64 {
-	var total, covered int64
-	for _, b := range blocks {
-		total += int64(b.NumStmt)
-		if b.Count > 0 {
-			covered += int64(b.NumStmt)
-		}
-	}
-
-	if total == 0 {
-		return 0
-	}
-
-	return float64(covered) / float64(total) * 100
-}
-
-func findFile(file string) string {
+func findFile(file string) (string, error) {
 	dir, file := filepath.Split(file)
 	pkg, err := build.Import(dir, ".", build.FindOnly)
 	if err != nil {
-		panic(fmt.Sprintf("can't find %q: %v", file, err))
+		return "", fmt.Errorf("can't find %q: %v", file, err)
 	}
-	return filepath.Join(pkg.Dir, file)
+	return filepath.Join(pkg.Dir, file), nil
 }
 
 func genSource(w io.Writer, src []byte, prof profile.Profile) error {

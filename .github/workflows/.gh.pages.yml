@@ -22,11 +22,11 @@ jobs:
 
       - name: Coverage
         run: |
+          mkdir public
           go test -coverpkg ./internal/...  -coverprofile=coverage.out ./test/...
           go tool cover -html=coverage.out -o coverage.html
-          go run cover.go
-          mkdir public
           mv coverage.html ./public/coverage.html
+          go run cover.go
           mv coverage.html ./public/index.html
 
       - name: Deploy

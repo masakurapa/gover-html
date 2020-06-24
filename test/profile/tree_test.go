@@ -48,3 +48,17 @@ func TestProfiles_ToTree(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkProfiles_ToTree(b *testing.B) {
+	prof := profile.Profiles{
+		profile.Profile{FileName: "path/to/dir1/file0.go"},
+		profile.Profile{FileName: "path/to/dir1/file1.go"},
+		profile.Profile{FileName: "path/to/dir2/file1.go"},
+		profile.Profile{FileName: "path/to/dir3/sub/file1.go"},
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		prof.ToTree()
+	}
+}

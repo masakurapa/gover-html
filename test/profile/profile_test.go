@@ -119,3 +119,17 @@ path/to/dir1/file0.go,2.12,22.32 42 52
 		})
 	}
 }
+
+func BenchmarkScan(b *testing.B) {
+	s := bufio.NewScanner(strings.NewReader(`mode: set
+path/to/dir2/file1.go:1.11,21.31 41 51
+path/to/dir1/file0.go:2.12,22.32 42 52
+path/to/dir1/file0.go:3.13,23.33 43 53
+path/to/dir1/file1.go:4.14,24.34 44 54
+`))
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		profile.Scan(s)
+	}
+}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/masakurapa/go-cover/internal/html"
 	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/go-cover/internal/reader"
 )
 
 var (
@@ -35,7 +36,7 @@ func main() {
 	}
 	defer out.Close()
 
-	if err = html.Print(out, profiles); err != nil {
+	if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
 		panic(err)
 	}
 }

@@ -33,6 +33,8 @@ const tmpl = `
 		.cover {
 			width: 70%;
 			margin-left: 32px;
+		}
+		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
 		}
@@ -59,18 +61,19 @@ const tmpl = `
 </head>
 <body>
 	<div class="content">
-		<div class="tree">
-			<div>{{.Tree}}</div>
-		</div>
+		<div class="tree">{{.Tree}}</div>
 		<div class="cover">
 			{{range $i, $f := .Files}}
 				<div id="file{{$i}}" style="display: none">
 					<div>{{$f.Name}}</div>
 					<div>{{printf "%.1f" $f.Coverage}}%</div>
-					<pre>{{$f.Body}}</pre>
+					<div class="source">
+						<pre>{{$f.Body}}</pre>
+					</div>
 				</div>
 			{{end}}
 		</div>
+	</div>
 
 	<script>
 		let current;

@@ -4,27 +4,24 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"go/build"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/go-cover/internal/reader"
 )
 
-func Print(out io.Writer, profiles profile.Profiles) error {
-	tree := profiles.ToTree()
+func WriteTreeView(
+	reader reader.Reader,
+	out io.Writer,
+	profiles profile.Profiles,
+	tree profile.Tree,
+) error {
 
-	files := make([]TemplateFile, 0)
+	files := make([]TemplateFile, 0, len(profiles))
 	for _, p := range profiles {
-
-		file, err := findFile(p.FileName)
-		if err != nil {
-			return err
-		}
-
-		b, err := ioutil.ReadFile(file)
+		b, err := reader.Read(p.FileName)
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
@@ -41,15 +38,10 @@ func Print(out io.Writer, profiles profile.Profiles) error {
 		})
 	}
 
-	err := parsedTemplate.Execute(out, TemplateData{
+	return parsedTemplate.Execute(out, TemplateData{
 		Tree:  template.HTML(genDirectoryTree(tree)),
 		Files: files,
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func genDirectoryTree(tree profile.Tree) string {
@@ -87,15 +79,6 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) {
 		}
 		buf.WriteString("</li>")
 	}
-}
-
-func findFile(file string) (string, error) {
-	dir, file := filepath.Split(file)
-	pkg, err := build.Import(dir, ".", build.FindOnly)
-	if err != nil {
-		return "", fmt.Errorf("can't find %q: %v", file, err)
-	}
-	return filepath.Join(pkg.Dir, file), nil
 }
 
 func genSource(w io.Writer, src []byte, prof profile.Profile) error {

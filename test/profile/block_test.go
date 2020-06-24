@@ -51,3 +51,15 @@ func TestBlocks_Coverage(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkBlocks_Coverage(b *testing.B) {
+	blocks := profile.Blocks{
+		{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumStmt: 41, Count: 1},
+		{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumStmt: 42, Count: 0},
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		blocks.Coverage()
+	}
+}

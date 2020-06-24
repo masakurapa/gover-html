@@ -18,7 +18,6 @@ func WriteTreeView(
 	profiles profile.Profiles,
 	tree profile.Tree,
 ) error {
-
 	files := make([]TemplateFile, 0, len(profiles))
 	for _, p := range profiles {
 		b, err := reader.Read(p.FileName)

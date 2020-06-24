@@ -27,7 +27,7 @@ jobs:
           go run cover.go
           mkdir public
           mv coverage.html ./public/coverage.html
-          mv my_coverage.html ./public/index.html
+          mv coverage.html ./public/index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

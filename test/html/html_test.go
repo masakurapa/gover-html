@@ -65,7 +65,7 @@ func BenchmarkWriteTreeView(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		html.WriteTreeView(&reader, &writer, profiles, tree)
+		html.WriteTreeView2(&reader, &writer, profiles, tree)
 	}
 }
 

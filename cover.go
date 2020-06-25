@@ -38,7 +38,7 @@ func main() {
 	defer out.Close()
 
 	if *isTree {
-		if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
+		if err = html.WriteTreeView2(reader.New(), out, profiles, profiles.ToTree()); err != nil {
 			panic(err)
 		}
 	} else {

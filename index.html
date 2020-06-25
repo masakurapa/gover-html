@@ -29,7 +29,7 @@
 			
 			<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (93.1%)</option>
 			
-			<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (92.6%)</option>
+			<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (59.5%)</option>
 			
 			<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 			
@@ -166,6 +166,116 @@ import (
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
+
+func WriteTreeView2(
+        reader reader.Reader,
+        out io.Writer,
+        profiles profile.Profiles,
+        tree profile.Tree,
+) error <span class="uncov">{
+        var buf bytes.Buffer
+        buf.WriteString(`&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+        &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+        &lt;style&gt;
+                .content {
+                        display: flex;
+                        padding: 8px;
+                }
+                .tree {
+                        width: 30%;
+                        white-space: nowrap;
+                        overflow-x: scroll;
+                }
+                .cover {
+                        width: 70%;
+                        margin-left: 32px;
+                }
+                .source {
+                        white-space: nowrap;
+                        overflow-x: scroll;
+                }
+                ul {
+                        list-style: none;
+                        margin-block-start: unset;
+                        margin-block-end: unset;
+                }
+                li .file {
+                        cursor: pointer;
+                }
+                pre {
+                        font-family: Menlo, monospace;
+                        font-weight: bold;
+                        color: rgb(80, 80, 80);
+                }
+                .uncov {
+                        color: rgb(192, 0, 0);
+                }
+                .cov {
+                        color: rgb(44, 212, 149);
+                }
+        &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+        &lt;div class="content"&gt;
+                &lt;div class="tree"&gt;`)
+
+        buf.WriteString(genDirectoryTree(tree))
+        buf.WriteString(`&lt;/div&gt;
+                &lt;div class="cover"&gt;
+`)
+
+        for i, p := range profiles </span><span class="uncov">{
+                b, err := reader.Read(p.FileName)
+                if err != nil </span><span class="uncov">{
+                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
+                }</span>
+
+                <span class="uncov">buf.WriteString(fmt.Sprintf(`&lt;div id="file%d" style="display: none"&gt;
+                &lt;div&gt;%s&lt;/div&gt;
+                &lt;div&gt;%.1f%%&lt;/div&gt;
+                &lt;div class="source"&gt;
+                        &lt;pre&gt;`, i, p.FileName, p.Blocks.Coverage()))
+
+                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="uncov">{
+                        return err
+                }</span>
+
+                <span class="uncov">buf.WriteString(`&lt;/pre&gt;
+                &lt;/div&gt;
+        &lt;/div&gt;`)</span>
+        }
+
+        <span class="uncov">buf.WriteString(`&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;script&gt;
+                let current;
+
+                function select(f) {
+                        if (current) {
+                                current.style.display = 'none';
+                        }
+
+                        current = document.getElementById(f)
+                        if (!current) {
+                                return;
+                        }
+
+                        current.style.display = 'block';
+                }
+                function change(f) {
+                        select(f);
+                        window.scrollTo(0, 0);
+                }
+        &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;`)
+
+        out.Write(buf.Bytes())
+        return nil</span>
+}
 
 func WriteTreeView(
         reader reader.Reader,

@@ -2,20 +2,14 @@ package html
 
 import "html/template"
 
-type TemplateData struct {
+type TreeTemplateData struct {
 	Tree  template.HTML
 	Files []TemplateFile
 }
 
-type TemplateFile struct {
-	Name     string
-	Body     template.HTML
-	Coverage float64
-}
+var parsedTreeTemplate = template.Must(template.New("html").Funcs(template.FuncMap{}).Parse(treeTmpl))
 
-var parsedTemplate = template.Must(template.New("html").Funcs(template.FuncMap{}).Parse(tmpl))
-
-const tmpl = `
+const treeTmpl = `
 <!DOCTYPE html>
 <html>
 <head>

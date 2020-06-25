@@ -14,6 +14,7 @@ import (
 var (
 	input  = flag.String("i", "coverage.out", "coverage profile")
 	output = flag.String("o", "coverage.html", "html file output")
+	isTree = flag.Bool("tree", false, "output tree view")
 )
 
 func main() {
@@ -36,8 +37,14 @@ func main() {
 	}
 	defer out.Close()
 
-	if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
-		panic(err)
+	if *isTree {
+		if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
+			panic(err)
+		}
+	} else {
+		if err = html.Write(reader.New(), out, profiles); err != nil {
+			panic(err)
+		}
 	}
 }
 

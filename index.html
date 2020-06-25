@@ -4,30 +4,9 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<style>
-		.content {
-			display: flex;
-			padding: 8px;
-		}
-		.tree {
-			width: 30%;
-			white-space: nowrap;
-			overflow-x: scroll;
-		}
-		.cover {
-			width: 70%;
-			margin-left: 32px;
-		}
 		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
-		}
-		ul {
-			list-style: none;
-			margin-block-start: unset;
-			margin-block-end: unset;
-		}
-		li .file {
-			cursor: pointer;
 		}
 		pre {
 			font-family: Menlo, monospace;
@@ -43,97 +22,85 @@
 	</style>
 </head>
 <body>
-	<div class="content">
-		<div class="tree"><ul style="padding-left: 0;"><li>github.com/masakurapa/go-cover/internal<ul><li>html<ul><li class="file" onclick="change('file0');">html.go (92.9%)</li></ul></li><li>profile<ul><li class="file" onclick="change('file1');">block.go (100.0%)</li><li class="file" onclick="change('file2');">profile.go (98.0%)</li><li class="file" onclick="change('file3');">tree.go (100.0%)</li></ul></li><li>reader<ul><li class="file" onclick="change('file4');">reader.go (0.0%)</li></ul></li></ul></li></ul></div>
-		<div class="cover">
+	<div>
+		<select id="files" onchange="change();">
 			
-				<div id="file0" style="display: none">
-					<div>github.com/masakurapa/go-cover/internal/html/html.go</div>
-					<div>92.9%</div>
-					<div class="source">
-						<pre>package html
+			<option value="file0">github.com/masakurapa/go-cover/internal/html/default.go (0.0%)</option>
+			
+			<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (93.1%)</option>
+			
+			<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (92.6%)</option>
+			
+			<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+			
+			<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+			
+			<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+			
+			<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+			
+		</select>
+	</div>
+
+	
+		<div class="source" id="file0" style="display: none">
+			<pre>package html
 
 import (
-        "bufio"
         "bytes"
         "fmt"
         "html/template"
         "io"
-        "path/filepath"
 
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
 
-func WriteTreeView(
-        reader reader.Reader,
-        out io.Writer,
-        profiles profile.Profiles,
-        tree profile.Tree,
-) error <span class="cov">{
+func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error <span class="uncov">{
         files := make([]TemplateFile, 0, len(profiles))
-        for _, p := range profiles </span><span class="cov">{
+        for _, p := range profiles </span><span class="uncov">{
                 b, err := reader.Read(p.FileName)
                 if err != nil </span><span class="uncov">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
 
-                <span class="cov">var buf bytes.Buffer
-                if err = genSource(&amp;buf, b, p); err != nil </span><span class="uncov">{
+                <span class="uncov">var buf bytes.Buffer
+                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="uncov">{
                         return err
                 }</span>
 
-                <span class="cov">files = append(files, TemplateFile{
+                <span class="uncov">files = append(files, TemplateFile{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
                         Coverage: p.Blocks.Coverage(),
                 })</span>
         }
 
-        <span class="cov">return parsedTemplate.Execute(out, TemplateData{
-                Tree:  template.HTML(genDirectoryTree(tree)),
+        <span class="uncov">return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
                 Files: files,
         })</span>
 }
+</pre>
+		</div>
+	
+		<div class="source" id="file1" style="display: none">
+			<pre>package html
 
-func genDirectoryTree(tree profile.Tree) string <span class="cov">{
-        var buf bytes.Buffer
-        buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
-        makeDirectoryTree(&amp;buf, tree)
-        buf.WriteString("&lt;/ul&gt;")
-        return buf.String()
-}</span>
+import (
+        "bufio"
+        "html/template"
+        "io"
 
-// ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov">{
-        for _, t := range tree </span><span class="cov">{
-                buf.WriteString("&lt;li&gt;")
-                buf.WriteString(t.Name)
+        "github.com/masakurapa/go-cover/internal/profile"
+)
 
-                if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov">{
-                        buf.WriteString("&lt;ul&gt;")
-                }</span>
-
-                <span class="cov">makeDirectoryTree(buf, t.SubDirs)
-
-                for _, p := range t.Profiles </span><span class="cov">{
-                        _, f := filepath.Split(p.FileName)
-                        buf.WriteString(fmt.Sprintf(
-                                `&lt;li class="file" onclick="change('file%d');"&gt;%s (%.1f%%)&lt;/li&gt;`,
-                                p.ID,
-                                f,
-                                p.Blocks.Coverage(),
-                        ))
-                }</span>
-
-                <span class="cov">if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov">{
-                        buf.WriteString("&lt;/ul&gt;")
-                }</span>
-                <span class="cov">buf.WriteString("&lt;/li&gt;")</span>
-        }
+type TemplateFile struct {
+        Name     string
+        Body     template.HTML
+        Coverage float64
 }
 
-func genSource(w io.Writer, src []byte, prof profile.Profile) error <span class="cov">{
+func genSource(w io.Writer, src []byte, prof *profile.Profile) error <span class="cov">{
         dst := bufio.NewWriter(w)
 
         bi := 0
@@ -184,14 +151,94 @@ func genSource(w io.Writer, src []byte, prof profile.Profile) error <span class=
         <span class="cov">return dst.Flush()</span>
 }
 </pre>
-					</div>
-				</div>
-			
-				<div id="file1" style="display: none">
-					<div>github.com/masakurapa/go-cover/internal/profile/block.go</div>
-					<div>100.0%</div>
-					<div class="source">
-						<pre>package profile
+		</div>
+	
+		<div class="source" id="file2" style="display: none">
+			<pre>package html
+
+import (
+        "bytes"
+        "fmt"
+        "html/template"
+        "io"
+        "path/filepath"
+
+        "github.com/masakurapa/go-cover/internal/profile"
+        "github.com/masakurapa/go-cover/internal/reader"
+)
+
+func WriteTreeView(
+        reader reader.Reader,
+        out io.Writer,
+        profiles profile.Profiles,
+        tree profile.Tree,
+) error <span class="cov">{
+        files := make([]TemplateFile, 0, len(profiles))
+        for _, p := range profiles </span><span class="cov">{
+                b, err := reader.Read(p.FileName)
+                if err != nil </span><span class="uncov">{
+                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
+                }</span>
+
+                <span class="cov">var buf bytes.Buffer
+                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="uncov">{
+                        return err
+                }</span>
+
+                <span class="cov">files = append(files, TemplateFile{
+                        Name:     p.FileName,
+                        Body:     template.HTML(buf.String()),
+                        Coverage: p.Blocks.Coverage(),
+                })</span>
+        }
+
+        <span class="cov">return parsedTreeTemplate.Execute(out, TreeTemplateData{
+                Tree:  template.HTML(genDirectoryTree(tree)),
+                Files: files,
+        })</span>
+}
+
+func genDirectoryTree(tree profile.Tree) string <span class="cov">{
+        var buf bytes.Buffer
+        buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
+        makeDirectoryTree(&amp;buf, tree)
+        buf.WriteString("&lt;/ul&gt;")
+        return buf.String()
+}</span>
+
+// ディレクトリツリーの生成
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov">{
+        for _, t := range tree </span><span class="cov">{
+                buf.WriteString("&lt;li&gt;")
+                buf.WriteString(t.Name)
+
+                if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov">{
+                        buf.WriteString("&lt;ul&gt;")
+                }</span>
+
+                <span class="cov">makeDirectoryTree(buf, t.SubDirs)
+
+                for _, p := range t.Profiles </span><span class="cov">{
+                        _, f := filepath.Split(p.FileName)
+                        buf.WriteString(fmt.Sprintf(
+                                `&lt;li class="file" onclick="change('file%d');"&gt;%s (%.1f%%)&lt;/li&gt;`,
+                                p.ID,
+                                f,
+                                p.Blocks.Coverage(),
+                        ))
+                }</span>
+
+                <span class="cov">if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov">{
+                        buf.WriteString("&lt;/ul&gt;")
+                }</span>
+                <span class="cov">buf.WriteString("&lt;/li&gt;")</span>
+        }
+}
+</pre>
+		</div>
+	
+		<div class="source" id="file3" style="display: none">
+			<pre>package profile
 
 type Blocks []Block
 
@@ -220,14 +267,10 @@ func (blocks *Blocks) Coverage() float64 <span class="cov">{
         <span class="cov">return float64(covered) / float64(total) * 100</span>
 }
 </pre>
-					</div>
-				</div>
-			
-				<div id="file2" style="display: none">
-					<div>github.com/masakurapa/go-cover/internal/profile/profile.go</div>
-					<div>98.0%</div>
-					<div class="source">
-						<pre>package profile
+		</div>
+	
+		<div class="source" id="file4" style="display: none">
+			<pre>package profile
 
 import (
         "bufio"
@@ -349,14 +392,10 @@ func toInt(s string) int <span class="cov">{
         <span class="cov">return i</span>
 }
 </pre>
-					</div>
-				</div>
-			
-				<div id="file3" style="display: none">
-					<div>github.com/masakurapa/go-cover/internal/profile/tree.go</div>
-					<div>100.0%</div>
-					<div class="source">
-						<pre>package profile
+		</div>
+	
+		<div class="source" id="file5" style="display: none">
+			<pre>package profile
 
 import (
         "fmt"
@@ -428,14 +467,10 @@ func (tree *Tree) merge() <span class="cov">{
         }
 }
 </pre>
-					</div>
-				</div>
-			
-				<div id="file4" style="display: none">
-					<div>github.com/masakurapa/go-cover/internal/reader/reader.go</div>
-					<div>0.0%</div>
-					<div class="source">
-						<pre>package reader
+		</div>
+	
+		<div class="source" id="file6" style="display: none">
+			<pre>package reader
 
 import (
         "fmt"
@@ -472,11 +507,8 @@ func (*reader) find(file string) (string, error) <span class="uncov">{
         <span class="uncov">return filepath.Join(pkg.Dir, file), nil</span>
 }
 </pre>
-					</div>
-				</div>
-			
 		</div>
-	</div>
+	
 
 	<script>
 		let current;
@@ -493,9 +525,13 @@ func (*reader) find(file string) (string, error) <span class="uncov">{
 
 			current.style.display = 'block';
 		}
-		function change(f) {
-			select(f);
+		function change(t) {
+			select(document.getElementById('files').value);
 			window.scrollTo(0, 0);
+		}
+
+		if (!current) {
+			select("file0");
 		}
 	</script>
 </body>

@@ -54,15 +54,19 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/default.go (0.0%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (93.1%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (92.6%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				
+				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				
+				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -79,86 +83,58 @@
 		<pre class="file" id="file0" style="display: none">package html
 
 import (
-        "bufio"
         "bytes"
         "fmt"
         "html/template"
         "io"
-        "path/filepath"
 
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
 
-func WriteTreeView(
-        reader reader.Reader,
-        out io.Writer,
-        profiles profile.Profiles,
-        tree profile.Tree,
-) error <span class="cov8" title="1">{
+func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error <span class="cov0" title="0">{
         files := make([]TemplateFile, 0, len(profiles))
-        for _, p := range profiles </span><span class="cov8" title="1">{
+        for _, p := range profiles </span><span class="cov0" title="0">{
                 b, err := reader.Read(p.FileName)
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
 
-                <span class="cov8" title="1">var buf bytes.Buffer
-                if err = genSource(&amp;buf, b, p); err != nil </span><span class="cov0" title="0">{
+                <span class="cov0" title="0">var buf bytes.Buffer
+                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
 
-                <span class="cov8" title="1">files = append(files, TemplateFile{
+                <span class="cov0" title="0">files = append(files, TemplateFile{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
                         Coverage: p.Blocks.Coverage(),
                 })</span>
         }
 
-        <span class="cov8" title="1">return parsedTemplate.Execute(out, TemplateData{
-                Tree:  template.HTML(genDirectoryTree(tree)),
+        <span class="cov0" title="0">return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
                 Files: files,
         })</span>
 }
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package html
 
-func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
-        var buf bytes.Buffer
-        buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
-        makeDirectoryTree(&amp;buf, tree)
-        buf.WriteString("&lt;/ul&gt;")
-        return buf.String()
-}</span>
+import (
+        "bufio"
+        "html/template"
+        "io"
 
-// ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov8" title="1">{
-        for _, t := range tree </span><span class="cov8" title="1">{
-                buf.WriteString("&lt;li&gt;")
-                buf.WriteString(t.Name)
+        "github.com/masakurapa/go-cover/internal/profile"
+)
 
-                if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
-                        buf.WriteString("&lt;ul&gt;")
-                }</span>
-
-                <span class="cov8" title="1">makeDirectoryTree(buf, t.SubDirs)
-
-                for _, p := range t.Profiles </span><span class="cov8" title="1">{
-                        _, f := filepath.Split(p.FileName)
-                        buf.WriteString(fmt.Sprintf(
-                                `&lt;li class="file" onclick="change('file%d');"&gt;%s (%.1f%%)&lt;/li&gt;`,
-                                p.ID,
-                                f,
-                                p.Blocks.Coverage(),
-                        ))
-                }</span>
-
-                <span class="cov8" title="1">if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
-                        buf.WriteString("&lt;/ul&gt;")
-                }</span>
-                <span class="cov8" title="1">buf.WriteString("&lt;/li&gt;")</span>
-        }
+type TemplateFile struct {
+        Name     string
+        Body     template.HTML
+        Coverage float64
 }
 
-func genSource(w io.Writer, src []byte, prof profile.Profile) error <span class="cov8" title="1">{
+func genSource(w io.Writer, src []byte, prof *profile.Profile) error <span class="cov8" title="1">{
         dst := bufio.NewWriter(w)
 
         bi := 0
@@ -210,7 +186,89 @@ func genSource(w io.Writer, src []byte, prof profile.Profile) error <span class=
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package profile
+		<pre class="file" id="file2" style="display: none">package html
+
+import (
+        "bytes"
+        "fmt"
+        "html/template"
+        "io"
+        "path/filepath"
+
+        "github.com/masakurapa/go-cover/internal/profile"
+        "github.com/masakurapa/go-cover/internal/reader"
+)
+
+func WriteTreeView(
+        reader reader.Reader,
+        out io.Writer,
+        profiles profile.Profiles,
+        tree profile.Tree,
+) error <span class="cov8" title="1">{
+        files := make([]TemplateFile, 0, len(profiles))
+        for _, p := range profiles </span><span class="cov8" title="1">{
+                b, err := reader.Read(p.FileName)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
+                }</span>
+
+                <span class="cov8" title="1">var buf bytes.Buffer
+                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+
+                <span class="cov8" title="1">files = append(files, TemplateFile{
+                        Name:     p.FileName,
+                        Body:     template.HTML(buf.String()),
+                        Coverage: p.Blocks.Coverage(),
+                })</span>
+        }
+
+        <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, TreeTemplateData{
+                Tree:  template.HTML(genDirectoryTree(tree)),
+                Files: files,
+        })</span>
+}
+
+func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
+        var buf bytes.Buffer
+        buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
+        makeDirectoryTree(&amp;buf, tree)
+        buf.WriteString("&lt;/ul&gt;")
+        return buf.String()
+}</span>
+
+// ディレクトリツリーの生成
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov8" title="1">{
+        for _, t := range tree </span><span class="cov8" title="1">{
+                buf.WriteString("&lt;li&gt;")
+                buf.WriteString(t.Name)
+
+                if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
+                        buf.WriteString("&lt;ul&gt;")
+                }</span>
+
+                <span class="cov8" title="1">makeDirectoryTree(buf, t.SubDirs)
+
+                for _, p := range t.Profiles </span><span class="cov8" title="1">{
+                        _, f := filepath.Split(p.FileName)
+                        buf.WriteString(fmt.Sprintf(
+                                `&lt;li class="file" onclick="change('file%d');"&gt;%s (%.1f%%)&lt;/li&gt;`,
+                                p.ID,
+                                f,
+                                p.Blocks.Coverage(),
+                        ))
+                }</span>
+
+                <span class="cov8" title="1">if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
+                        buf.WriteString("&lt;/ul&gt;")
+                }</span>
+                <span class="cov8" title="1">buf.WriteString("&lt;/li&gt;")</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package profile
 
 type Blocks []Block
 
@@ -240,7 +298,7 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "bufio"
@@ -363,7 +421,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file5" style="display: none">package profile
 
 import (
         "fmt"
@@ -436,7 +494,7 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package reader
+		<pre class="file" id="file6" style="display: none">package reader
 
 import (
         "fmt"

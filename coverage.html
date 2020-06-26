@@ -58,15 +58,17 @@
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (93.1%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (59.5%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (61.4%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				<option value="file5">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
 				
-				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file6">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				
+				<option value="file7">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -88,11 +90,14 @@ import (
         "html/template"
         "io"
 
+        "github.com/masakurapa/go-cover/internal/logger"
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
 
 func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error <span class="cov0" title="0">{
+        logger.L.Debug("start generating html")
+
         files := make([]TemplateFile, 0, len(profiles))
         for _, p := range profiles </span><span class="cov0" title="0">{
                 b, err := reader.Read(p.FileName)
@@ -112,7 +117,8 @@ func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error
                 })</span>
         }
 
-        <span class="cov0" title="0">return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
+        <span class="cov0" title="0">logger.L.Debug("write html")
+        return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
                 Files: files,
         })</span>
 }
@@ -195,6 +201,7 @@ import (
         "io"
         "path/filepath"
 
+        "github.com/masakurapa/go-cover/internal/logger"
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
@@ -315,6 +322,8 @@ func WriteTreeView(
         profiles profile.Profiles,
         tree profile.Tree,
 ) error <span class="cov8" title="1">{
+        logger.L.Debug("start generating tree view html")
+
         files := make([]TemplateFile, 0, len(profiles))
         for _, p := range profiles </span><span class="cov8" title="1">{
                 b, err := reader.Read(p.FileName)
@@ -334,7 +343,8 @@ func WriteTreeView(
                 })</span>
         }
 
-        <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, TreeTemplateData{
+        <span class="cov8" title="1">logger.L.Debug("write html")
+        return parsedTreeTemplate.Execute(out, TreeTemplateData{
                 Tree:  template.HTML(genDirectoryTree(tree)),
                 Files: files,
         })</span>
@@ -378,7 +388,33 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov8" 
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file3" style="display: none">package logger
+
+import (
+        "fmt"
+        "time"
+)
+
+var L Logger
+
+type Logger struct {
+        verbose bool
+}
+
+func New(v bool) <span class="cov0" title="0">{
+        L = Logger{verbose: v}
+}</span>
+
+func (l *Logger) Debug(format string, a ...interface{}) <span class="cov8" title="1">{
+        if !l.verbose </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov0" title="0">t := time.Now().Format("2006-01-02 15:04:05")
+        fmt.Printf(fmt.Sprintf("[%s]%s\n", t, format), a...)</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package profile
 
 type Blocks []Block
 
@@ -408,7 +444,7 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file5" style="display: none">package profile
 
 import (
         "bufio"
@@ -531,7 +567,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package profile
+		<pre class="file" id="file6" style="display: none">package profile
 
 import (
         "fmt"
@@ -604,13 +640,15 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package reader
+		<pre class="file" id="file7" style="display: none">package reader
 
 import (
         "fmt"
         "go/build"
         "io/ioutil"
         "path/filepath"
+
+        "github.com/masakurapa/go-cover/internal/logger"
 )
 
 type Reader interface {
@@ -629,7 +667,8 @@ func (r *reader) Read(path string) ([]byte, error) <span class="cov0" title="0">
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return ioutil.ReadFile(file)</span>
+        <span class="cov0" title="0">logger.L.Debug("read: %s", file)
+        return ioutil.ReadFile(file)</span>
 }
 
 func (*reader) find(file string) (string, error) <span class="cov0" title="0">{

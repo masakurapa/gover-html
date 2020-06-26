@@ -7,6 +7,7 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/masakurapa/go-cover/internal/logger"
 	"github.com/masakurapa/go-cover/internal/profile"
 	"github.com/masakurapa/go-cover/internal/reader"
 )
@@ -127,6 +128,8 @@ func WriteTreeView(
 	profiles profile.Profiles,
 	tree profile.Tree,
 ) error {
+	logger.L.Debug("start generating tree view html")
+
 	files := make([]TemplateFile, 0, len(profiles))
 	for _, p := range profiles {
 		b, err := reader.Read(p.FileName)
@@ -146,6 +149,7 @@ func WriteTreeView(
 		})
 	}
 
+	logger.L.Debug("write html")
 	return parsedTreeTemplate.Execute(out, TreeTemplateData{
 		Tree:  template.HTML(genDirectoryTree(tree)),
 		Files: files,

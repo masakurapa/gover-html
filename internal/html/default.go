@@ -6,11 +6,14 @@ import (
 	"html/template"
 	"io"
 
+	"github.com/masakurapa/go-cover/internal/logger"
 	"github.com/masakurapa/go-cover/internal/profile"
 	"github.com/masakurapa/go-cover/internal/reader"
 )
 
 func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error {
+	logger.L.Debug("start generating html")
+
 	files := make([]TemplateFile, 0, len(profiles))
 	for _, p := range profiles {
 		b, err := reader.Read(p.FileName)
@@ -30,6 +33,7 @@ func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error
 		})
 	}
 
+	logger.L.Debug("write html")
 	return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
 		Files: files,
 	})

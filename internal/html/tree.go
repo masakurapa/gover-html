@@ -12,116 +12,6 @@ import (
 	"github.com/masakurapa/go-cover/internal/reader"
 )
 
-func WriteTreeView2(
-	reader reader.Reader,
-	out io.Writer,
-	profiles profile.Profiles,
-	tree profile.Tree,
-) error {
-	var buf bytes.Buffer
-	buf.WriteString(`<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<style>
-		.content {
-			display: flex;
-			padding: 8px;
-		}
-		.tree {
-			width: 30%;
-			white-space: nowrap;
-			overflow-x: scroll;
-		}
-		.cover {
-			width: 70%;
-			margin-left: 32px;
-		}
-		.source {
-			white-space: nowrap;
-			overflow-x: scroll;
-		}
-		ul {
-			list-style: none;
-			margin-block-start: unset;
-			margin-block-end: unset;
-		}
-		li .file {
-			cursor: pointer;
-		}
-		pre {
-			font-family: Menlo, monospace;
-			font-weight: bold;
-			color: rgb(80, 80, 80);
-		}
-		.uncov {
-			color: rgb(192, 0, 0);
-		}
-		.cov {
-			color: rgb(44, 212, 149);
-		}
-	</style>
-</head>
-<body>
-	<div class="content">
-		<div class="tree">`)
-
-	buf.WriteString(genDirectoryTree(tree))
-	buf.WriteString(`</div>
-		<div class="cover">
-`)
-
-	for i, p := range profiles {
-		b, err := reader.Read(p.FileName)
-		if err != nil {
-			return fmt.Errorf("can't read %q: %v", p.FileName, err)
-		}
-
-		buf.WriteString(fmt.Sprintf(`<div id="file%d" style="display: none">
-		<div>%s</div>
-		<div>%.1f%%</div>
-		<div class="source">
-			<pre>`, i, p.FileName, p.Blocks.Coverage()))
-
-		if err = genSource(&buf, b, &p); err != nil {
-			return err
-		}
-
-		buf.WriteString(`</pre>
-		</div>
-	</div>`)
-	}
-
-	buf.WriteString(`</div>
-	</div>
-
-	<script>
-		let current;
-
-		function select(f) {
-			if (current) {
-				current.style.display = 'none';
-			}
-
-			current = document.getElementById(f)
-			if (!current) {
-				return;
-			}
-
-			current.style.display = 'block';
-		}
-		function change(f) {
-			select(f);
-			window.scrollTo(0, 0);
-		}
-	</script>
-</body>
-</html>`)
-
-	out.Write(buf.Bytes())
-	return nil
-}
-
 func WriteTreeView(
 	reader reader.Reader,
 	out io.Writer,
@@ -130,38 +20,45 @@ func WriteTreeView(
 ) error {
 	logger.L.Debug("start generating tree view html")
 
-	files := make([]TemplateFile, 0, len(profiles))
+	data := TreeTemplateData{
+		Tree:  template.HTML(genDirectoryTree(tree)),
+		Files: make([]TemplateFile, 0, len(profiles)),
+	}
+
 	for _, p := range profiles {
 		b, err := reader.Read(p.FileName)
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
 
-		var buf bytes.Buffer
-		if err = genSource(&buf, b, &p); err != nil {
-			return err
-		}
+		buf := writePool.Get().(*bytes.Buffer)
+		genSource(buf, b, &p)
 
-		files = append(files, TemplateFile{
+		data.Files = append(data.Files, TemplateFile{
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
 			Coverage: p.Blocks.Coverage(),
 		})
+
+		buf.Reset()
+		writePool.Put(buf)
 	}
 
 	logger.L.Debug("write html")
-	return parsedTreeTemplate.Execute(out, TreeTemplateData{
-		Tree:  template.HTML(genDirectoryTree(tree)),
-		Files: files,
-	})
+	return parsedTreeTemplate.Execute(out, data)
 }
 
 func genDirectoryTree(tree profile.Tree) string {
-	var buf bytes.Buffer
+	buf := writePool.Get().(*bytes.Buffer)
+
 	buf.WriteString(`<ul style="padding-left: 0;">`)
-	makeDirectoryTree(&buf, tree)
+	makeDirectoryTree(buf, tree)
 	buf.WriteString("</ul>")
-	return buf.String()
+
+	s := buf.String()
+	buf.Reset()
+	writePool.Put(buf)
+	return s
 }
 
 // ディレクトリツリーの生成

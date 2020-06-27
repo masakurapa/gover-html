@@ -7,7 +7,6 @@ import (
 
 	"github.com/masakurapa/go-cover/internal/html"
 	"github.com/masakurapa/go-cover/internal/profile"
-	"github.com/masakurapa/go-cover/internal/reader"
 )
 
 func TestWriteTreeView(t *testing.T) {
@@ -65,14 +64,12 @@ func BenchmarkWriteTreeView(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		html.WriteTreeView2(&reader, &writer, profiles, tree)
+		html.WriteTreeView(&reader, &writer, profiles, tree)
 	}
 }
 
 // stub
-type stubReader struct {
-	reader.Reader
-}
+type stubReader struct{}
 
 func (stub *stubReader) Read(s string) ([]byte, error) {
 	if s != "path/to/example.go" {

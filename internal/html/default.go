@@ -21,16 +21,17 @@ func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
 
-		var buf bytes.Buffer
-		if err = genSource(&buf, b, &p); err != nil {
-			return err
-		}
+		buf := writePool.Get().(*bytes.Buffer)
+		genSource(buf, b, &p)
 
 		files = append(files, TemplateFile{
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
 			Coverage: p.Blocks.Coverage(),
 		})
+
+		buf.Reset()
+		writePool.Put(buf)
 	}
 
 	logger.L.Debug("write html")

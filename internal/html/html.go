@@ -1,11 +1,19 @@
 package html
 
 import (
-	"bufio"
+	"bytes"
 	"html/template"
-	"io"
+	"sync"
 
 	"github.com/masakurapa/go-cover/internal/profile"
+)
+
+var (
+	writePool = sync.Pool{
+		New: func() interface{} {
+			return &bytes.Buffer{}
+		},
+	}
 )
 
 type TemplateFile struct {
@@ -14,9 +22,7 @@ type TemplateFile struct {
 	Coverage float64
 }
 
-func genSource(w io.Writer, src []byte, prof *profile.Profile) error {
-	dst := bufio.NewWriter(w)
-
+func genSource(dst *bytes.Buffer, src []byte, prof *profile.Profile) {
 	bi := 0
 	si := 0
 	line := 1
@@ -61,6 +67,4 @@ func genSource(w io.Writer, src []byte, prof *profile.Profile) error {
 		si++
 		col++
 	}
-
-	return dst.Flush()
 }

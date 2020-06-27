@@ -13,10 +13,12 @@ type Reader interface {
 	Read(path string) ([]byte, error)
 }
 
-type reader struct{}
+type reader struct {
+	dirs map[string]string
+}
 
 func New() Reader {
-	return &reader{}
+	return &reader{dirs: make(map[string]string)}
 }
 
 func (r *reader) Read(path string) ([]byte, error) {
@@ -29,11 +31,18 @@ func (r *reader) Read(path string) ([]byte, error) {
 	return ioutil.ReadFile(file)
 }
 
-func (*reader) find(file string) (string, error) {
+func (r *reader) find(file string) (string, error) {
 	dir, file := filepath.Split(file)
+
+	if d, ok := r.dirs[dir]; ok {
+		return filepath.Join(d, file), nil
+	}
+
 	pkg, err := build.Import(dir, ".", build.FindOnly)
 	if err != nil {
 		return "", fmt.Errorf("can't find %q: %v", file, err)
 	}
+
+	r.dirs[dir] = pkg.Dir
 	return filepath.Join(pkg.Dir, file), nil
 }

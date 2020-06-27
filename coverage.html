@@ -56,9 +56,9 @@
 				
 				<option value="file0">github.com/masakurapa/go-cover/internal/html/default.go (0.0%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (93.1%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (61.4%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (97.0%)</option>
 				
 				<option value="file3">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
@@ -105,16 +105,17 @@ func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
 
-                <span class="cov0" title="0">var buf bytes.Buffer
-                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="cov0" title="0">{
-                        return err
-                }</span>
+                <span class="cov0" title="0">buf := writePool.Get().(*bytes.Buffer)
+                genSource(buf, b, &amp;p)
 
-                <span class="cov0" title="0">files = append(files, TemplateFile{
+                files = append(files, TemplateFile{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
                         Coverage: p.Blocks.Coverage(),
-                })</span>
+                })
+
+                buf.Reset()
+                writePool.Put(buf)</span>
         }
 
         <span class="cov0" title="0">logger.L.Debug("write html")
@@ -127,11 +128,19 @@ func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error
 		<pre class="file" id="file1" style="display: none">package html
 
 import (
-        "bufio"
+        "bytes"
         "html/template"
-        "io"
+        "sync"
 
         "github.com/masakurapa/go-cover/internal/profile"
+)
+
+var (
+        writePool = sync.Pool{
+                New: func() interface{} <span class="cov8" title="1">{
+                        return &amp;bytes.Buffer{}
+                }</span>,
+        }
 )
 
 type TemplateFile struct {
@@ -140,9 +149,7 @@ type TemplateFile struct {
         Coverage float64
 }
 
-func genSource(w io.Writer, src []byte, prof *profile.Profile) error <span class="cov8" title="1">{
-        dst := bufio.NewWriter(w)
-
+func genSource(dst *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov8" title="1">{
         bi := 0
         si := 0
         line := 1
@@ -187,8 +194,6 @@ func genSource(w io.Writer, src []byte, prof *profile.Profile) error <span class
                 <span class="cov8" title="1">si++
                 col++</span>
         }
-
-        <span class="cov8" title="1">return dst.Flush()</span>
 }
 </pre>
 		
@@ -206,116 +211,6 @@ import (
         "github.com/masakurapa/go-cover/internal/reader"
 )
 
-func WriteTreeView2(
-        reader reader.Reader,
-        out io.Writer,
-        profiles profile.Profiles,
-        tree profile.Tree,
-) error <span class="cov0" title="0">{
-        var buf bytes.Buffer
-        buf.WriteString(`&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-        &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
-        &lt;style&gt;
-                .content {
-                        display: flex;
-                        padding: 8px;
-                }
-                .tree {
-                        width: 30%;
-                        white-space: nowrap;
-                        overflow-x: scroll;
-                }
-                .cover {
-                        width: 70%;
-                        margin-left: 32px;
-                }
-                .source {
-                        white-space: nowrap;
-                        overflow-x: scroll;
-                }
-                ul {
-                        list-style: none;
-                        margin-block-start: unset;
-                        margin-block-end: unset;
-                }
-                li .file {
-                        cursor: pointer;
-                }
-                pre {
-                        font-family: Menlo, monospace;
-                        font-weight: bold;
-                        color: rgb(80, 80, 80);
-                }
-                .uncov {
-                        color: rgb(192, 0, 0);
-                }
-                .cov {
-                        color: rgb(44, 212, 149);
-                }
-        &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-        &lt;div class="content"&gt;
-                &lt;div class="tree"&gt;`)
-
-        buf.WriteString(genDirectoryTree(tree))
-        buf.WriteString(`&lt;/div&gt;
-                &lt;div class="cover"&gt;
-`)
-
-        for i, p := range profiles </span><span class="cov0" title="0">{
-                b, err := reader.Read(p.FileName)
-                if err != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
-                }</span>
-
-                <span class="cov0" title="0">buf.WriteString(fmt.Sprintf(`&lt;div id="file%d" style="display: none"&gt;
-                &lt;div&gt;%s&lt;/div&gt;
-                &lt;div&gt;%.1f%%&lt;/div&gt;
-                &lt;div class="source"&gt;
-                        &lt;pre&gt;`, i, p.FileName, p.Blocks.Coverage()))
-
-                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="cov0" title="0">{
-                        return err
-                }</span>
-
-                <span class="cov0" title="0">buf.WriteString(`&lt;/pre&gt;
-                &lt;/div&gt;
-        &lt;/div&gt;`)</span>
-        }
-
-        <span class="cov0" title="0">buf.WriteString(`&lt;/div&gt;
-        &lt;/div&gt;
-
-        &lt;script&gt;
-                let current;
-
-                function select(f) {
-                        if (current) {
-                                current.style.display = 'none';
-                        }
-
-                        current = document.getElementById(f)
-                        if (!current) {
-                                return;
-                        }
-
-                        current.style.display = 'block';
-                }
-                function change(f) {
-                        select(f);
-                        window.scrollTo(0, 0);
-                }
-        &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;`)
-
-        out.Write(buf.Bytes())
-        return nil</span>
-}
-
 func WriteTreeView(
         reader reader.Reader,
         out io.Writer,
@@ -324,38 +219,45 @@ func WriteTreeView(
 ) error <span class="cov8" title="1">{
         logger.L.Debug("start generating tree view html")
 
-        files := make([]TemplateFile, 0, len(profiles))
+        data := TreeTemplateData{
+                Tree:  template.HTML(genDirectoryTree(tree)),
+                Files: make([]TemplateFile, 0, len(profiles)),
+        }
+
         for _, p := range profiles </span><span class="cov8" title="1">{
                 b, err := reader.Read(p.FileName)
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
 
-                <span class="cov8" title="1">var buf bytes.Buffer
-                if err = genSource(&amp;buf, b, &amp;p); err != nil </span><span class="cov0" title="0">{
-                        return err
-                }</span>
+                <span class="cov8" title="1">buf := writePool.Get().(*bytes.Buffer)
+                genSource(buf, b, &amp;p)
 
-                <span class="cov8" title="1">files = append(files, TemplateFile{
+                data.Files = append(data.Files, TemplateFile{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
                         Coverage: p.Blocks.Coverage(),
-                })</span>
+                })
+
+                buf.Reset()
+                writePool.Put(buf)</span>
         }
 
         <span class="cov8" title="1">logger.L.Debug("write html")
-        return parsedTreeTemplate.Execute(out, TreeTemplateData{
-                Tree:  template.HTML(genDirectoryTree(tree)),
-                Files: files,
-        })</span>
+        return parsedTreeTemplate.Execute(out, data)</span>
 }
 
 func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
-        var buf bytes.Buffer
+        buf := writePool.Get().(*bytes.Buffer)
+
         buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
-        makeDirectoryTree(&amp;buf, tree)
+        makeDirectoryTree(buf, tree)
         buf.WriteString("&lt;/ul&gt;")
-        return buf.String()
+
+        s := buf.String()
+        buf.Reset()
+        writePool.Put(buf)
+        return s
 }</span>
 
 // ディレクトリツリーの生成
@@ -655,10 +557,12 @@ type Reader interface {
         Read(path string) ([]byte, error)
 }
 
-type reader struct{}
+type reader struct {
+        dirs map[string]string
+}
 
 func New() Reader <span class="cov0" title="0">{
-        return &amp;reader{}
+        return &amp;reader{dirs: make(map[string]string)}
 }</span>
 
 func (r *reader) Read(path string) ([]byte, error) <span class="cov0" title="0">{
@@ -671,13 +575,20 @@ func (r *reader) Read(path string) ([]byte, error) <span class="cov0" title="0">
         return ioutil.ReadFile(file)</span>
 }
 
-func (*reader) find(file string) (string, error) <span class="cov0" title="0">{
+func (r *reader) find(file string) (string, error) <span class="cov0" title="0">{
         dir, file := filepath.Split(file)
-        pkg, err := build.Import(dir, ".", build.FindOnly)
+
+        if d, ok := r.dirs[dir]; ok </span><span class="cov0" title="0">{
+                return filepath.Join(d, file), nil
+        }</span>
+
+        <span class="cov0" title="0">pkg, err := build.Import(dir, ".", build.FindOnly)
         if err != nil </span><span class="cov0" title="0">{
                 return "", fmt.Errorf("can't find %q: %v", file, err)
         }</span>
-        <span class="cov0" title="0">return filepath.Join(pkg.Dir, file), nil</span>
+
+        <span class="cov0" title="0">r.dirs[dir] = pkg.Dir
+        return filepath.Join(pkg.Dir, file), nil</span>
 }
 </pre>
 		

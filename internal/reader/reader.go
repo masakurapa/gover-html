@@ -5,6 +5,7 @@ import (
 	"go/build"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/masakurapa/go-cover/internal/logger"
 )
@@ -22,7 +23,7 @@ func New() Reader {
 }
 
 func (r *reader) Read(path string) ([]byte, error) {
-	file, err := r.find(path)
+	file, err := r.find2(path)
 	if err != nil {
 		return nil, err
 	}
@@ -44,5 +45,25 @@ func (r *reader) find(file string) (string, error) {
 	}
 
 	r.dirs[dir] = pkg.Dir
+	return filepath.Join(pkg.Dir, file), nil
+}
+
+func (r *reader) find2(file string) (string, error) {
+	for k, v := range r.dirs {
+		if !strings.HasPrefix(file, k) {
+			continue
+		}
+		p := strings.TrimPrefix(file, k)
+		return filepath.Join(v, p), nil
+	}
+
+	dir, file := filepath.Split(file)
+	pkg, err := build.Import(dir, ".", build.FindOnly)
+	if err != nil {
+		return "", fmt.Errorf("can't find %q: %v", file, err)
+	}
+
+	p := strings.TrimSuffix(pkg.ImportPath, strings.TrimPrefix(pkg.Dir, pkg.Root))
+	r.dirs[p] = pkg.Root
 	return filepath.Join(pkg.Dir, file), nil
 }

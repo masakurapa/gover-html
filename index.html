@@ -527,6 +527,7 @@ import (
         "go/build"
         "io/ioutil"
         "path/filepath"
+        "strings"
 
         "github.com/masakurapa/go-cover/internal/logger"
 )
@@ -544,7 +545,7 @@ func New() Reader <span class="uncov">{
 }</span>
 
 func (r *reader) Read(path string) ([]byte, error) <span class="uncov">{
-        file, err := r.find(path)
+        file, err := r.find2(path)
         if err != nil </span><span class="uncov">{
                 return nil, err
         }</span>
@@ -566,6 +567,26 @@ func (r *reader) find(file string) (string, error) <span class="uncov">{
         }</span>
 
         <span class="uncov">r.dirs[dir] = pkg.Dir
+        return filepath.Join(pkg.Dir, file), nil</span>
+}
+
+func (r *reader) find2(file string) (string, error) <span class="uncov">{
+        for k, v := range r.dirs </span><span class="uncov">{
+                if !strings.HasPrefix(file, k) </span><span class="uncov">{
+                        continue</span>
+                }
+                <span class="uncov">p := strings.TrimPrefix(file, k)
+                return filepath.Join(v, p), nil</span>
+        }
+
+        <span class="uncov">dir, file := filepath.Split(file)
+        pkg, err := build.Import(dir, ".", build.FindOnly)
+        if err != nil </span><span class="uncov">{
+                return "", fmt.Errorf("can't find %q: %v", file, err)
+        }</span>
+
+        <span class="uncov">p := strings.TrimSuffix(pkg.ImportPath, strings.TrimPrefix(pkg.Dir, pkg.Root))
+        r.dirs[p] = pkg.Root
         return filepath.Join(pkg.Dir, file), nil</span>
 }
 </pre>

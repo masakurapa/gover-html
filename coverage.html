@@ -54,21 +54,19 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/default.go (0.0%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree.go (97.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree.go (97.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
 				
-				<option value="file5">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
 				
-				<option value="file6">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
-				
-				<option value="file7">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -83,49 +81,6 @@
 		<div id="content">
 		
 		<pre class="file" id="file0" style="display: none">package html
-
-import (
-        "bytes"
-        "fmt"
-        "html/template"
-        "io"
-
-        "github.com/masakurapa/go-cover/internal/logger"
-        "github.com/masakurapa/go-cover/internal/profile"
-        "github.com/masakurapa/go-cover/internal/reader"
-)
-
-func Write(reader reader.Reader, out io.Writer, profiles profile.Profiles) error <span class="cov0" title="0">{
-        logger.L.Debug("start generating html")
-
-        files := make([]TemplateFile, 0, len(profiles))
-        for _, p := range profiles </span><span class="cov0" title="0">{
-                b, err := reader.Read(p.FileName)
-                if err != nil </span><span class="cov0" title="0">{
-                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
-                }</span>
-
-                <span class="cov0" title="0">buf := writePool.Get().(*bytes.Buffer)
-                genSource(buf, b, &amp;p)
-
-                files = append(files, TemplateFile{
-                        Name:     p.FileName,
-                        Body:     template.HTML(buf.String()),
-                        Coverage: p.Blocks.Coverage(),
-                })
-
-                buf.Reset()
-                writePool.Put(buf)</span>
-        }
-
-        <span class="cov0" title="0">logger.L.Debug("write html")
-        return parsedDefaultTemplate.Execute(out, DefaultTemplateData{
-                Files: files,
-        })</span>
-}
-</pre>
-		
-		<pre class="file" id="file1" style="display: none">package html
 
 import (
         "bytes"
@@ -197,7 +152,7 @@ func genSource(dst *bytes.Buffer, src []byte, prof *profile.Profile) <span class
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package html
+		<pre class="file" id="file1" style="display: none">package html
 
 import (
         "bytes"
@@ -290,7 +245,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov8" 
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package logger
+		<pre class="file" id="file2" style="display: none">package logger
 
 import (
         "fmt"
@@ -316,7 +271,7 @@ func (l *Logger) Debug(format string, a ...interface{}) <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file3" style="display: none">package profile
 
 type Blocks []Block
 
@@ -346,7 +301,7 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "bufio"
@@ -469,7 +424,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package profile
+		<pre class="file" id="file5" style="display: none">package profile
 
 import (
         "fmt"
@@ -542,7 +497,7 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file7" style="display: none">package reader
+		<pre class="file" id="file6" style="display: none">package reader
 
 import (
         "fmt"

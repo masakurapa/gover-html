@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/build"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -15,15 +16,17 @@ type Reader interface {
 }
 
 type reader struct {
-	dirs map[string]string
+	pkg        *build.Package
+	hasSrcRoot bool
+	prefix     string
 }
 
 func New() Reader {
-	return &reader{dirs: make(map[string]string)}
+	return &reader{}
 }
 
 func (r *reader) Read(path string) ([]byte, error) {
-	file, err := r.find2(path)
+	file, err := r.find(path)
 	if err != nil {
 		return nil, err
 	}
@@ -32,38 +35,32 @@ func (r *reader) Read(path string) ([]byte, error) {
 	return ioutil.ReadFile(file)
 }
 
-func (r *reader) find(file string) (string, error) {
-	dir, file := filepath.Split(file)
+func (r *reader) find(path string) (string, error) {
+	dir, file := filepath.Split(path)
 
-	if d, ok := r.dirs[dir]; ok {
-		return filepath.Join(d, file), nil
-	}
-
-	pkg, err := build.Import(dir, ".", build.FindOnly)
-	if err != nil {
-		return "", fmt.Errorf("can't find %q: %v", file, err)
-	}
-
-	r.dirs[dir] = pkg.Dir
-	return filepath.Join(pkg.Dir, file), nil
-}
-
-func (r *reader) find2(file string) (string, error) {
-	for k, v := range r.dirs {
-		if !strings.HasPrefix(file, k) {
-			continue
+	if r.pkg == nil {
+		pkg, err := build.Import(dir, ".", build.FindOnly)
+		if err != nil {
+			return "", fmt.Errorf("can't find %q: %v", path, err)
 		}
-		p := strings.TrimPrefix(file, k)
-		return filepath.Join(v, p), nil
+		r.pkg = pkg
+
+		src := filepath.Join(r.pkg.SrcRoot, path)
+		if _, err := os.Stat(src); err == nil {
+			r.hasSrcRoot = true
+			return src, nil
+		}
+
+		src = filepath.Join(r.pkg.Dir, file)
+		if _, err := os.Stat(src); err == nil {
+			r.hasSrcRoot = false
+			r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
+			return src, nil
+		}
 	}
 
-	dir, file := filepath.Split(file)
-	pkg, err := build.Import(dir, ".", build.FindOnly)
-	if err != nil {
-		return "", fmt.Errorf("can't find %q: %v", file, err)
+	if r.hasSrcRoot {
+		return filepath.Join(r.pkg.SrcRoot, path), nil
 	}
-
-	p := strings.TrimSuffix(pkg.ImportPath, strings.TrimPrefix(pkg.Dir, pkg.Root))
-	r.dirs[p] = pkg.Root
-	return filepath.Join(pkg.Dir, file), nil
+	return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil
 }

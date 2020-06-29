@@ -526,6 +526,7 @@ import (
         "fmt"
         "go/build"
         "io/ioutil"
+        "os"
         "path/filepath"
         "strings"
 
@@ -537,15 +538,17 @@ type Reader interface {
 }
 
 type reader struct {
-        dirs map[string]string
+        pkg        *build.Package
+        hasSrcRoot bool
+        prefix     string
 }
 
 func New() Reader <span class="uncov">{
-        return &amp;reader{dirs: make(map[string]string)}
+        return &amp;reader{}
 }</span>
 
 func (r *reader) Read(path string) ([]byte, error) <span class="uncov">{
-        file, err := r.find2(path)
+        file, err := r.find(path)
         if err != nil </span><span class="uncov">{
                 return nil, err
         }</span>
@@ -554,40 +557,34 @@ func (r *reader) Read(path string) ([]byte, error) <span class="uncov">{
         return ioutil.ReadFile(file)</span>
 }
 
-func (r *reader) find(file string) (string, error) <span class="uncov">{
-        dir, file := filepath.Split(file)
+func (r *reader) find(path string) (string, error) <span class="uncov">{
+        dir, file := filepath.Split(path)
 
-        if d, ok := r.dirs[dir]; ok </span><span class="uncov">{
-                return filepath.Join(d, file), nil
-        }</span>
+        if r.pkg == nil </span><span class="uncov">{
+                pkg, err := build.Import(dir, ".", build.FindOnly)
+                if err != nil </span><span class="uncov">{
+                        return "", fmt.Errorf("can't find %q: %v", path, err)
+                }</span>
+                <span class="uncov">r.pkg = pkg
 
-        <span class="uncov">pkg, err := build.Import(dir, ".", build.FindOnly)
-        if err != nil </span><span class="uncov">{
-                return "", fmt.Errorf("can't find %q: %v", file, err)
-        }</span>
+                src := filepath.Join(r.pkg.SrcRoot, path)
+                if _, err := os.Stat(src); err == nil </span><span class="uncov">{
+                        r.hasSrcRoot = true
+                        return src, nil
+                }</span>
 
-        <span class="uncov">r.dirs[dir] = pkg.Dir
-        return filepath.Join(pkg.Dir, file), nil</span>
-}
-
-func (r *reader) find2(file string) (string, error) <span class="uncov">{
-        for k, v := range r.dirs </span><span class="uncov">{
-                if !strings.HasPrefix(file, k) </span><span class="uncov">{
-                        continue</span>
-                }
-                <span class="uncov">p := strings.TrimPrefix(file, k)
-                return filepath.Join(v, p), nil</span>
+                <span class="uncov">src = filepath.Join(r.pkg.Dir, file)
+                if _, err := os.Stat(src); err == nil </span><span class="uncov">{
+                        r.hasSrcRoot = false
+                        r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
+                        return src, nil
+                }</span>
         }
 
-        <span class="uncov">dir, file := filepath.Split(file)
-        pkg, err := build.Import(dir, ".", build.FindOnly)
-        if err != nil </span><span class="uncov">{
-                return "", fmt.Errorf("can't find %q: %v", file, err)
+        <span class="uncov">if r.hasSrcRoot </span><span class="uncov">{
+                return filepath.Join(r.pkg.SrcRoot, path), nil
         }</span>
-
-        <span class="uncov">p := strings.TrimSuffix(pkg.ImportPath, strings.TrimPrefix(pkg.Dir, pkg.Root))
-        r.dirs[p] = pkg.Root
-        return filepath.Join(pkg.Dir, file), nil</span>
+        <span class="uncov">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
 }
 </pre>
 		</div>

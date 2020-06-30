@@ -56,7 +56,7 @@
 				
 				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree.go (97.0%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree.go (96.0%)</option>
 				
 				<option value="file2">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
@@ -204,11 +204,7 @@ func WriteTreeView(
 
 func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
         buf := writePool.Get().(*bytes.Buffer)
-
-        buf.WriteString(`&lt;ul style="padding-left: 0;"&gt;`)
-        makeDirectoryTree(buf, tree)
-        buf.WriteString("&lt;/ul&gt;")
-
+        makeDirectoryTree(buf, tree, 0)
         s := buf.String()
         buf.Reset()
         writePool.Put(buf)
@@ -216,31 +212,27 @@ func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
 }</span>
 
 // ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) <span class="cov8" title="1">{
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov8" title="1">{
         for _, t := range tree </span><span class="cov8" title="1">{
-                buf.WriteString("&lt;li&gt;")
-                buf.WriteString(t.Name)
+                buf.WriteString(fmt.Sprintf(
+                        `&lt;div style="padding-inline-start: %dpx"&gt;%s&lt;/div&gt;`,
+                        indent*30,
+                        t.Name,
+                ))
 
-                if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
-                        buf.WriteString("&lt;ul&gt;")
-                }</span>
-
-                <span class="cov8" title="1">makeDirectoryTree(buf, t.SubDirs)
+                makeDirectoryTree(buf, t.SubDirs, indent+1)
 
                 for _, p := range t.Profiles </span><span class="cov8" title="1">{
                         _, f := filepath.Split(p.FileName)
                         buf.WriteString(fmt.Sprintf(
-                                `&lt;li class="file" onclick="change('file%d');"&gt;%s (%.1f%%)&lt;/li&gt;`,
+                                `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
+                                (indent+1)*30,
+                                p.ID,
                                 p.ID,
                                 f,
                                 p.Blocks.Coverage(),
                         ))
                 }</span>
-
-                <span class="cov8" title="1">if len(t.Profiles) &gt; 0 || len(t.SubDirs) &gt; 0 </span><span class="cov8" title="1">{
-                        buf.WriteString("&lt;/ul&gt;")
-                }</span>
-                <span class="cov8" title="1">buf.WriteString("&lt;/li&gt;")</span>
         }
 }
 </pre>

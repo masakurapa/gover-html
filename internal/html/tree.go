@@ -50,11 +50,7 @@ func WriteTreeView(
 
 func genDirectoryTree(tree profile.Tree) string {
 	buf := writePool.Get().(*bytes.Buffer)
-
-	buf.WriteString(`<ul style="padding-left: 0;">`)
-	makeDirectoryTree(buf, tree)
-	buf.WriteString("</ul>")
-
+	makeDirectoryTree(buf, tree, 0)
 	s := buf.String()
 	buf.Reset()
 	writePool.Put(buf)
@@ -62,30 +58,26 @@ func genDirectoryTree(tree profile.Tree) string {
 }
 
 // ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree) {
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 	for _, t := range tree {
-		buf.WriteString("<li>")
-		buf.WriteString(t.Name)
+		buf.WriteString(fmt.Sprintf(
+			`<div style="padding-inline-start: %dpx">%s</div>`,
+			indent*30,
+			t.Name,
+		))
 
-		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
-			buf.WriteString("<ul>")
-		}
-
-		makeDirectoryTree(buf, t.SubDirs)
+		makeDirectoryTree(buf, t.SubDirs, indent+1)
 
 		for _, p := range t.Profiles {
 			_, f := filepath.Split(p.FileName)
 			buf.WriteString(fmt.Sprintf(
-				`<li class="file" onclick="change('file%d');">%s (%.1f%%)</li>`,
+				`<div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);">%s (%.1f%%)</div>`,
+				(indent+1)*30,
+				p.ID,
 				p.ID,
 				f,
 				p.Blocks.Coverage(),
 			))
 		}
-
-		if len(t.Profiles) > 0 || len(t.SubDirs) > 0 {
-			buf.WriteString("</ul>")
-		}
-		buf.WriteString("</li>")
 	}
 }

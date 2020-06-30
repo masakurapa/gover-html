@@ -19,26 +19,33 @@ const treeTmpl = `
 			display: flex;
 			padding: 8px;
 		}
+
 		.tree {
 			width: 30%;
+			height: 100vh;
 			white-space: nowrap;
-			overflow-x: scroll;
+			overflow: scroll;
 		}
+		.tree div {
+			padding: 3px 0;
+		}
+		.file {
+			cursor: pointer;
+		}
+		.current {
+			font-weight: bold;
+			background-color: #E1F5FF;
+		}
+
 		.cover {
 			width: 70%;
+			height: 100vh;
 			margin-left: 32px;
 		}
 		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
-		}
-		ul {
-			list-style: none;
-			margin-block-start: unset;
-			margin-block-end: unset;
-		}
-		li .file {
-			cursor: pointer;
+			height: 100vh;
 		}
 		pre {
 			font-family: Menlo, monospace;
@@ -55,37 +62,53 @@ const treeTmpl = `
 </head>
 <body>
 	<div class="content">
-		<div class="tree">{{.Tree}}</div>
+		<div class="tree">
+			{{.Tree}}
+		</div>
 		<div class="cover">
 			{{range $i, $f := .Files}}
-				<div id="file{{$i}}" style="display: none">
-					<div>{{$f.Name}}</div>
-					<div>{{printf "%.1f" $f.Coverage}}%</div>
-					<div class="source">
-						<pre>{{$f.Body}}</pre>
-					</div>
+			<div id="file{{$i}}" style="display: none">
+				<div class="top">
+					<div>{{$f.Name}} ({{printf "%.1f" $f.Coverage}}%)</div>
 				</div>
+				<div class="source">
+					<pre>{{$f.Body}}</pre>
+				</div>
+			</div>
 			{{end}}
 		</div>
 	</div>
 
 	<script>
 		let current;
+		let currentTree;
 
-		function select(f) {
+		function select(n) {
 			if (current) {
 				current.style.display = 'none';
 			}
 
-			current = document.getElementById(f)
+			current = document.getElementById('file' + n);
 			if (!current) {
 				return;
 			}
-
 			current.style.display = 'block';
 		}
-		function change(f) {
-			select(f);
+		function selectTree(n) {
+			if (currentTree) {
+				currentTree.classList.remove("current");
+			}
+
+			currentTree = document.getElementById('tree' + n);
+			if (!current) {
+				return;
+			}
+			currentTree.classList.add("current");
+		}
+
+		function change(n) {
+			select(n);
+			selectTree(n);
 			window.scrollTo(0, 0);
 		}
 	</script>

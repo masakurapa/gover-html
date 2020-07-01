@@ -17,7 +17,7 @@ const treeTemplate = `
 			padding: 8px;
 		}
 		.tree {
-			width: 30%;
+			width: 25%;
 			height: 95vh;
 			white-space: nowrap;
 			overflow: scroll;
@@ -57,9 +57,9 @@ const treeTemplate = `
 		li:before {
 			counter-increment: number;
 			content: counter(number);
-			margin-right: 32px;
+			margin-right: 24px;
 			display: inline-block;
-			width: 65px;
+			width: 50px;
 			text-align: right;
 		}
 		.cov0 {

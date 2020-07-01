@@ -54,7 +54,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.4%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.3%)</option>
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
@@ -109,7 +109,6 @@ type TreeTemplateData struct {
 type File struct {
         Name     string
         Body     template.HTML
-        Line     int
         Coverage float64
 }
 
@@ -133,12 +132,11 @@ func WriteTreeView(
                 }</span>
 
                 <span class="cov8" title="1">buf := writePool.Get().(*bytes.Buffer)
-                line := genSource(buf, b, &amp;p)
+                genSource(buf, b, &amp;p)
 
                 data.Files = append(data.Files, File{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
-                        Line:     line,
                         Coverage: p.Blocks.Coverage(),
                 })
 
@@ -184,7 +182,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
         }
 }
 
-func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span class="cov8" title="1">{
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov8" title="1">{
         bi := 0
         si := 0
         line := 1
@@ -229,8 +227,6 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span c
                 <span class="cov8" title="1">si++
                 col++</span>
         }
-
-        <span class="cov8" title="1">return line</span>
 }
 </pre>
 		

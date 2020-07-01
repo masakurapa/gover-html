@@ -51,7 +51,7 @@
 <body>
 	<div class="content">
 		<div class="tree">
-			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.4%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (0.0%)</div>
+			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.3%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (0.0%)</div>
 		</div>
 		<div class="cover">
 			
@@ -87,7 +87,6 @@ type TreeTemplateData struct {
 type File struct {
         Name     string
         Body     template.HTML
-        Line     int
         Coverage float64
 }
 
@@ -111,12 +110,11 @@ func WriteTreeView(
                 }</span>
 
                 <span class="cov1">buf := writePool.Get().(*bytes.Buffer)
-                line := genSource(buf, b, &amp;p)
+                genSource(buf, b, &amp;p)
 
                 data.Files = append(data.Files, File{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
-                        Line:     line,
                         Coverage: p.Blocks.Coverage(),
                 })
 
@@ -162,7 +160,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
         }
 }
 
-func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span class="cov1">{
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov1">{
         bi := 0
         si := 0
         line := 1
@@ -207,8 +205,6 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span c
                 <span class="cov1">si++
                 col++</span>
         }
-
-        <span class="cov1">return line</span>
 }
 </pre>
 			</div>

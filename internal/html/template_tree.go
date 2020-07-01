@@ -33,18 +33,34 @@ const treeTemplate = `
 			background-color: #E1F5FF;
 		}
 		.cover {
-			width: 70%;
+			width: 65%;
 			margin-left: 32px;
+			margin-right: 32px;
 		}
 		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
 		}
 		pre {
+			counter-reset: line;
 			height: 90vh;
 			font-family: Menlo, monospace;
 			font-weight: bold;
 			color: rgb(80, 80, 80);
+		}
+		ol {
+			list-style: none;
+			counter-reset: number;
+			margin: 0;
+			padding: 0;
+		}
+		li:before {
+			counter-increment: number;
+			content: counter(number);
+			margin-right: 32px;
+			display: inline-block;
+			width: 65px;
+			text-align: right;
 		}
 		.cov0 {
 			color: rgb(192, 0, 0);

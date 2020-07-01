@@ -107,20 +107,38 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 	si := 0
 	line := 1
 	col := 1
+	cov0 := false
+	cov1 := false
+
+	buf.WriteString("<ol>")
 
 	for si < len(src) {
+		if col == 1 {
+			buf.WriteString("<li>")
+			if cov0 {
+				buf.WriteString(`<span class="cov0">`)
+			}
+			if cov1 {
+				buf.WriteString(`<span class="cov1">`)
+			}
+		}
+
 		if len(prof.Blocks) > bi {
 			block := prof.Blocks[bi]
 			if block.StartLine == line && block.StartCol == col {
 				if block.Count == 0 {
 					buf.WriteString(`<span class="cov0">`)
+					cov0 = true
 				} else {
 					buf.WriteString(`<span class="cov1">`)
+					cov1 = true
 				}
 			}
 			if block.EndLine == line && block.EndCol == col || line > block.EndLine {
 				buf.WriteString(`</span>`)
 				bi++
+				cov0 = false
+				cov1 = false
 				continue
 			}
 		}
@@ -140,6 +158,10 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 		}
 
 		if b == '\n' {
+			if cov0 || cov1 {
+				buf.WriteString("</span>")
+			}
+			buf.WriteString("</li>")
 			line++
 			col = 0
 		}
@@ -147,4 +169,6 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 		si++
 		col++
 	}
+
+	buf.WriteString("</ol>")
 }

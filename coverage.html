@@ -187,20 +187,38 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class
         si := 0
         line := 1
         col := 1
+        cov0 := false
+        cov1 := false
+
+        buf.WriteString("&lt;ol&gt;")
 
         for si &lt; len(src) </span><span class="cov8" title="1">{
-                if len(prof.Blocks) &gt; bi </span><span class="cov8" title="1">{
+                if col == 1 </span><span class="cov8" title="1">{
+                        buf.WriteString("&lt;li&gt;")
+                        if cov0 </span><span class="cov0" title="0">{
+                                buf.WriteString(`&lt;span class="cov0"&gt;`)
+                        }</span>
+                        <span class="cov8" title="1">if cov1 </span><span class="cov8" title="1">{
+                                buf.WriteString(`&lt;span class="cov1"&gt;`)
+                        }</span>
+                }
+
+                <span class="cov8" title="1">if len(prof.Blocks) &gt; bi </span><span class="cov8" title="1">{
                         block := prof.Blocks[bi]
                         if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov8" title="1">{
                                 if block.Count == 0 </span><span class="cov8" title="1">{
                                         buf.WriteString(`&lt;span class="cov0"&gt;`)
+                                        cov0 = true
                                 }</span> else<span class="cov8" title="1"> {
                                         buf.WriteString(`&lt;span class="cov1"&gt;`)
+                                        cov1 = true
                                 }</span>
                         }
                         <span class="cov8" title="1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov8" title="1">{
                                 buf.WriteString(`&lt;/span&gt;`)
                                 bi++
+                                cov0 = false
+                                cov1 = false
                                 continue</span>
                         }
                 }
@@ -220,13 +238,19 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class
                 }
 
                 <span class="cov8" title="1">if b == '\n' </span><span class="cov8" title="1">{
+                        if cov0 || cov1 </span><span class="cov8" title="1">{
+                                buf.WriteString("&lt;/span&gt;")
+                        }</span>
+                        <span class="cov8" title="1">buf.WriteString("&lt;/li&gt;")
                         line++
-                        col = 0
-                }</span>
+                        col = 0</span>
+                }
 
                 <span class="cov8" title="1">si++
                 col++</span>
         }
+
+        <span class="cov8" title="1">buf.WriteString("&lt;/ol&gt;")</span>
 }
 </pre>
 		

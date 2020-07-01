@@ -29,7 +29,6 @@ type TreeTemplateData struct {
 type File struct {
 	Name     string
 	Body     template.HTML
-	Line     int
 	Coverage float64
 }
 
@@ -53,12 +52,11 @@ func WriteTreeView(
 		}
 
 		buf := writePool.Get().(*bytes.Buffer)
-		line := genSource(buf, b, &p)
+		genSource(buf, b, &p)
 
 		data.Files = append(data.Files, File{
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
-			Line:     line,
 			Coverage: p.Blocks.Coverage(),
 		})
 
@@ -104,7 +102,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 	}
 }
 
-func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int {
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 	bi := 0
 	si := 0
 	line := 1
@@ -149,6 +147,4 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int {
 		si++
 		col++
 	}
-
-	return line
 }

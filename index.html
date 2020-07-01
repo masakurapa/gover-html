@@ -55,6 +55,7 @@
 			display: inline-block;
 			width: 50px;
 			text-align: right;
+			color: rgb(200, 200, 200);
 		}
 		.cov0 {
 			color: rgb(192, 0, 0);
@@ -69,7 +70,7 @@
 		<div class="tree">
 			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.3%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (0.0%)</div>
 		</div>
-		<div class="cover">
+		<div id="cov" class="cover">
 			
 			<div id="file0" class="source" style="display: none">
 				<pre><ol><li>package html
@@ -596,23 +597,24 @@
 				return;
 			}
 			current.style.display = 'block';
+			current.scrollLeft = 0;
+			current.scrollTop = 0;
 		}
 		function selectTree(n) {
 			if (currentTree) {
-				currentTree.classList.remove("current");
+				currentTree.classList.remove('current');
 			}
 
 			currentTree = document.getElementById('tree' + n);
 			if (!current) {
 				return;
 			}
-			currentTree.classList.add("current");
+			currentTree.classList.add('current');
 		}
 
 		function change(n) {
 			select(n);
 			selectTree(n);
-			window.scrollTo(0, 0);
 		}
 	</script>
 </body>

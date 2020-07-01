@@ -61,6 +61,7 @@ const treeTemplate = `
 			display: inline-block;
 			width: 50px;
 			text-align: right;
+			color: rgb(200, 200, 200);
 		}
 		.cov0 {
 			color: rgb(192, 0, 0);
@@ -75,7 +76,7 @@ const treeTemplate = `
 		<div class="tree">
 			{{.Tree}}
 		</div>
-		<div class="cover">
+		<div id="cov" class="cover">
 			{{range $i, $f := .Files}}
 			<div id="file{{$i}}" class="source" style="display: none">
 				<pre>{{$f.Body}}</pre>
@@ -98,23 +99,24 @@ const treeTemplate = `
 				return;
 			}
 			current.style.display = 'block';
+			current.scrollLeft = 0;
+			current.scrollTop = 0;
 		}
 		function selectTree(n) {
 			if (currentTree) {
-				currentTree.classList.remove("current");
+				currentTree.classList.remove('current');
 			}
 
 			currentTree = document.getElementById('tree' + n);
 			if (!current) {
 				return;
 			}
-			currentTree.classList.add("current");
+			currentTree.classList.add('current');
 		}
 
 		function change(n) {
 			select(n);
 			selectTree(n);
-			window.scrollTo(0, 0);
 		}
 	</script>
 </body>

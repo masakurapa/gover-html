@@ -2,27 +2,23 @@ package html
 
 import "html/template"
 
-type TreeTemplateData struct {
-	Tree  template.HTML
-	Files []TemplateFile
-}
+var parsedTreeTemplate = template.Must(template.New("html").Funcs(template.FuncMap{}).Parse(treeTemplate))
 
-var parsedTreeTemplate = template.Must(template.New("html").Funcs(template.FuncMap{}).Parse(treeTmpl))
-
-const treeTmpl = `
+const treeTemplate = `
 <!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<style>
 		.content {
+			height: 100%;
+			width: 100%;
 			display: flex;
 			padding: 8px;
 		}
-
 		.tree {
 			width: 30%;
-			height: 100vh;
+			height: 95vh;
 			white-space: nowrap;
 			overflow: scroll;
 		}
@@ -36,26 +32,24 @@ const treeTmpl = `
 			font-weight: bold;
 			background-color: #E1F5FF;
 		}
-
 		.cover {
 			width: 70%;
-			height: 100vh;
 			margin-left: 32px;
 		}
 		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
-			height: 100vh;
 		}
 		pre {
+			height: 90vh;
 			font-family: Menlo, monospace;
 			font-weight: bold;
 			color: rgb(80, 80, 80);
 		}
-		.uncov {
+		.cov0 {
 			color: rgb(192, 0, 0);
 		}
-		.cov {
+		.cov1 {
 			color: rgb(44, 212, 149);
 		}
 	</style>
@@ -67,13 +61,8 @@ const treeTmpl = `
 		</div>
 		<div class="cover">
 			{{range $i, $f := .Files}}
-			<div id="file{{$i}}" style="display: none">
-				<div class="top">
-					<div>{{$f.Name}} ({{printf "%.1f" $f.Coverage}}%)</div>
-				</div>
-				<div class="source">
-					<pre>{{$f.Body}}</pre>
-				</div>
+			<div id="file{{$i}}" class="source" style="display: none">
+				<pre>{{$f.Body}}</pre>
 			</div>
 			{{end}}
 		</div>

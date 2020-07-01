@@ -6,11 +6,32 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+	"sync"
 
 	"github.com/masakurapa/go-cover/internal/logger"
 	"github.com/masakurapa/go-cover/internal/profile"
 	"github.com/masakurapa/go-cover/internal/reader"
 )
+
+var (
+	writePool = sync.Pool{
+		New: func() interface{} {
+			return &bytes.Buffer{}
+		},
+	}
+)
+
+type TreeTemplateData struct {
+	Tree  template.HTML
+	Files []File
+}
+
+type File struct {
+	Name     string
+	Body     template.HTML
+	Line     int
+	Coverage float64
+}
 
 func WriteTreeView(
 	reader reader.Reader,
@@ -22,7 +43,7 @@ func WriteTreeView(
 
 	data := TreeTemplateData{
 		Tree:  template.HTML(genDirectoryTree(tree)),
-		Files: make([]TemplateFile, 0, len(profiles)),
+		Files: make([]File, 0, len(profiles)),
 	}
 
 	for _, p := range profiles {
@@ -32,11 +53,12 @@ func WriteTreeView(
 		}
 
 		buf := writePool.Get().(*bytes.Buffer)
-		genSource(buf, b, &p)
+		line := genSource(buf, b, &p)
 
-		data.Files = append(data.Files, TemplateFile{
+		data.Files = append(data.Files, File{
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
+			Line:     line,
 			Coverage: p.Blocks.Coverage(),
 		})
 
@@ -80,4 +102,53 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 			))
 		}
 	}
+}
+
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int {
+	bi := 0
+	si := 0
+	line := 1
+	col := 1
+
+	for si < len(src) {
+		if len(prof.Blocks) > bi {
+			block := prof.Blocks[bi]
+			if block.StartLine == line && block.StartCol == col {
+				if block.Count == 0 {
+					buf.WriteString(`<span class="cov0">`)
+				} else {
+					buf.WriteString(`<span class="cov1">`)
+				}
+			}
+			if block.EndLine == line && block.EndCol == col || line > block.EndLine {
+				buf.WriteString(`</span>`)
+				bi++
+				continue
+			}
+		}
+
+		b := src[si]
+		switch b {
+		case '<':
+			buf.WriteString("&lt;")
+		case '>':
+			buf.WriteString("&gt;")
+		case '&':
+			buf.WriteString("&amp;")
+		case '\t':
+			buf.WriteString("        ")
+		default:
+			buf.WriteByte(b)
+		}
+
+		if b == '\n' {
+			line++
+			col = 0
+		}
+
+		si++
+		col++
+	}
+
+	return line
 }

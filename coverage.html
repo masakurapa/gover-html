@@ -54,19 +54,17 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.4%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree.go (96.0%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
 				
-				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
-				
-				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file5">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -84,10 +82,15 @@
 
 import (
         "bytes"
+        "fmt"
         "html/template"
+        "io"
+        "path/filepath"
         "sync"
 
+        "github.com/masakurapa/go-cover/internal/logger"
         "github.com/masakurapa/go-cover/internal/profile"
+        "github.com/masakurapa/go-cover/internal/reader"
 )
 
 var (
@@ -98,73 +101,17 @@ var (
         }
 )
 
-type TemplateFile struct {
+type TreeTemplateData struct {
+        Tree  template.HTML
+        Files []File
+}
+
+type File struct {
         Name     string
         Body     template.HTML
+        Line     int
         Coverage float64
 }
-
-func genSource(dst *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov8" title="1">{
-        bi := 0
-        si := 0
-        line := 1
-        col := 1
-
-        for si &lt; len(src) </span><span class="cov8" title="1">{
-                if len(prof.Blocks) &gt; bi </span><span class="cov8" title="1">{
-                        block := prof.Blocks[bi]
-                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov8" title="1">{
-                                if block.Count == 0 </span><span class="cov8" title="1">{
-                                        dst.WriteString(`&lt;span class="uncov"&gt;`)
-                                }</span> else<span class="cov8" title="1"> {
-                                        dst.WriteString(`&lt;span class="cov"&gt;`)
-                                }</span>
-                        }
-                        <span class="cov8" title="1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov8" title="1">{
-                                dst.WriteString(`&lt;/span&gt;`)
-                                bi++
-                                continue</span>
-                        }
-                }
-
-                <span class="cov8" title="1">b := src[si]
-                switch b </span>{
-                case '&lt;':<span class="cov8" title="1">
-                        dst.WriteString("&amp;lt;")</span>
-                case '&gt;':<span class="cov0" title="0">
-                        dst.WriteString("&amp;gt;")</span>
-                case '&amp;':<span class="cov0" title="0">
-                        dst.WriteString("&amp;amp;")</span>
-                case '\t':<span class="cov8" title="1">
-                        dst.WriteString("        ")</span>
-                default:<span class="cov8" title="1">
-                        dst.WriteByte(b)</span>
-                }
-
-                <span class="cov8" title="1">if b == '\n' </span><span class="cov8" title="1">{
-                        line++
-                        col = 0
-                }</span>
-
-                <span class="cov8" title="1">si++
-                col++</span>
-        }
-}
-</pre>
-		
-		<pre class="file" id="file1" style="display: none">package html
-
-import (
-        "bytes"
-        "fmt"
-        "html/template"
-        "io"
-        "path/filepath"
-
-        "github.com/masakurapa/go-cover/internal/logger"
-        "github.com/masakurapa/go-cover/internal/profile"
-        "github.com/masakurapa/go-cover/internal/reader"
-)
 
 func WriteTreeView(
         reader reader.Reader,
@@ -176,7 +123,7 @@ func WriteTreeView(
 
         data := TreeTemplateData{
                 Tree:  template.HTML(genDirectoryTree(tree)),
-                Files: make([]TemplateFile, 0, len(profiles)),
+                Files: make([]File, 0, len(profiles)),
         }
 
         for _, p := range profiles </span><span class="cov8" title="1">{
@@ -186,11 +133,12 @@ func WriteTreeView(
                 }</span>
 
                 <span class="cov8" title="1">buf := writePool.Get().(*bytes.Buffer)
-                genSource(buf, b, &amp;p)
+                line := genSource(buf, b, &amp;p)
 
-                data.Files = append(data.Files, TemplateFile{
+                data.Files = append(data.Files, File{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
+                        Line:     line,
                         Coverage: p.Blocks.Coverage(),
                 })
 
@@ -235,9 +183,58 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
                 }</span>
         }
 }
+
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span class="cov8" title="1">{
+        bi := 0
+        si := 0
+        line := 1
+        col := 1
+
+        for si &lt; len(src) </span><span class="cov8" title="1">{
+                if len(prof.Blocks) &gt; bi </span><span class="cov8" title="1">{
+                        block := prof.Blocks[bi]
+                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov8" title="1">{
+                                if block.Count == 0 </span><span class="cov8" title="1">{
+                                        buf.WriteString(`&lt;span class="cov0"&gt;`)
+                                }</span> else<span class="cov8" title="1"> {
+                                        buf.WriteString(`&lt;span class="cov1"&gt;`)
+                                }</span>
+                        }
+                        <span class="cov8" title="1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov8" title="1">{
+                                buf.WriteString(`&lt;/span&gt;`)
+                                bi++
+                                continue</span>
+                        }
+                }
+
+                <span class="cov8" title="1">b := src[si]
+                switch b </span>{
+                case '&lt;':<span class="cov8" title="1">
+                        buf.WriteString("&amp;lt;")</span>
+                case '&gt;':<span class="cov0" title="0">
+                        buf.WriteString("&amp;gt;")</span>
+                case '&amp;':<span class="cov0" title="0">
+                        buf.WriteString("&amp;amp;")</span>
+                case '\t':<span class="cov8" title="1">
+                        buf.WriteString("        ")</span>
+                default:<span class="cov8" title="1">
+                        buf.WriteByte(b)</span>
+                }
+
+                <span class="cov8" title="1">if b == '\n' </span><span class="cov8" title="1">{
+                        line++
+                        col = 0
+                }</span>
+
+                <span class="cov8" title="1">si++
+                col++</span>
+        }
+
+        <span class="cov8" title="1">return line</span>
+}
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package logger
+		<pre class="file" id="file1" style="display: none">package logger
 
 import (
         "fmt"
@@ -263,7 +260,7 @@ func (l *Logger) Debug(format string, a ...interface{}) <span class="cov8" title
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file2" style="display: none">package profile
 
 type Blocks []Block
 
@@ -293,7 +290,7 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file3" style="display: none">package profile
 
 import (
         "bufio"
@@ -416,7 +413,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "fmt"
@@ -489,7 +486,7 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package reader
+		<pre class="file" id="file5" style="display: none">package reader
 
 import (
         "fmt"

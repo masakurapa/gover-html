@@ -5,13 +5,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<style>
 		.content {
+			height: 100%;
+			width: 100%;
 			display: flex;
 			padding: 8px;
 		}
-
 		.tree {
 			width: 30%;
-			height: 100vh;
+			height: 95vh;
 			white-space: nowrap;
 			overflow: scroll;
 		}
@@ -25,26 +26,24 @@
 			font-weight: bold;
 			background-color: #E1F5FF;
 		}
-
 		.cover {
 			width: 70%;
-			height: 100vh;
 			margin-left: 32px;
 		}
 		.source {
 			white-space: nowrap;
 			overflow-x: scroll;
-			height: 100vh;
 		}
 		pre {
+			height: 90vh;
 			font-family: Menlo, monospace;
 			font-weight: bold;
 			color: rgb(80, 80, 80);
 		}
-		.uncov {
+		.cov0 {
 			color: rgb(192, 0, 0);
 		}
-		.cov {
+		.cov1 {
 			color: rgb(44, 212, 149);
 		}
 	</style>
@@ -52,95 +51,12 @@
 <body>
 	<div class="content">
 		<div class="tree">
-			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">html.go (92.9%)</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">tree.go (96.0%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree6" onclick="change(6);">reader.go (0.0%)</div>
+			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.4%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (0.0%)</div>
 		</div>
 		<div class="cover">
 			
-			<div id="file0" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/html/html.go (92.9%)</div>
-				</div>
-				<div class="source">
-					<pre>package html
-
-import (
-        "bytes"
-        "html/template"
-        "sync"
-
-        "github.com/masakurapa/go-cover/internal/profile"
-)
-
-var (
-        writePool = sync.Pool{
-                New: func() interface{} <span class="cov">{
-                        return &amp;bytes.Buffer{}
-                }</span>,
-        }
-)
-
-type TemplateFile struct {
-        Name     string
-        Body     template.HTML
-        Coverage float64
-}
-
-func genSource(dst *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov">{
-        bi := 0
-        si := 0
-        line := 1
-        col := 1
-
-        for si &lt; len(src) </span><span class="cov">{
-                if len(prof.Blocks) &gt; bi </span><span class="cov">{
-                        block := prof.Blocks[bi]
-                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov">{
-                                if block.Count == 0 </span><span class="cov">{
-                                        dst.WriteString(`&lt;span class="uncov"&gt;`)
-                                }</span> else<span class="cov"> {
-                                        dst.WriteString(`&lt;span class="cov"&gt;`)
-                                }</span>
-                        }
-                        <span class="cov">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov">{
-                                dst.WriteString(`&lt;/span&gt;`)
-                                bi++
-                                continue</span>
-                        }
-                }
-
-                <span class="cov">b := src[si]
-                switch b </span>{
-                case '&lt;':<span class="cov">
-                        dst.WriteString("&amp;lt;")</span>
-                case '&gt;':<span class="uncov">
-                        dst.WriteString("&amp;gt;")</span>
-                case '&amp;':<span class="uncov">
-                        dst.WriteString("&amp;amp;")</span>
-                case '\t':<span class="cov">
-                        dst.WriteString("        ")</span>
-                default:<span class="cov">
-                        dst.WriteByte(b)</span>
-                }
-
-                <span class="cov">if b == '\n' </span><span class="cov">{
-                        line++
-                        col = 0
-                }</span>
-
-                <span class="cov">si++
-                col++</span>
-        }
-}
-</pre>
-				</div>
-			</div>
-			
-			<div id="file1" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/html/tree.go (96.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package html
+			<div id="file0" class="source" style="display: none">
+				<pre>package html
 
 import (
         "bytes"
@@ -148,37 +64,59 @@ import (
         "html/template"
         "io"
         "path/filepath"
+        "sync"
 
         "github.com/masakurapa/go-cover/internal/logger"
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
 
+var (
+        writePool = sync.Pool{
+                New: func() interface{} <span class="cov1">{
+                        return &amp;bytes.Buffer{}
+                }</span>,
+        }
+)
+
+type TreeTemplateData struct {
+        Tree  template.HTML
+        Files []File
+}
+
+type File struct {
+        Name     string
+        Body     template.HTML
+        Line     int
+        Coverage float64
+}
+
 func WriteTreeView(
         reader reader.Reader,
         out io.Writer,
         profiles profile.Profiles,
         tree profile.Tree,
-) error <span class="cov">{
+) error <span class="cov1">{
         logger.L.Debug("start generating tree view html")
 
         data := TreeTemplateData{
                 Tree:  template.HTML(genDirectoryTree(tree)),
-                Files: make([]TemplateFile, 0, len(profiles)),
+                Files: make([]File, 0, len(profiles)),
         }
 
-        for _, p := range profiles </span><span class="cov">{
+        for _, p := range profiles </span><span class="cov1">{
                 b, err := reader.Read(p.FileName)
-                if err != nil </span><span class="uncov">{
+                if err != nil </span><span class="cov0">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
 
-                <span class="cov">buf := writePool.Get().(*bytes.Buffer)
-                genSource(buf, b, &amp;p)
+                <span class="cov1">buf := writePool.Get().(*bytes.Buffer)
+                line := genSource(buf, b, &amp;p)
 
-                data.Files = append(data.Files, TemplateFile{
+                data.Files = append(data.Files, File{
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
+                        Line:     line,
                         Coverage: p.Blocks.Coverage(),
                 })
 
@@ -186,11 +124,11 @@ func WriteTreeView(
                 writePool.Put(buf)</span>
         }
 
-        <span class="cov">logger.L.Debug("write html")
+        <span class="cov1">logger.L.Debug("write html")
         return parsedTreeTemplate.Execute(out, data)</span>
 }
 
-func genDirectoryTree(tree profile.Tree) string <span class="cov">{
+func genDirectoryTree(tree profile.Tree) string <span class="cov1">{
         buf := writePool.Get().(*bytes.Buffer)
         makeDirectoryTree(buf, tree, 0)
         s := buf.String()
@@ -200,8 +138,8 @@ func genDirectoryTree(tree profile.Tree) string <span class="cov">{
 }</span>
 
 // ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov">{
-        for _, t := range tree </span><span class="cov">{
+func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov1">{
+        for _, t := range tree </span><span class="cov1">{
                 buf.WriteString(fmt.Sprintf(
                         `&lt;div style="padding-inline-start: %dpx"&gt;%s&lt;/div&gt;`,
                         indent*30,
@@ -210,7 +148,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
 
                 makeDirectoryTree(buf, t.SubDirs, indent+1)
 
-                for _, p := range t.Profiles </span><span class="cov">{
+                for _, p := range t.Profiles </span><span class="cov1">{
                         _, f := filepath.Split(p.FileName)
                         buf.WriteString(fmt.Sprintf(
                                 `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
@@ -223,16 +161,60 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
                 }</span>
         }
 }
+
+func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) int <span class="cov1">{
+        bi := 0
+        si := 0
+        line := 1
+        col := 1
+
+        for si &lt; len(src) </span><span class="cov1">{
+                if len(prof.Blocks) &gt; bi </span><span class="cov1">{
+                        block := prof.Blocks[bi]
+                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov1">{
+                                if block.Count == 0 </span><span class="cov1">{
+                                        buf.WriteString(`&lt;span class="cov0"&gt;`)
+                                }</span> else<span class="cov1"> {
+                                        buf.WriteString(`&lt;span class="cov1"&gt;`)
+                                }</span>
+                        }
+                        <span class="cov1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov1">{
+                                buf.WriteString(`&lt;/span&gt;`)
+                                bi++
+                                continue</span>
+                        }
+                }
+
+                <span class="cov1">b := src[si]
+                switch b </span>{
+                case '&lt;':<span class="cov1">
+                        buf.WriteString("&amp;lt;")</span>
+                case '&gt;':<span class="cov0">
+                        buf.WriteString("&amp;gt;")</span>
+                case '&amp;':<span class="cov0">
+                        buf.WriteString("&amp;amp;")</span>
+                case '\t':<span class="cov1">
+                        buf.WriteString("        ")</span>
+                default:<span class="cov1">
+                        buf.WriteByte(b)</span>
+                }
+
+                <span class="cov1">if b == '\n' </span><span class="cov1">{
+                        line++
+                        col = 0
+                }</span>
+
+                <span class="cov1">si++
+                col++</span>
+        }
+
+        <span class="cov1">return line</span>
+}
 </pre>
-				</div>
 			</div>
 			
-			<div id="file2" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package logger
+			<div id="file1" class="source" style="display: none">
+				<pre>package logger
 
 import (
         "fmt"
@@ -245,27 +227,22 @@ type Logger struct {
         verbose bool
 }
 
-func New(v bool) <span class="uncov">{
+func New(v bool) <span class="cov0">{
         L = Logger{verbose: v}
 }</span>
 
-func (l *Logger) Debug(format string, a ...interface{}) <span class="cov">{
-        if !l.verbose </span><span class="cov">{
+func (l *Logger) Debug(format string, a ...interface{}) <span class="cov1">{
+        if !l.verbose </span><span class="cov1">{
                 return
         }</span>
-        <span class="uncov">t := time.Now().Format("2006-01-02 15:04:05")
+        <span class="cov0">t := time.Now().Format("2006-01-02 15:04:05")
         fmt.Printf(fmt.Sprintf("[%s]%s\n", t, format), a...)</span>
 }
 </pre>
-				</div>
 			</div>
 			
-			<div id="file3" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package profile
+			<div id="file2" class="source" style="display: none">
+				<pre>package profile
 
 type Blocks []Block
 
@@ -278,31 +255,26 @@ type Block struct {
         Count     int
 }
 
-func (blocks *Blocks) Coverage() float64 <span class="cov">{
+func (blocks *Blocks) Coverage() float64 <span class="cov1">{
         var total, covered int64
-        for _, b := range *blocks </span><span class="cov">{
+        for _, b := range *blocks </span><span class="cov1">{
                 total += int64(b.NumStmt)
-                if b.Count &gt; 0 </span><span class="cov">{
+                if b.Count &gt; 0 </span><span class="cov1">{
                         covered += int64(b.NumStmt)
                 }</span>
         }
 
-        <span class="cov">if total == 0 </span><span class="cov">{
+        <span class="cov1">if total == 0 </span><span class="cov1">{
                 return 0
         }</span>
 
-        <span class="cov">return float64(covered) / float64(total) * 100</span>
+        <span class="cov1">return float64(covered) / float64(total) * 100</span>
 }
 </pre>
-				</div>
 			</div>
 			
-			<div id="file4" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package profile
+			<div id="file3" class="source" style="display: none">
+				<pre>package profile
 
 import (
         "bufio"
@@ -324,32 +296,32 @@ type Profile struct {
         Blocks   Blocks
 }
 
-func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov">{
+func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov1">{
         files := make(map[string]*Profile)
         mode := ""
         id := 1
 
-        for s.Scan() </span><span class="cov">{
+        for s.Scan() </span><span class="cov1">{
                 line := s.Text()
 
-                if mode == "" </span><span class="cov">{
+                if mode == "" </span><span class="cov1">{
                         const p = "mode: "
-                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov">{
+                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov1">{
                                 return nil, fmt.Errorf("bad mode line: %q", line)
                         }</span>
-                        <span class="cov">mode = line[len(p):]
+                        <span class="cov1">mode = line[len(p):]
                         continue</span>
                 }
 
-                <span class="cov">m := reg.FindStringSubmatch(line)
-                if m == nil </span><span class="cov">{
+                <span class="cov1">m := reg.FindStringSubmatch(line)
+                if m == nil </span><span class="cov1">{
                         return nil, fmt.Errorf("line %q does not match expected format: %v", line, reg)
                 }</span>
 
-                <span class="cov">fileName := m[1]
+                <span class="cov1">fileName := m[1]
                 p := files[fileName]
 
-                if p == nil </span><span class="cov">{
+                if p == nil </span><span class="cov1">{
                         p = &amp;Profile{
                                 FileName: fileName,
                                 Mode:     mode,
@@ -358,7 +330,7 @@ func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov">{
                         id++
                 }</span>
 
-                <span class="cov">p.Blocks = append(p.Blocks, Block{
+                <span class="cov1">p.Blocks = append(p.Blocks, Block{
                         StartLine: toInt(m[2]),
                         StartCol:  toInt(m[3]),
                         EndLine:   toInt(m[4]),
@@ -368,71 +340,66 @@ func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov">{
                 })</span>
         }
 
-        <span class="cov">return toProfiles(files), nil</span>
+        <span class="cov1">return toProfiles(files), nil</span>
 }
 
-func toProfiles(files map[string]*Profile) Profiles <span class="cov">{
+func toProfiles(files map[string]*Profile) Profiles <span class="cov1">{
         profiles := make([]Profile, 0, len(files))
-        for _, p := range files </span><span class="cov">{
+        for _, p := range files </span><span class="cov1">{
                 p.Blocks = filterBlocks(p.Blocks)
                 profiles = append(profiles, *p)
         }</span>
 
-        <span class="cov">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov">{
+        <span class="cov1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov1">{
                 return profiles[i].FileName &lt; profiles[j].FileName
         }</span>)
 
         // ID振る
-        <span class="cov">for i := range profiles </span><span class="cov">{
+        <span class="cov1">for i := range profiles </span><span class="cov1">{
                 profiles[i].ID = i
         }</span>
 
-        <span class="cov">return profiles</span>
+        <span class="cov1">return profiles</span>
 }
 
-func filterBlocks(blocks Blocks) Blocks <span class="cov">{
+func filterBlocks(blocks Blocks) Blocks <span class="cov1">{
         pbm := make(map[string]Block)
-        for _, b := range blocks </span><span class="cov">{
+        for _, b := range blocks </span><span class="cov1">{
                 // TODO: やり方考える
                 k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
-                if _, ok := pbm[k]; !ok </span><span class="cov">{
+                if _, ok := pbm[k]; !ok </span><span class="cov1">{
                         pbm[k] = b
                 }</span>
-                <span class="cov">if b.Count &gt; 0 </span><span class="cov">{
+                <span class="cov1">if b.Count &gt; 0 </span><span class="cov1">{
                         pbm[k] = b
                 }</span>
         }
 
-        <span class="cov">pbs := make(Blocks, 0, len(pbm))
-        for _, b := range pbm </span><span class="cov">{
+        <span class="cov1">pbs := make(Blocks, 0, len(pbm))
+        for _, b := range pbm </span><span class="cov1">{
                 pbs = append(pbs, b)
         }</span>
 
-        <span class="cov">sort.SliceStable(pbs, func(i, j int) bool </span><span class="cov">{
+        <span class="cov1">sort.SliceStable(pbs, func(i, j int) bool </span><span class="cov1">{
                 bi, bj := pbs[i], pbs[j]
                 return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
         }</span>)
 
-        <span class="cov">return pbs</span>
+        <span class="cov1">return pbs</span>
 }
 
-func toInt(s string) int <span class="cov">{
+func toInt(s string) int <span class="cov1">{
         i, err := strconv.Atoi(s)
-        if err != nil </span><span class="uncov">{
+        if err != nil </span><span class="cov0">{
                 panic(err)</span>
         }
-        <span class="cov">return i</span>
+        <span class="cov1">return i</span>
 }
 </pre>
-				</div>
 			</div>
 			
-			<div id="file5" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package profile
+			<div id="file4" class="source" style="display: none">
+				<pre>package profile
 
 import (
         "fmt"
@@ -447,23 +414,23 @@ type Node struct {
         SubDirs  Tree
 }
 
-func (prof Profiles) ToTree() Tree <span class="cov">{
+func (prof Profiles) ToTree() Tree <span class="cov1">{
         tree := make(Tree, 0)
 
-        for _, p := range prof </span><span class="cov">{
+        for _, p := range prof </span><span class="cov1">{
                 tree.add(strings.Split(p.FileName, "/"), &amp;p)
         }</span>
 
-        <span class="cov">tree.merge()
+        <span class="cov1">tree.merge()
         return tree</span>
 }
 
-func (tree *Tree) add(paths []string, p *Profile) <span class="cov">{
+func (tree *Tree) add(paths []string, p *Profile) <span class="cov1">{
         name := paths[0]
         nextPaths := paths[1:]
 
         idx, ok := tree.findNode(name)
-        if !ok </span><span class="cov">{
+        if !ok </span><span class="cov1">{
                 *tree = append(*tree, Node{
                         Name:     name,
                         Profiles: make(Profiles, 0),
@@ -472,30 +439,30 @@ func (tree *Tree) add(paths []string, p *Profile) <span class="cov">{
                 idx = len(*tree) - 1
         }</span>
 
-        <span class="cov">t := *tree
-        if len(nextPaths) == 1 </span><span class="cov">{
+        <span class="cov1">t := *tree
+        if len(nextPaths) == 1 </span><span class="cov1">{
                 t[idx].Profiles = append(t[idx].Profiles, *p)
                 return
         }</span>
-        <span class="cov">t[idx].SubDirs.add(nextPaths, p)</span>
+        <span class="cov1">t[idx].SubDirs.add(nextPaths, p)</span>
 }
 
-func (tree *Tree) findNode(name string) (int, bool) <span class="cov">{
-        for i, t := range *tree </span><span class="cov">{
-                if t.Name == name </span><span class="cov">{
+func (tree *Tree) findNode(name string) (int, bool) <span class="cov1">{
+        for i, t := range *tree </span><span class="cov1">{
+                if t.Name == name </span><span class="cov1">{
                         return i, true
                 }</span>
         }
-        <span class="cov">return 0, false</span>
+        <span class="cov1">return 0, false</span>
 }
 
 // 子のディレクトリが1つしか無いものをマージしていく
-func (tree *Tree) merge() <span class="cov">{
+func (tree *Tree) merge() <span class="cov1">{
         tt := *tree
-        for i, t := range *tree </span><span class="cov">{
+        for i, t := range *tree </span><span class="cov1">{
                 t.SubDirs.merge()
 
-                if len(t.Profiles) == 0 &amp;&amp; len(t.SubDirs) == 1 </span><span class="cov">{
+                if len(t.Profiles) == 0 &amp;&amp; len(t.SubDirs) == 1 </span><span class="cov1">{
                         sub := t.SubDirs[0]
                         tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
                         tt[i].Profiles = sub.Profiles
@@ -504,15 +471,10 @@ func (tree *Tree) merge() <span class="cov">{
         }
 }
 </pre>
-				</div>
 			</div>
 			
-			<div id="file6" style="display: none">
-				<div class="top">
-					<div>github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</div>
-				</div>
-				<div class="source">
-					<pre>package reader
+			<div id="file5" class="source" style="display: none">
+				<pre>package reader
 
 import (
         "fmt"
@@ -535,51 +497,50 @@ type reader struct {
         prefix     string
 }
 
-func New() Reader <span class="uncov">{
+func New() Reader <span class="cov0">{
         return &amp;reader{}
 }</span>
 
-func (r *reader) Read(path string) ([]byte, error) <span class="uncov">{
+func (r *reader) Read(path string) ([]byte, error) <span class="cov0">{
         file, err := r.find(path)
-        if err != nil </span><span class="uncov">{
+        if err != nil </span><span class="cov0">{
                 return nil, err
         }</span>
 
-        <span class="uncov">logger.L.Debug("read: %s", file)
+        <span class="cov0">logger.L.Debug("read: %s", file)
         return ioutil.ReadFile(file)</span>
 }
 
-func (r *reader) find(path string) (string, error) <span class="uncov">{
+func (r *reader) find(path string) (string, error) <span class="cov0">{
         dir, file := filepath.Split(path)
 
-        if r.pkg == nil </span><span class="uncov">{
+        if r.pkg == nil </span><span class="cov0">{
                 pkg, err := build.Import(dir, ".", build.FindOnly)
-                if err != nil </span><span class="uncov">{
+                if err != nil </span><span class="cov0">{
                         return "", fmt.Errorf("can't find %q: %v", path, err)
                 }</span>
-                <span class="uncov">r.pkg = pkg
+                <span class="cov0">r.pkg = pkg
 
                 src := filepath.Join(r.pkg.SrcRoot, path)
-                if _, err := os.Stat(src); err == nil </span><span class="uncov">{
+                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
                         r.hasSrcRoot = true
                         return src, nil
                 }</span>
 
-                <span class="uncov">src = filepath.Join(r.pkg.Dir, file)
-                if _, err := os.Stat(src); err == nil </span><span class="uncov">{
+                <span class="cov0">src = filepath.Join(r.pkg.Dir, file)
+                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
                         r.hasSrcRoot = false
                         r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
                         return src, nil
                 }</span>
         }
 
-        <span class="uncov">if r.hasSrcRoot </span><span class="uncov">{
+        <span class="cov0">if r.hasSrcRoot </span><span class="cov0">{
                 return filepath.Join(r.pkg.SrcRoot, path), nil
         }</span>
-        <span class="uncov">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
+        <span class="cov0">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
 }
 </pre>
-				</div>
 			</div>
 			
 		</div>

@@ -33,7 +33,7 @@ const treeTemplate = `
 			background-color: #E1F5FF;
 		}
 		.cover {
-			width: 65%;
+			width: 70%;
 			margin-left: 32px;
 			margin-right: 32px;
 		}

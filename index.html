@@ -1,79 +1,76 @@
-
 <!DOCTYPE html>
 <html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<style>
-		.content {
-			height: 100%;
-			width: 100%;
-			display: flex;
-			padding: 8px;
-		}
-		.tree {
-			width: 25%;
-			height: 95vh;
-			white-space: nowrap;
-			overflow: scroll;
-		}
-		.tree div {
-			padding: 3px 0;
-		}
-		.file {
-			cursor: pointer;
-		}
-		.current {
-			font-weight: bold;
-			background-color: #E1F5FF;
-		}
-		.cover {
-			width: 70%;
-			margin-left: 32px;
-			margin-right: 32px;
-		}
-		.source {
-			white-space: nowrap;
-			overflow-x: scroll;
-		}
-		pre {
-			counter-reset: line;
-			height: 90vh;
-			font-family: Menlo, monospace;
-			font-weight: bold;
-			color: rgb(80, 80, 80);
-		}
-		ol {
-			list-style: none;
-			counter-reset: number;
-			margin: 0;
-			padding: 0;
-		}
-		li:before {
-			counter-increment: number;
-			content: counter(number);
-			margin-right: 24px;
-			display: inline-block;
-			width: 50px;
-			text-align: right;
-			color: rgb(200, 200, 200);
-		}
-		.cov0 {
-			color: rgb(192, 0, 0);
-		}
-		.cov1 {
-			color: rgb(44, 212, 149);
-		}
-	</style>
-</head>
-<body>
-	<div class="content">
-		<div class="tree">
-			<div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.3%)</div><div style="padding-inline-start: 30px">logger</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">log.go (40.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (0.0%)</div>
-		</div>
-		<div id="cov" class="cover">
-			
-			<div id="file0" class="source" style="display: none">
-				<pre><ol><li>package html
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			.main {
+				height: 100%;
+				width: 100%;
+				display: flex;
+				padding: 8px;
+			}
+			.tree {
+				width: 25%;
+				height: 95vh;
+				white-space: nowrap;
+				overflow: scroll;
+			}
+			.tree div {
+				padding: 3px 0;
+			}
+			.file {
+				cursor: pointer;
+			}
+			.current {
+				font-weight: bold;
+				background-color: #E1F5FF;
+			}
+			.content {
+				width: 70%;
+				margin-left: 32px;
+				margin-right: 32px;
+			}
+			.source {
+				white-space: nowrap;
+				overflow-x: scroll;
+			}
+			pre {
+				counter-reset: line;
+				height: 90vh;
+				font-family: Menlo, monospace;
+				font-weight: bold;
+				color: rgb(80, 80, 80);
+			}
+			ol {
+				list-style: none;
+				counter-reset: number;
+				margin: 0;
+				padding: 0;
+			}
+			li:before {
+				counter-increment: number;
+				content: counter(number);
+				margin-right: 24px;
+				display: inline-block;
+				width: 50px;
+				text-align: right;
+				color: rgb(200, 200, 200);
+			}
+			.cov0 {
+				color: rgb(192, 0, 0);
+			}
+			.cov1 {
+				color: rgb(44, 212, 149);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="main">
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">reader.go (0.0%)</div></div>
+			<div id="cov" class="content">
+				
+				<div id="file0" class="source" style="display: none">
+					<pre><ol><li>package html
 </li><li>
 </li><li>import (
 </li><li>        "bytes"
@@ -83,7 +80,6 @@
 </li><li>        "path/filepath"
 </li><li>        "sync"
 </li><li>
-</li><li>        "github.com/masakurapa/go-cover/internal/logger"
 </li><li>        "github.com/masakurapa/go-cover/internal/profile"
 </li><li>        "github.com/masakurapa/go-cover/internal/reader"
 </li><li>)
@@ -113,8 +109,6 @@
 </li><li>        profiles profile.Profiles,
 </li><li>        tree profile.Tree,
 </li><li>) error <span class="cov1">{
-</span></li><li><span class="cov1">        logger.L.Debug("start generating tree view html")
-</span></li><li><span class="cov1">
 </span></li><li><span class="cov1">        data := TreeTemplateData{
 </span></li><li><span class="cov1">                Tree:  template.HTML(genDirectoryTree(tree)),
 </span></li><li><span class="cov1">                Files: make([]File, 0, len(profiles)),
@@ -139,8 +133,7 @@
 </span></li><li><span class="cov1">                writePool.Put(buf)</span>
 </li><li>        }
 </li><li>
-</li><li>        <span class="cov1">logger.L.Debug("write html")
-</span></li><li><span class="cov1">        return parsedTreeTemplate.Execute(out, data)</span>
+</li><li>        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
 </li><li>}
 </li><li>
 </li><li>func genDirectoryTree(tree profile.Tree) string <span class="cov1">{
@@ -248,38 +241,10 @@
 </li><li>        <span class="cov1">buf.WriteString("&lt;/ol&gt;")</span>
 </li><li>}
 </li></ol></pre>
-			</div>
-			
-			<div id="file1" class="source" style="display: none">
-				<pre><ol><li>package logger
-</li><li>
-</li><li>import (
-</li><li>        "fmt"
-</li><li>        "time"
-</li><li>)
-</li><li>
-</li><li>var L Logger
-</li><li>
-</li><li>type Logger struct {
-</li><li>        verbose bool
-</li><li>}
-</li><li>
-</li><li>func New(v bool) <span class="cov0">{
-</span></li><li><span class="cov0">        L = Logger{verbose: v}
-</span></li><li><span class="cov0">}</span>
-</li><li>
-</li><li>func (l *Logger) Debug(format string, a ...interface{}) <span class="cov1">{
-</span></li><li><span class="cov1">        if !l.verbose </span><span class="cov1">{
-</span></li><li><span class="cov1">                return
-</span></li><li><span class="cov1">        }</span>
-</li><li>        <span class="cov0">t := time.Now().Format("2006-01-02 15:04:05")
-</span></li><li><span class="cov0">        fmt.Printf(fmt.Sprintf("[%s]%s\n", t, format), a...)</span>
-</li><li>}
-</li></ol></pre>
-			</div>
-			
-			<div id="file2" class="source" style="display: none">
-				<pre><ol><li>package profile
+				</div>
+				
+				<div id="file1" class="source" style="display: none">
+					<pre><ol><li>package profile
 </li><li>
 </li><li>type Blocks []Block
 </li><li>
@@ -308,10 +273,10 @@
 </li><li>        <span class="cov1">return float64(covered) / float64(total) * 100</span>
 </li><li>}
 </li></ol></pre>
-			</div>
-			
-			<div id="file3" class="source" style="display: none">
-				<pre><ol><li>package profile
+				</div>
+				
+				<div id="file2" class="source" style="display: none">
+					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
 </li><li>        "bufio"
@@ -433,10 +398,10 @@
 </li><li>        <span class="cov1">return i</span>
 </li><li>}
 </li></ol></pre>
-			</div>
-			
-			<div id="file4" class="source" style="display: none">
-				<pre><ol><li>package profile
+				</div>
+				
+				<div id="file3" class="source" style="display: none">
+					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
 </li><li>        "fmt"
@@ -508,10 +473,10 @@
 </li><li>        }
 </li><li>}
 </li></ol></pre>
-			</div>
-			
-			<div id="file5" class="source" style="display: none">
-				<pre><ol><li>package reader
+				</div>
+				
+				<div id="file4" class="source" style="display: none">
+					<pre><ol><li>package reader
 </li><li>
 </li><li>import (
 </li><li>        "fmt"
@@ -520,8 +485,6 @@
 </li><li>        "os"
 </li><li>        "path/filepath"
 </li><li>        "strings"
-</li><li>
-</li><li>        "github.com/masakurapa/go-cover/internal/logger"
 </li><li>)
 </li><li>
 </li><li>type Reader interface {
@@ -544,8 +507,7 @@
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
 </li><li>
-</li><li>        <span class="cov0">logger.L.Debug("read: %s", file)
-</span></li><li><span class="cov0">        return ioutil.ReadFile(file)</span>
+</li><li>        <span class="cov0">return ioutil.ReadFile(file)</span>
 </li><li>}
 </li><li>
 </li><li>func (r *reader) find(path string) (string, error) <span class="cov0">{
@@ -578,44 +540,44 @@
 </li><li>        <span class="cov0">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
 </li><li>}
 </li></ol></pre>
+				</div>
+				
 			</div>
-			
 		</div>
-	</div>
 
-	<script>
-		let current;
-		let currentTree;
+		<script>
+			let current;
+			let currentTree;
 
-		function select(n) {
-			if (current) {
-				current.style.display = 'none';
+			function select(n) {
+				if (current) {
+					current.style.display = 'none';
+				}
+
+				current = document.getElementById('file' + n);
+				if (!current) {
+					return;
+				}
+				current.style.display = 'block';
+				current.scrollLeft = 0;
+				current.scrollTop = 0;
+			}
+			function selectTree(n) {
+				if (currentTree) {
+					currentTree.classList.remove('current');
+				}
+
+				currentTree = document.getElementById('tree' + n);
+				if (!current) {
+					return;
+				}
+				currentTree.classList.add('current');
 			}
 
-			current = document.getElementById('file' + n);
-			if (!current) {
-				return;
+			function change(n) {
+				select(n);
+				selectTree(n);
 			}
-			current.style.display = 'block';
-			current.scrollLeft = 0;
-			current.scrollTop = 0;
-		}
-		function selectTree(n) {
-			if (currentTree) {
-				currentTree.classList.remove('current');
-			}
-
-			currentTree = document.getElementById('tree' + n);
-			if (!current) {
-				return;
-			}
-			currentTree.classList.add('current');
-		}
-
-		function change(n) {
-			select(n);
-			selectTree(n);
-		}
-	</script>
-</body>
+		</script>
+	</body>
 </html>

@@ -54,17 +54,15 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.3%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.1%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/logger/log.go (40.0%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
-				
-				<option value="file5">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -88,7 +86,6 @@ import (
         "path/filepath"
         "sync"
 
-        "github.com/masakurapa/go-cover/internal/logger"
         "github.com/masakurapa/go-cover/internal/profile"
         "github.com/masakurapa/go-cover/internal/reader"
 )
@@ -118,8 +115,6 @@ func WriteTreeView(
         profiles profile.Profiles,
         tree profile.Tree,
 ) error <span class="cov8" title="1">{
-        logger.L.Debug("start generating tree view html")
-
         data := TreeTemplateData{
                 Tree:  template.HTML(genDirectoryTree(tree)),
                 Files: make([]File, 0, len(profiles)),
@@ -144,8 +139,7 @@ func WriteTreeView(
                 writePool.Put(buf)</span>
         }
 
-        <span class="cov8" title="1">logger.L.Debug("write html")
-        return parsedTreeTemplate.Execute(out, data)</span>
+        <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, data)</span>
 }
 
 func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
@@ -254,33 +248,7 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package logger
-
-import (
-        "fmt"
-        "time"
-)
-
-var L Logger
-
-type Logger struct {
-        verbose bool
-}
-
-func New(v bool) <span class="cov0" title="0">{
-        L = Logger{verbose: v}
-}</span>
-
-func (l *Logger) Debug(format string, a ...interface{}) <span class="cov8" title="1">{
-        if !l.verbose </span><span class="cov8" title="1">{
-                return
-        }</span>
-        <span class="cov0" title="0">t := time.Now().Format("2006-01-02 15:04:05")
-        fmt.Printf(fmt.Sprintf("[%s]%s\n", t, format), a...)</span>
-}
-</pre>
-		
-		<pre class="file" id="file2" style="display: none">package profile
+		<pre class="file" id="file1" style="display: none">package profile
 
 type Blocks []Block
 
@@ -310,7 +278,7 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file2" style="display: none">package profile
 
 import (
         "bufio"
@@ -433,7 +401,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file3" style="display: none">package profile
 
 import (
         "fmt"
@@ -506,7 +474,7 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package reader
+		<pre class="file" id="file4" style="display: none">package reader
 
 import (
         "fmt"
@@ -515,8 +483,6 @@ import (
         "os"
         "path/filepath"
         "strings"
-
-        "github.com/masakurapa/go-cover/internal/logger"
 )
 
 type Reader interface {
@@ -539,8 +505,7 @@ func (r *reader) Read(path string) ([]byte, error) <span class="cov0" title="0">
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">logger.L.Debug("read: %s", file)
-        return ioutil.ReadFile(file)</span>
+        <span class="cov0" title="0">return ioutil.ReadFile(file)</span>
 }
 
 func (r *reader) find(path string) (string, error) <span class="cov0" title="0">{

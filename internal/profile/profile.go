@@ -1,15 +1,9 @@
 package profile
 
 import (
-	"bufio"
 	"fmt"
-	"regexp"
-	"sort"
-	"strconv"
 	"strings"
 )
-
-var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
 
 type Profiles []Profile
 
@@ -20,102 +14,66 @@ type Profile struct {
 	Blocks   Blocks
 }
 
-func Scan(s *bufio.Scanner) (Profiles, error) {
-	files := make(map[string]*Profile)
-	mode := ""
-	id := 1
+type Tree []Node
 
-	for s.Scan() {
-		line := s.Text()
+type Node struct {
+	Name     string
+	Profiles Profiles
+	SubDirs  Tree
+}
 
-		if mode == "" {
-			const p = "mode: "
-			if !strings.HasPrefix(line, p) || line == p {
-				return nil, fmt.Errorf("bad mode line: %q", line)
-			}
-			mode = line[len(p):]
-			continue
-		}
+func (prof Profiles) ToTree() Tree {
+	tree := make(Tree, 0)
 
-		m := reg.FindStringSubmatch(line)
-		if m == nil {
-			return nil, fmt.Errorf("line %q does not match expected format: %v", line, reg)
-		}
+	for _, p := range prof {
+		tree.add(strings.Split(p.FileName, "/"), &p)
+	}
 
-		fileName := m[1]
-		p := files[fileName]
+	tree.mergeSingreDir()
+	return tree
+}
 
-		if p == nil {
-			p = &Profile{
-				FileName: fileName,
-				Mode:     mode,
-			}
-			files[fileName] = p
-			id++
-		}
+func (tree *Tree) add(paths []string, p *Profile) {
+	name := paths[0]
+	nextPaths := paths[1:]
 
-		p.Blocks = append(p.Blocks, Block{
-			StartLine: toInt(m[2]),
-			StartCol:  toInt(m[3]),
-			EndLine:   toInt(m[4]),
-			EndCol:    toInt(m[5]),
-			NumStmt:   toInt(m[6]),
-			Count:     toInt(m[7]),
+	idx, ok := tree.findNode(name)
+	if !ok {
+		*tree = append(*tree, Node{
+			Name:     name,
+			Profiles: make(Profiles, 0),
+			SubDirs:  make(Tree, 0),
 		})
+		idx = len(*tree) - 1
 	}
 
-	return toProfiles(files), nil
+	t := *tree
+	if len(nextPaths) == 1 {
+		t[idx].Profiles = append(t[idx].Profiles, *p)
+		return
+	}
+	t[idx].SubDirs.add(nextPaths, p)
 }
 
-func toProfiles(files map[string]*Profile) Profiles {
-	profiles := make([]Profile, 0, len(files))
-	for _, p := range files {
-		p.Blocks = filterBlocks(p.Blocks)
-		profiles = append(profiles, *p)
-	}
-
-	sort.SliceStable(profiles, func(i, j int) bool {
-		return profiles[i].FileName < profiles[j].FileName
-	})
-
-	// ID振る
-	for i := range profiles {
-		profiles[i].ID = i
-	}
-
-	return profiles
-}
-
-func filterBlocks(blocks Blocks) Blocks {
-	pbm := make(map[string]Block)
-	for _, b := range blocks {
-		// TODO: やり方考える
-		k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
-		if _, ok := pbm[k]; !ok {
-			pbm[k] = b
-		}
-		if b.Count > 0 {
-			pbm[k] = b
+func (tree *Tree) findNode(name string) (int, bool) {
+	for i, t := range *tree {
+		if t.Name == name {
+			return i, true
 		}
 	}
-
-	pbs := make(Blocks, 0, len(pbm))
-	for _, b := range pbm {
-		pbs = append(pbs, b)
-	}
-
-	sort.SliceStable(pbs, func(i, j int) bool {
-		bi, bj := pbs[i], pbs[j]
-		return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
-	})
-
-	return pbs
+	return 0, false
 }
 
-func toInt(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
+func (tree *Tree) mergeSingreDir() {
+	tt := *tree
+	for i, t := range *tree {
+		t.SubDirs.mergeSingreDir()
+
+		if len(t.Profiles) == 0 && len(t.SubDirs) == 1 {
+			sub := t.SubDirs[0]
+			tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
+			tt[i].Profiles = sub.Profiles
+			tt[i].SubDirs = sub.SubDirs
+		}
 	}
-	return i
 }

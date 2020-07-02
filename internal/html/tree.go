@@ -20,7 +20,7 @@ var (
 	}
 )
 
-type TreeTemplateData struct {
+type TemplateData struct {
 	Tree  template.HTML
 	Files []File
 }
@@ -37,8 +37,8 @@ func WriteTreeView(
 	profiles profile.Profiles,
 	tree profile.Tree,
 ) error {
-	data := TreeTemplateData{
-		Tree:  template.HTML(genDirectoryTree(tree)),
+	data := TemplateData{
+		Tree:  template.HTML(directoryTree(tree)),
 		Files: make([]File, 0, len(profiles)),
 	}
 
@@ -49,7 +49,7 @@ func WriteTreeView(
 		}
 
 		buf := writePool.Get().(*bytes.Buffer)
-		genSource(buf, b, &p)
+		writeSource(buf, b, &p)
 
 		data.Files = append(data.Files, File{
 			Name:     p.FileName,
@@ -64,17 +64,16 @@ func WriteTreeView(
 	return parsedTreeTemplate.Execute(out, data)
 }
 
-func genDirectoryTree(tree profile.Tree) string {
+func directoryTree(tree profile.Tree) string {
 	buf := writePool.Get().(*bytes.Buffer)
-	makeDirectoryTree(buf, tree, 0)
+	writeDirectoryTree(buf, tree, 0)
 	s := buf.String()
 	buf.Reset()
 	writePool.Put(buf)
 	return s
 }
 
-// ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
+func writeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 	for _, t := range tree {
 		buf.WriteString(fmt.Sprintf(
 			`<div style="padding-inline-start: %dpx">%s</div>`,
@@ -82,7 +81,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 			t.Name,
 		))
 
-		makeDirectoryTree(buf, t.SubDirs, indent+1)
+		writeDirectoryTree(buf, t.SubDirs, indent+1)
 
 		for _, p := range t.Profiles {
 			_, f := filepath.Split(p.FileName)
@@ -98,7 +97,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 	}
 }
 
-func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
+func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 	bi := 0
 	si := 0
 	line := 1

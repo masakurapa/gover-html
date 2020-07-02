@@ -20,7 +20,7 @@ func (prof Profiles) ToTree() Tree {
 		tree.add(strings.Split(p.FileName, "/"), &p)
 	}
 
-	tree.merge()
+	tree.mergeSingreDir()
 	return tree
 }
 
@@ -55,11 +55,10 @@ func (tree *Tree) findNode(name string) (int, bool) {
 	return 0, false
 }
 
-// 子のディレクトリが1つしか無いものをマージしていく
-func (tree *Tree) merge() {
+func (tree *Tree) mergeSingreDir() {
 	tt := *tree
 	for i, t := range *tree {
-		t.SubDirs.merge()
+		t.SubDirs.mergeSingreDir()
 
 		if len(t.Profiles) == 0 && len(t.SubDirs) == 1 {
 			sub := t.SubDirs[0]

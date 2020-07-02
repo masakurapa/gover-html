@@ -5,39 +5,25 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/masakurapa/go-cover/internal/html"
-	"github.com/masakurapa/go-cover/internal/logger"
 	"github.com/masakurapa/go-cover/internal/profile"
 	"github.com/masakurapa/go-cover/internal/reader"
 )
 
 var (
-	input   = flag.String("i", "coverage.out", "coverage profile")
-	output  = flag.String("o", "coverage.html", "html file output")
-	verbose = flag.Bool("v", false, "verbose output log")
+	input  = flag.String("i", "coverage.out", "coverage profile")
+	output = flag.String("o", "coverage.html", "html file output")
 )
 
 func main() {
-	start := time.Now()
 	parseFlags()
 
-	logger.New(*verbose)
-	logger.L.Debug("start go-cover")
-
-	logger.L.Debug("open profile: %s", *input)
 	f, err := os.Open(*input)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-
-	fi, err := f.Stat()
-	if err != nil {
-		panic(err)
-	}
-	logger.L.Debug("profile size: %dbytes", fi.Size())
 
 	buf := bufio.NewReader(f)
 	profiles, err := profile.Scan(bufio.NewScanner(buf))
@@ -55,9 +41,6 @@ func main() {
 	if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
 		panic(err)
 	}
-
-	sec := time.Now().Sub(start).Milliseconds()
-	logger.L.Debug("end go-cover. total: %dms", sec)
 }
 
 func usage() {

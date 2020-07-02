@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/masakurapa/go-cover/internal/logger"
 )
 
 type Reader interface {
@@ -31,7 +29,6 @@ func (r *reader) Read(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	logger.L.Debug("read: %s", file)
 	return ioutil.ReadFile(file)
 }
 

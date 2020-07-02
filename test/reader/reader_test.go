@@ -39,12 +39,8 @@ func TestReader(t *testing.T) {
 func BenchmarkReader(b *testing.B) {
 	r := reader.New()
 	paths := []string{
-		"github.com/masakurapa/go-cover/internal/html/default.go",
-		"github.com/masakurapa/go-cover/internal/html/html.go",
-		"github.com/masakurapa/go-cover/internal/html/template_default.go",
 		"github.com/masakurapa/go-cover/internal/html/template_tree.go",
 		"github.com/masakurapa/go-cover/internal/html/tree.go",
-		"github.com/masakurapa/go-cover/internal/logger/log.go",
 		"github.com/masakurapa/go-cover/internal/profile/block.go",
 		"github.com/masakurapa/go-cover/internal/profile/profile.go",
 		"github.com/masakurapa/go-cover/internal/profile/tree.go",

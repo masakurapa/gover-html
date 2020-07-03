@@ -1,7 +1,7 @@
 package profile
 
 import (
-	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -71,7 +71,7 @@ func (tree *Tree) mergeSingreDir() {
 
 		if len(t.Profiles) == 0 && len(t.SubDirs) == 1 {
 			sub := t.SubDirs[0]
-			tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
+			tt[i].Name = filepath.Join(t.Name, sub.Name)
 			tt[i].Profiles = sub.Profiles
 			tt[i].SubDirs = sub.SubDirs
 		}

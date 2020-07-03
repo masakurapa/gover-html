@@ -14,7 +14,6 @@ var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+)
 func Scan(s *bufio.Scanner) (Profiles, error) {
 	files := make(map[string]*Profile)
 	mode := ""
-	id := 1
 
 	for s.Scan() {
 		line := s.Text()
@@ -37,12 +36,8 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 		p := files[fileName]
 
 		if p == nil {
-			p = &Profile{
-				FileName: fileName,
-				Mode:     mode,
-			}
+			p = &Profile{FileName: fileName, Mode: mode}
 			files[fileName] = p
-			id++
 		}
 
 		p.Blocks = append(p.Blocks, Block{

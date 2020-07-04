@@ -60,7 +60,7 @@
 				
 				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (97.1%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (97.3%)</option>
 				
 				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
 				
@@ -253,8 +253,6 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
 		
 		<pre class="file" id="file1" style="display: none">package profile
 
-import "sort"
-
 type Blocks []Block
 
 type Block struct {
@@ -282,15 +280,6 @@ func (blocks *Blocks) Filter() Blocks <span class="cov8" title="1">{
         }
 
         <span class="cov8" title="1">return newBlocks</span>
-}
-
-func (blocks *Blocks) Sort() <span class="cov8" title="1">{
-        b := *blocks
-        sort.SliceStable(b, func(i, j int) bool </span><span class="cov8" title="1">{
-                bi, bj := b[i], b[j]
-                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-        }</span>)
-        <span class="cov8" title="1">*blocks = b</span>
 }
 
 func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
@@ -415,9 +404,14 @@ func toProfiles(files map[string]*Profile) Profiles <span class="cov8" title="1"
 
         <span class="cov8" title="1">for i, p := range profiles </span><span class="cov8" title="1">{
                 profiles[i].ID = i
-                profiles[i].Blocks = p.Blocks.Filter()
-                profiles[i].Blocks.Sort()
-        }</span>
+
+                blocks := p.Blocks.Filter()
+                sort.SliceStable(blocks, func(i, j int) bool </span><span class="cov8" title="1">{
+                        bi, bj := blocks[i], blocks[j]
+                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+                }</span>)
+                <span class="cov8" title="1">profiles[i].Blocks = blocks</span>
+        }
 
         <span class="cov8" title="1">return profiles</span>
 }

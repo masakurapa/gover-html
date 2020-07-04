@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">scan.go (97.1%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (69.6%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">scan.go (97.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (69.6%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file0" class="source" style="display: none">
@@ -247,8 +247,6 @@
 				<div id="file1" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
-</li><li>import "sort"
-</li><li>
 </li><li>type Blocks []Block
 </li><li>
 </li><li>type Block struct {
@@ -276,15 +274,6 @@
 </li><li>        }
 </li><li>
 </li><li>        <span class="cov1">return newBlocks</span>
-</li><li>}
-</li><li>
-</li><li>func (blocks *Blocks) Sort() <span class="cov1">{
-</span></li><li><span class="cov1">        b := *blocks
-</span></li><li><span class="cov1">        sort.SliceStable(b, func(i, j int) bool </span><span class="cov1">{
-</span></li><li><span class="cov1">                bi, bj := b[i], b[j]
-</span></li><li><span class="cov1">                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-</span></li><li><span class="cov1">        }</span>)
-</li><li>        <span class="cov1">*blocks = b</span>
 </li><li>}
 </li><li>
 </li><li>func (blocks *Blocks) Coverage() float64 <span class="cov1">{
@@ -413,9 +402,14 @@
 </li><li>
 </li><li>        <span class="cov1">for i, p := range profiles </span><span class="cov1">{
 </span></li><li><span class="cov1">                profiles[i].ID = i
-</span></li><li><span class="cov1">                profiles[i].Blocks = p.Blocks.Filter()
-</span></li><li><span class="cov1">                profiles[i].Blocks.Sort()
-</span></li><li><span class="cov1">        }</span>
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                blocks := p.Blocks.Filter()
+</span></li><li><span class="cov1">                sort.SliceStable(blocks, func(i, j int) bool </span><span class="cov1">{
+</span></li><li><span class="cov1">                        bi, bj := blocks[i], blocks[j]
+</span></li><li><span class="cov1">                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+</span></li><li><span class="cov1">                }</span>)
+</li><li>                <span class="cov1">profiles[i].Blocks = blocks</span>
+</li><li>        }
 </li><li>
 </li><li>        <span class="cov1">return profiles</span>
 </li><li>}

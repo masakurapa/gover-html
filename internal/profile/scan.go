@@ -65,8 +65,13 @@ func toProfiles(files map[string]*Profile) Profiles {
 
 	for i, p := range profiles {
 		profiles[i].ID = i
-		profiles[i].Blocks = p.Blocks.Filter()
-		profiles[i].Blocks.Sort()
+
+		blocks := p.Blocks.Filter()
+		sort.SliceStable(blocks, func(i, j int) bool {
+			bi, bj := blocks[i], blocks[j]
+			return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
+		})
+		profiles[i].Blocks = blocks
 	}
 
 	return profiles

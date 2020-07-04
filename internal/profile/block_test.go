@@ -25,28 +25,6 @@ func TestBlocks_Filter(t *testing.T) {
 	}
 }
 
-func TestBlocks_Sort(t *testing.T) {
-	blocks := profile.Blocks{
-		{StartLine: 2, StartCol: 23, EndLine: 3, EndCol: 30},
-		{StartLine: 2, StartCol: 12, EndLine: 2, EndCol: 22},
-		{StartLine: 1, StartCol: 21, EndLine: 2, EndCol: 11},
-		{StartLine: 1, StartCol: 11, EndLine: 1, EndCol: 20},
-	}
-
-	// 開始行 -> 開始位置の昇順にソートされること
-	want := profile.Blocks{
-		{StartLine: 1, StartCol: 11, EndLine: 1, EndCol: 20},
-		{StartLine: 1, StartCol: 21, EndLine: 2, EndCol: 11},
-		{StartLine: 2, StartCol: 12, EndLine: 2, EndCol: 22},
-		{StartLine: 2, StartCol: 23, EndLine: 3, EndCol: 30},
-	}
-
-	blocks.Sort()
-	if !reflect.DeepEqual(blocks, want) {
-		t.Errorf("Profiles.Sort() = %#v, want %#v", blocks, want)
-	}
-}
-
 func TestBlocks_Coverage(t *testing.T) {
 	tests := []struct {
 		name   string

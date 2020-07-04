@@ -1,7 +1,5 @@
 package profile
 
-import "sort"
-
 type Blocks []Block
 
 type Block struct {
@@ -29,15 +27,6 @@ func (blocks *Blocks) Filter() Blocks {
 	}
 
 	return newBlocks
-}
-
-func (blocks *Blocks) Sort() {
-	b := *blocks
-	sort.SliceStable(b, func(i, j int) bool {
-		bi, bj := b[i], b[j]
-		return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
-	})
-	*blocks = b
 }
 
 func (blocks *Blocks) Coverage() float64 {

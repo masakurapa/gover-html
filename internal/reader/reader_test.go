@@ -1,6 +1,8 @@
 package reader_test
 
 import (
+	"io/ioutil"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -11,6 +13,18 @@ func TestReader(t *testing.T) {
 	type args struct {
 		path string
 	}
+
+	r := reader.New()
+
+	path, err := filepath.Abs("./reader.go")
+	if err != nil {
+		t.Error(err)
+	}
+	want, err := ioutil.ReadFile(path)
+	if err != nil {
+		t.Error(err)
+	}
+
 	tests := []struct {
 		name    string
 		r       reader.Reader
@@ -18,7 +32,15 @@ func TestReader(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "ファイルが読み込めること",
+			r:    r,
+			args: args{
+				path: "github.com/masakurapa/go-cover/internal/reader/reader.go",
+			},
+			want:    want,
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -33,25 +55,5 @@ func TestReader(t *testing.T) {
 				t.Errorf("reader.Read() = %v, want %v", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkReader(b *testing.B) {
-	r := reader.New()
-	paths := []string{
-		"github.com/masakurapa/go-cover/internal/html/template_tree.go",
-		"github.com/masakurapa/go-cover/internal/html/tree.go",
-		"github.com/masakurapa/go-cover/internal/profile/block.go",
-		"github.com/masakurapa/go-cover/internal/profile/profile.go",
-		"github.com/masakurapa/go-cover/internal/profile/tree.go",
-		"github.com/masakurapa/go-cover/internal/reader/reader.go",
-		"github.com/masakurapa/go-cover/test/_example/example.go",
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		for _, path := range paths {
-			r.Read(path)
-		}
 	}
 }

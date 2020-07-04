@@ -1,8 +1,0 @@
-mode: set
-github.com/masakurapa/go-cover/test/_example/example.go:5.31,7.16 2 1
-github.com/masakurapa/go-cover/test/_example/example.go:11.2,11.13 1 1
-github.com/masakurapa/go-cover/test/_example/example.go:17.2,17.17 1 0
-github.com/masakurapa/go-cover/test/_example/example.go:7.16,9.3 1 1
-github.com/masakurapa/go-cover/test/_example/example.go:11.13,13.3 1 1
-github.com/masakurapa/go-cover/test/_example/example.go:13.8,13.20 1 0
-github.com/masakurapa/go-cover/test/_example/example.go:13.20,15.3 1 0

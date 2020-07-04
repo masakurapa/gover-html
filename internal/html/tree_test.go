@@ -1,4 +1,4 @@
-package profile_test
+package html_test
 
 import (
 	"bytes"
@@ -39,33 +39,6 @@ func TestWriteTreeView(t *testing.T) {
 	// if got != want {
 	// 	t.Errorf("WriteTreeView() = %v, want %v", got, want)
 	// }
-}
-
-func BenchmarkWriteTreeView(b *testing.B) {
-	reader := stubReader{}
-	var writer bytes.Buffer
-	profiles := profile.Profiles{
-		{
-			ID:       1,
-			FileName: "path/to/example.go",
-			Mode:     "set",
-			Blocks: profile.Blocks{
-				{StartLine: 5, StartCol: 31, EndLine: 7, EndCol: 16, NumStmt: 2, Count: 1},
-				{StartLine: 11, StartCol: 2, EndLine: 11, EndCol: 13, NumStmt: 1, Count: 1},
-				{StartLine: 17, StartCol: 2, EndLine: 17, EndCol: 17, NumStmt: 1, Count: 0},
-				{StartLine: 7, StartCol: 16, EndLine: 9, EndCol: 3, NumStmt: 1, Count: 1},
-				{StartLine: 11, StartCol: 13, EndLine: 13, EndCol: 3, NumStmt: 1, Count: 1},
-				{StartLine: 13, StartCol: 8, EndLine: 13, EndCol: 20, NumStmt: 1, Count: 0},
-				{StartLine: 13, StartCol: 20, EndLine: 15, EndCol: 3, NumStmt: 1, Count: 0},
-			},
-		},
-	}
-	tree := profiles.ToTree()
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		html.WriteTreeView(&reader, &writer, profiles, tree)
-	}
 }
 
 // stub

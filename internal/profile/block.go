@@ -16,7 +16,7 @@ type Block struct {
 func (blocks *Blocks) Filter() Blocks {
 	newBlocks := make(Blocks, 0, len(*blocks))
 	for _, b := range *blocks {
-		i := newBlocks.Index(&b)
+		i := newBlocks.index(&b)
 
 		if i == -1 {
 			newBlocks = append(newBlocks, b)
@@ -33,22 +33,11 @@ func (blocks *Blocks) Filter() Blocks {
 
 func (blocks *Blocks) Sort() {
 	b := *blocks
-	sort.SliceStable(*blocks, func(i, j int) bool {
+	sort.SliceStable(b, func(i, j int) bool {
 		bi, bj := b[i], b[j]
 		return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
 	})
-}
-
-func (blocks *Blocks) Index(block *Block) int {
-	for i, b := range *blocks {
-		if b.StartLine == block.StartLine &&
-			b.StartCol == block.StartCol &&
-			b.EndLine == block.EndLine &&
-			b.EndCol == block.EndCol {
-			return i
-		}
-	}
-	return -1
+	*blocks = b
 }
 
 func (blocks *Blocks) Coverage() float64 {
@@ -65,4 +54,16 @@ func (blocks *Blocks) Coverage() float64 {
 	}
 
 	return float64(covered) / float64(total) * 100
+}
+
+func (blocks *Blocks) index(block *Block) int {
+	for i, b := range *blocks {
+		if b.StartLine == block.StartLine &&
+			b.StartCol == block.StartCol &&
+			b.EndLine == block.EndLine &&
+			b.EndCol == block.EndCol {
+			return i
+		}
+	}
+	return -1
 }

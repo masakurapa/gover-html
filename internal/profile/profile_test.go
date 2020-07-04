@@ -1,7 +1,6 @@
 package profile_test
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -47,18 +46,5 @@ func TestProfiles_ToTree(t *testing.T) {
 				t.Errorf("Profiles.ToTree() = %#v, want %#v", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkProfiles_ToTree(b *testing.B) {
-	c := 100
-	prof := make(profile.Profiles, 0, c)
-	for i := 0; i <= c; i++ {
-		prof = append(prof, profile.Profile{FileName: fmt.Sprintf("path/to/dir%d/file%d.go", i, i)})
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		prof.ToTree()
 	}
 }

@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (98.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">reader.go (0.0%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">scan.go (97.1%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (69.6%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file0" class="source" style="display: none">
@@ -92,12 +92,13 @@
 </li><li>        }
 </li><li>)
 </li><li>
-</li><li>type TreeTemplateData struct {
+</li><li>type TemplateData struct {
 </li><li>        Tree  template.HTML
 </li><li>        Files []File
 </li><li>}
 </li><li>
 </li><li>type File struct {
+</li><li>        ID       int
 </li><li>        Name     string
 </li><li>        Body     template.HTML
 </li><li>        Coverage float64
@@ -109,8 +110,8 @@
 </li><li>        profiles profile.Profiles,
 </li><li>        tree profile.Tree,
 </li><li>) error <span class="cov1">{
-</span></li><li><span class="cov1">        data := TreeTemplateData{
-</span></li><li><span class="cov1">                Tree:  template.HTML(genDirectoryTree(tree)),
+</span></li><li><span class="cov1">        data := TemplateData{
+</span></li><li><span class="cov1">                Tree:  template.HTML(directoryTree(tree)),
 </span></li><li><span class="cov1">                Files: make([]File, 0, len(profiles)),
 </span></li><li><span class="cov1">        }
 </span></li><li><span class="cov1">
@@ -121,9 +122,10 @@
 </span></li><li><span class="cov0">                }</span>
 </li><li>
 </li><li>                <span class="cov1">buf := writePool.Get().(*bytes.Buffer)
-</span></li><li><span class="cov1">                genSource(buf, b, &amp;p)
+</span></li><li><span class="cov1">                writeSource(buf, b, &amp;p)
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                data.Files = append(data.Files, File{
+</span></li><li><span class="cov1">                        ID:       p.ID,
 </span></li><li><span class="cov1">                        Name:     p.FileName,
 </span></li><li><span class="cov1">                        Body:     template.HTML(buf.String()),
 </span></li><li><span class="cov1">                        Coverage: p.Blocks.Coverage(),
@@ -136,17 +138,16 @@
 </li><li>        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
 </li><li>}
 </li><li>
-</li><li>func genDirectoryTree(tree profile.Tree) string <span class="cov1">{
+</li><li>func directoryTree(tree profile.Tree) string <span class="cov1">{
 </span></li><li><span class="cov1">        buf := writePool.Get().(*bytes.Buffer)
-</span></li><li><span class="cov1">        makeDirectoryTree(buf, tree, 0)
+</span></li><li><span class="cov1">        writeDirectoryTree(buf, tree, 0)
 </span></li><li><span class="cov1">        s := buf.String()
 </span></li><li><span class="cov1">        buf.Reset()
 </span></li><li><span class="cov1">        writePool.Put(buf)
 </span></li><li><span class="cov1">        return s
 </span></li><li><span class="cov1">}</span>
 </li><li>
-</li><li>// ディレクトリツリーの生成
-</li><li>func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov1">{
+</li><li>func writeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov1">{
 </span></li><li><span class="cov1">        for _, t := range tree </span><span class="cov1">{
 </span></li><li><span class="cov1">                buf.WriteString(fmt.Sprintf(
 </span></li><li><span class="cov1">                        `&lt;div style="padding-inline-start: %dpx"&gt;%s&lt;/div&gt;`,
@@ -154,7 +155,7 @@
 </span></li><li><span class="cov1">                        t.Name,
 </span></li><li><span class="cov1">                ))
 </span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                makeDirectoryTree(buf, t.SubDirs, indent+1)
+</span></li><li><span class="cov1">                writeDirectoryTree(buf, t.SubDirs, indent+1)
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                for _, p := range t.Profiles </span><span class="cov1">{
 </span></li><li><span class="cov1">                        _, f := filepath.Split(p.FileName)
@@ -170,7 +171,7 @@
 </li><li>        }
 </li><li>}
 </li><li>
-</li><li>func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov1">{
+</li><li>func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov1">{
 </span></li><li><span class="cov1">        bi := 0
 </span></li><li><span class="cov1">        si := 0
 </span></li><li><span class="cov1">        line := 1
@@ -246,6 +247,8 @@
 				<div id="file1" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
+</li><li>import "sort"
+</li><li>
 </li><li>type Blocks []Block
 </li><li>
 </li><li>type Block struct {
@@ -255,6 +258,33 @@
 </li><li>        EndCol    int
 </li><li>        NumStmt   int
 </li><li>        Count     int
+</li><li>}
+</li><li>
+</li><li>func (blocks *Blocks) Filter() Blocks <span class="cov1">{
+</span></li><li><span class="cov1">        newBlocks := make(Blocks, 0, len(*blocks))
+</span></li><li><span class="cov1">        for _, b := range *blocks </span><span class="cov1">{
+</span></li><li><span class="cov1">                i := newBlocks.index(&amp;b)
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                if i == -1 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        newBlocks = append(newBlocks, b)
+</span></li><li><span class="cov1">                        continue</span>
+</li><li>                }
+</li><li>
+</li><li>                <span class="cov1">if b.Count &gt; 0 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        newBlocks[i] = b
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">return newBlocks</span>
+</li><li>}
+</li><li>
+</li><li>func (blocks *Blocks) Sort() <span class="cov1">{
+</span></li><li><span class="cov1">        b := *blocks
+</span></li><li><span class="cov1">        sort.SliceStable(b, func(i, j int) bool </span><span class="cov1">{
+</span></li><li><span class="cov1">                bi, bj := b[i], b[j]
+</span></li><li><span class="cov1">                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+</span></li><li><span class="cov1">        }</span>)
+</li><li>        <span class="cov1">*blocks = b</span>
 </li><li>}
 </li><li>
 </li><li>func (blocks *Blocks) Coverage() float64 <span class="cov1">{
@@ -272,10 +302,50 @@
 </li><li>
 </li><li>        <span class="cov1">return float64(covered) / float64(total) * 100</span>
 </li><li>}
+</li><li>
+</li><li>func (blocks *Blocks) index(block *Block) int <span class="cov1">{
+</span></li><li><span class="cov1">        for i, b := range *blocks </span><span class="cov1">{
+</span></li><li><span class="cov1">                if b.StartLine == block.StartLine &amp;&amp;
+</span></li><li><span class="cov1">                        b.StartCol == block.StartCol &amp;&amp;
+</span></li><li><span class="cov1">                        b.EndLine == block.EndLine &amp;&amp;
+</span></li><li><span class="cov1">                        b.EndCol == block.EndCol </span><span class="cov1">{
+</span></li><li><span class="cov1">                        return i
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>        <span class="cov1">return -1</span>
+</li><li>}
 </li></ol></pre>
 				</div>
 				
 				<div id="file2" class="source" style="display: none">
+					<pre><ol><li>package profile
+</li><li>
+</li><li>import (
+</li><li>        "strings"
+</li><li>)
+</li><li>
+</li><li>type Profiles []Profile
+</li><li>
+</li><li>type Profile struct {
+</li><li>        ID       int
+</li><li>        FileName string
+</li><li>        Mode     string
+</li><li>        Blocks   Blocks
+</li><li>}
+</li><li>
+</li><li>func (prof *Profiles) ToTree() Tree <span class="cov1">{
+</span></li><li><span class="cov1">        tree := make(Tree, 0)
+</span></li><li><span class="cov1">        for _, p := range *prof </span><span class="cov1">{
+</span></li><li><span class="cov1">                tree.add(strings.Split(p.FileName, "/"), &amp;p)
+</span></li><li><span class="cov1">        }</span>
+</li><li>
+</li><li>        <span class="cov1">tree.mergeSingreDir()
+</span></li><li><span class="cov1">        return tree</span>
+</li><li>}
+</li></ol></pre>
+				</div>
+				
+				<div id="file3" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -289,19 +359,9 @@
 </li><li>
 </li><li>var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
 </li><li>
-</li><li>type Profiles []Profile
-</li><li>
-</li><li>type Profile struct {
-</li><li>        ID       int
-</li><li>        FileName string
-</li><li>        Mode     string
-</li><li>        Blocks   Blocks
-</li><li>}
-</li><li>
 </li><li>func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov1">{
 </span></li><li><span class="cov1">        files := make(map[string]*Profile)
 </span></li><li><span class="cov1">        mode := ""
-</span></li><li><span class="cov1">        id := 1
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">        for s.Scan() </span><span class="cov1">{
 </span></li><li><span class="cov1">                line := s.Text()
@@ -324,12 +384,8 @@
 </span></li><li><span class="cov1">                p := files[fileName]
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                if p == nil </span><span class="cov1">{
-</span></li><li><span class="cov1">                        p = &amp;Profile{
-</span></li><li><span class="cov1">                                FileName: fileName,
-</span></li><li><span class="cov1">                                Mode:     mode,
-</span></li><li><span class="cov1">                        }
+</span></li><li><span class="cov1">                        p = &amp;Profile{FileName: fileName, Mode: mode}
 </span></li><li><span class="cov1">                        files[fileName] = p
-</span></li><li><span class="cov1">                        id++
 </span></li><li><span class="cov1">                }</span>
 </li><li>
 </li><li>                <span class="cov1">p.Blocks = append(p.Blocks, Block{
@@ -348,7 +404,6 @@
 </li><li>func toProfiles(files map[string]*Profile) Profiles <span class="cov1">{
 </span></li><li><span class="cov1">        profiles := make([]Profile, 0, len(files))
 </span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
-</span></li><li><span class="cov1">                p.Blocks = filterBlocks(p.Blocks)
 </span></li><li><span class="cov1">                profiles = append(profiles, *p)
 </span></li><li><span class="cov1">        }</span>
 </li><li>
@@ -356,38 +411,13 @@
 </span></li><li><span class="cov1">                return profiles[i].FileName &lt; profiles[j].FileName
 </span></li><li><span class="cov1">        }</span>)
 </li><li>
-</li><li>        // ID振る
-</li><li>        <span class="cov1">for i := range profiles </span><span class="cov1">{
+</li><li>        <span class="cov1">for i, p := range profiles </span><span class="cov1">{
 </span></li><li><span class="cov1">                profiles[i].ID = i
+</span></li><li><span class="cov1">                profiles[i].Blocks = p.Blocks.Filter()
+</span></li><li><span class="cov1">                profiles[i].Blocks.Sort()
 </span></li><li><span class="cov1">        }</span>
 </li><li>
 </li><li>        <span class="cov1">return profiles</span>
-</li><li>}
-</li><li>
-</li><li>func filterBlocks(blocks Blocks) Blocks <span class="cov1">{
-</span></li><li><span class="cov1">        pbm := make(map[string]Block)
-</span></li><li><span class="cov1">        for _, b := range blocks </span><span class="cov1">{
-</span></li><li><span class="cov1">                // TODO: やり方考える
-</span></li><li><span class="cov1">                k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
-</span></li><li><span class="cov1">                if _, ok := pbm[k]; !ok </span><span class="cov1">{
-</span></li><li><span class="cov1">                        pbm[k] = b
-</span></li><li><span class="cov1">                }</span>
-</li><li>                <span class="cov1">if b.Count &gt; 0 </span><span class="cov1">{
-</span></li><li><span class="cov1">                        pbm[k] = b
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">pbs := make(Blocks, 0, len(pbm))
-</span></li><li><span class="cov1">        for _, b := range pbm </span><span class="cov1">{
-</span></li><li><span class="cov1">                pbs = append(pbs, b)
-</span></li><li><span class="cov1">        }</span>
-</li><li>
-</li><li>        <span class="cov1">sort.SliceStable(pbs, func(i, j int) bool </span><span class="cov1">{
-</span></li><li><span class="cov1">                bi, bj := pbs[i], pbs[j]
-</span></li><li><span class="cov1">                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-</span></li><li><span class="cov1">        }</span>)
-</li><li>
-</li><li>        <span class="cov1">return pbs</span>
 </li><li>}
 </li><li>
 </li><li>func toInt(s string) int <span class="cov1">{
@@ -400,12 +430,11 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file3" class="source" style="display: none">
+				<div id="file4" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
-</li><li>        "fmt"
-</li><li>        "strings"
+</li><li>        "path/filepath"
 </li><li>)
 </li><li>
 </li><li>type Tree []Node
@@ -416,23 +445,12 @@
 </li><li>        SubDirs  Tree
 </li><li>}
 </li><li>
-</li><li>func (prof Profiles) ToTree() Tree <span class="cov1">{
-</span></li><li><span class="cov1">        tree := make(Tree, 0)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        for _, p := range prof </span><span class="cov1">{
-</span></li><li><span class="cov1">                tree.add(strings.Split(p.FileName, "/"), &amp;p)
-</span></li><li><span class="cov1">        }</span>
-</li><li>
-</li><li>        <span class="cov1">tree.merge()
-</span></li><li><span class="cov1">        return tree</span>
-</li><li>}
-</li><li>
 </li><li>func (tree *Tree) add(paths []string, p *Profile) <span class="cov1">{
 </span></li><li><span class="cov1">        name := paths[0]
 </span></li><li><span class="cov1">        nextPaths := paths[1:]
 </span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        idx, ok := tree.findNode(name)
-</span></li><li><span class="cov1">        if !ok </span><span class="cov1">{
+</span></li><li><span class="cov1">        idx := tree.index(name)
+</span></li><li><span class="cov1">        if idx == -1 </span><span class="cov1">{
 </span></li><li><span class="cov1">                *tree = append(*tree, Node{
 </span></li><li><span class="cov1">                        Name:     name,
 </span></li><li><span class="cov1">                        Profiles: make(Profiles, 0),
@@ -449,24 +467,23 @@
 </li><li>        <span class="cov1">t[idx].SubDirs.add(nextPaths, p)</span>
 </li><li>}
 </li><li>
-</li><li>func (tree *Tree) findNode(name string) (int, bool) <span class="cov1">{
+</li><li>func (tree *Tree) index(name string) int <span class="cov1">{
 </span></li><li><span class="cov1">        for i, t := range *tree </span><span class="cov1">{
 </span></li><li><span class="cov1">                if t.Name == name </span><span class="cov1">{
-</span></li><li><span class="cov1">                        return i, true
+</span></li><li><span class="cov1">                        return i
 </span></li><li><span class="cov1">                }</span>
 </li><li>        }
-</li><li>        <span class="cov1">return 0, false</span>
+</li><li>        <span class="cov1">return -1</span>
 </li><li>}
 </li><li>
-</li><li>// 子のディレクトリが1つしか無いものをマージしていく
-</li><li>func (tree *Tree) merge() <span class="cov1">{
+</li><li>func (tree *Tree) mergeSingreDir() <span class="cov1">{
 </span></li><li><span class="cov1">        tt := *tree
 </span></li><li><span class="cov1">        for i, t := range *tree </span><span class="cov1">{
-</span></li><li><span class="cov1">                t.SubDirs.merge()
+</span></li><li><span class="cov1">                t.SubDirs.mergeSingreDir()
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                if len(t.Profiles) == 0 &amp;&amp; len(t.SubDirs) == 1 </span><span class="cov1">{
 </span></li><li><span class="cov1">                        sub := t.SubDirs[0]
-</span></li><li><span class="cov1">                        tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
+</span></li><li><span class="cov1">                        tt[i].Name = filepath.Join(t.Name, sub.Name)
 </span></li><li><span class="cov1">                        tt[i].Profiles = sub.Profiles
 </span></li><li><span class="cov1">                        tt[i].SubDirs = sub.SubDirs
 </span></li><li><span class="cov1">                }</span>
@@ -475,7 +492,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file4" class="source" style="display: none">
+				<div id="file5" class="source" style="display: none">
 					<pre><ol><li>package reader
 </li><li>
 </li><li>import (
@@ -497,41 +514,41 @@
 </li><li>        prefix     string
 </li><li>}
 </li><li>
-</li><li>func New() Reader <span class="cov0">{
-</span></li><li><span class="cov0">        return &amp;reader{}
-</span></li><li><span class="cov0">}</span>
+</li><li>func New() Reader <span class="cov1">{
+</span></li><li><span class="cov1">        return &amp;reader{}
+</span></li><li><span class="cov1">}</span>
 </li><li>
-</li><li>func (r *reader) Read(path string) ([]byte, error) <span class="cov0">{
-</span></li><li><span class="cov0">        file, err := r.find(path)
-</span></li><li><span class="cov0">        if err != nil </span><span class="cov0">{
+</li><li>func (r *reader) Read(path string) ([]byte, error) <span class="cov1">{
+</span></li><li><span class="cov1">        file, err := r.find(path)
+</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
 </li><li>
-</li><li>        <span class="cov0">return ioutil.ReadFile(file)</span>
+</li><li>        <span class="cov1">return ioutil.ReadFile(file)</span>
 </li><li>}
 </li><li>
-</li><li>func (r *reader) find(path string) (string, error) <span class="cov0">{
-</span></li><li><span class="cov0">        dir, file := filepath.Split(path)
-</span></li><li><span class="cov0">
-</span></li><li><span class="cov0">        if r.pkg == nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                pkg, err := build.Import(dir, ".", build.FindOnly)
-</span></li><li><span class="cov0">                if err != nil </span><span class="cov0">{
+</li><li>func (r *reader) find(path string) (string, error) <span class="cov1">{
+</span></li><li><span class="cov1">        dir, file := filepath.Split(path)
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        if r.pkg == nil </span><span class="cov1">{
+</span></li><li><span class="cov1">                pkg, err := build.Import(dir, ".", build.FindOnly)
+</span></li><li><span class="cov1">                if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        return "", fmt.Errorf("can't find %q: %v", path, err)
 </span></li><li><span class="cov0">                }</span>
-</li><li>                <span class="cov0">r.pkg = pkg
-</span></li><li><span class="cov0">
-</span></li><li><span class="cov0">                src := filepath.Join(r.pkg.SrcRoot, path)
-</span></li><li><span class="cov0">                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
+</li><li>                <span class="cov1">r.pkg = pkg
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                src := filepath.Join(r.pkg.SrcRoot, path)
+</span></li><li><span class="cov1">                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        r.hasSrcRoot = true
 </span></li><li><span class="cov0">                        return src, nil
 </span></li><li><span class="cov0">                }</span>
 </li><li>
-</li><li>                <span class="cov0">src = filepath.Join(r.pkg.Dir, file)
-</span></li><li><span class="cov0">                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                        r.hasSrcRoot = false
-</span></li><li><span class="cov0">                        r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
-</span></li><li><span class="cov0">                        return src, nil
-</span></li><li><span class="cov0">                }</span>
+</li><li>                <span class="cov1">src = filepath.Join(r.pkg.Dir, file)
+</span></li><li><span class="cov1">                if _, err := os.Stat(src); err == nil </span><span class="cov1">{
+</span></li><li><span class="cov1">                        r.hasSrcRoot = false
+</span></li><li><span class="cov1">                        r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
+</span></li><li><span class="cov1">                        return src, nil
+</span></li><li><span class="cov1">                }</span>
 </li><li>        }
 </li><li>
 </li><li>        <span class="cov0">if r.hasSrcRoot </span><span class="cov0">{

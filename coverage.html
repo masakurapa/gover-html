@@ -58,11 +58,13 @@
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (98.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (97.1%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/reader/reader.go (0.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				
+				<option value="file5">github.com/masakurapa/go-cover/internal/reader/reader.go (69.6%)</option>
 				
 				</select>
 			</div>
@@ -98,12 +100,13 @@ var (
         }
 )
 
-type TreeTemplateData struct {
+type TemplateData struct {
         Tree  template.HTML
         Files []File
 }
 
 type File struct {
+        ID       int
         Name     string
         Body     template.HTML
         Coverage float64
@@ -115,8 +118,8 @@ func WriteTreeView(
         profiles profile.Profiles,
         tree profile.Tree,
 ) error <span class="cov8" title="1">{
-        data := TreeTemplateData{
-                Tree:  template.HTML(genDirectoryTree(tree)),
+        data := TemplateData{
+                Tree:  template.HTML(directoryTree(tree)),
                 Files: make([]File, 0, len(profiles)),
         }
 
@@ -127,9 +130,10 @@ func WriteTreeView(
                 }</span>
 
                 <span class="cov8" title="1">buf := writePool.Get().(*bytes.Buffer)
-                genSource(buf, b, &amp;p)
+                writeSource(buf, b, &amp;p)
 
                 data.Files = append(data.Files, File{
+                        ID:       p.ID,
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
                         Coverage: p.Blocks.Coverage(),
@@ -142,17 +146,16 @@ func WriteTreeView(
         <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, data)</span>
 }
 
-func genDirectoryTree(tree profile.Tree) string <span class="cov8" title="1">{
+func directoryTree(tree profile.Tree) string <span class="cov8" title="1">{
         buf := writePool.Get().(*bytes.Buffer)
-        makeDirectoryTree(buf, tree, 0)
+        writeDirectoryTree(buf, tree, 0)
         s := buf.String()
         buf.Reset()
         writePool.Put(buf)
         return s
 }</span>
 
-// ディレクトリツリーの生成
-func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov8" title="1">{
+func writeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span class="cov8" title="1">{
         for _, t := range tree </span><span class="cov8" title="1">{
                 buf.WriteString(fmt.Sprintf(
                         `&lt;div style="padding-inline-start: %dpx"&gt;%s&lt;/div&gt;`,
@@ -160,7 +163,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
                         t.Name,
                 ))
 
-                makeDirectoryTree(buf, t.SubDirs, indent+1)
+                writeDirectoryTree(buf, t.SubDirs, indent+1)
 
                 for _, p := range t.Profiles </span><span class="cov8" title="1">{
                         _, f := filepath.Split(p.FileName)
@@ -176,7 +179,7 @@ func makeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) <span c
         }
 }
 
-func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov8" title="1">{
+func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov8" title="1">{
         bi := 0
         si := 0
         line := 1
@@ -250,6 +253,8 @@ func genSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class
 		
 		<pre class="file" id="file1" style="display: none">package profile
 
+import "sort"
+
 type Blocks []Block
 
 type Block struct {
@@ -259,6 +264,33 @@ type Block struct {
         EndCol    int
         NumStmt   int
         Count     int
+}
+
+func (blocks *Blocks) Filter() Blocks <span class="cov8" title="1">{
+        newBlocks := make(Blocks, 0, len(*blocks))
+        for _, b := range *blocks </span><span class="cov8" title="1">{
+                i := newBlocks.index(&amp;b)
+
+                if i == -1 </span><span class="cov8" title="1">{
+                        newBlocks = append(newBlocks, b)
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">if b.Count &gt; 0 </span><span class="cov8" title="1">{
+                        newBlocks[i] = b
+                }</span>
+        }
+
+        <span class="cov8" title="1">return newBlocks</span>
+}
+
+func (blocks *Blocks) Sort() <span class="cov8" title="1">{
+        b := *blocks
+        sort.SliceStable(b, func(i, j int) bool </span><span class="cov8" title="1">{
+                bi, bj := b[i], b[j]
+                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+        }</span>)
+        <span class="cov8" title="1">*blocks = b</span>
 }
 
 func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
@@ -276,9 +308,47 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
 
         <span class="cov8" title="1">return float64(covered) / float64(total) * 100</span>
 }
+
+func (blocks *Blocks) index(block *Block) int <span class="cov8" title="1">{
+        for i, b := range *blocks </span><span class="cov8" title="1">{
+                if b.StartLine == block.StartLine &amp;&amp;
+                        b.StartCol == block.StartCol &amp;&amp;
+                        b.EndLine == block.EndLine &amp;&amp;
+                        b.EndCol == block.EndCol </span><span class="cov8" title="1">{
+                        return i
+                }</span>
+        }
+        <span class="cov8" title="1">return -1</span>
+}
 </pre>
 		
 		<pre class="file" id="file2" style="display: none">package profile
+
+import (
+        "strings"
+)
+
+type Profiles []Profile
+
+type Profile struct {
+        ID       int
+        FileName string
+        Mode     string
+        Blocks   Blocks
+}
+
+func (prof *Profiles) ToTree() Tree <span class="cov8" title="1">{
+        tree := make(Tree, 0)
+        for _, p := range *prof </span><span class="cov8" title="1">{
+                tree.add(strings.Split(p.FileName, "/"), &amp;p)
+        }</span>
+
+        <span class="cov8" title="1">tree.mergeSingreDir()
+        return tree</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package profile
 
 import (
         "bufio"
@@ -291,19 +361,9 @@ import (
 
 var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
 
-type Profiles []Profile
-
-type Profile struct {
-        ID       int
-        FileName string
-        Mode     string
-        Blocks   Blocks
-}
-
 func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov8" title="1">{
         files := make(map[string]*Profile)
         mode := ""
-        id := 1
 
         for s.Scan() </span><span class="cov8" title="1">{
                 line := s.Text()
@@ -326,12 +386,8 @@ func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov8" title="1">{
                 p := files[fileName]
 
                 if p == nil </span><span class="cov8" title="1">{
-                        p = &amp;Profile{
-                                FileName: fileName,
-                                Mode:     mode,
-                        }
+                        p = &amp;Profile{FileName: fileName, Mode: mode}
                         files[fileName] = p
-                        id++
                 }</span>
 
                 <span class="cov8" title="1">p.Blocks = append(p.Blocks, Block{
@@ -350,7 +406,6 @@ func Scan(s *bufio.Scanner) (Profiles, error) <span class="cov8" title="1">{
 func toProfiles(files map[string]*Profile) Profiles <span class="cov8" title="1">{
         profiles := make([]Profile, 0, len(files))
         for _, p := range files </span><span class="cov8" title="1">{
-                p.Blocks = filterBlocks(p.Blocks)
                 profiles = append(profiles, *p)
         }</span>
 
@@ -358,38 +413,13 @@ func toProfiles(files map[string]*Profile) Profiles <span class="cov8" title="1"
                 return profiles[i].FileName &lt; profiles[j].FileName
         }</span>)
 
-        // ID振る
-        <span class="cov8" title="1">for i := range profiles </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">for i, p := range profiles </span><span class="cov8" title="1">{
                 profiles[i].ID = i
+                profiles[i].Blocks = p.Blocks.Filter()
+                profiles[i].Blocks.Sort()
         }</span>
 
         <span class="cov8" title="1">return profiles</span>
-}
-
-func filterBlocks(blocks Blocks) Blocks <span class="cov8" title="1">{
-        pbm := make(map[string]Block)
-        for _, b := range blocks </span><span class="cov8" title="1">{
-                // TODO: やり方考える
-                k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
-                if _, ok := pbm[k]; !ok </span><span class="cov8" title="1">{
-                        pbm[k] = b
-                }</span>
-                <span class="cov8" title="1">if b.Count &gt; 0 </span><span class="cov8" title="1">{
-                        pbm[k] = b
-                }</span>
-        }
-
-        <span class="cov8" title="1">pbs := make(Blocks, 0, len(pbm))
-        for _, b := range pbm </span><span class="cov8" title="1">{
-                pbs = append(pbs, b)
-        }</span>
-
-        <span class="cov8" title="1">sort.SliceStable(pbs, func(i, j int) bool </span><span class="cov8" title="1">{
-                bi, bj := pbs[i], pbs[j]
-                return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-        }</span>)
-
-        <span class="cov8" title="1">return pbs</span>
 }
 
 func toInt(s string) int <span class="cov8" title="1">{
@@ -401,11 +431,10 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
-        "fmt"
-        "strings"
+        "path/filepath"
 )
 
 type Tree []Node
@@ -416,23 +445,12 @@ type Node struct {
         SubDirs  Tree
 }
 
-func (prof Profiles) ToTree() Tree <span class="cov8" title="1">{
-        tree := make(Tree, 0)
-
-        for _, p := range prof </span><span class="cov8" title="1">{
-                tree.add(strings.Split(p.FileName, "/"), &amp;p)
-        }</span>
-
-        <span class="cov8" title="1">tree.merge()
-        return tree</span>
-}
-
 func (tree *Tree) add(paths []string, p *Profile) <span class="cov8" title="1">{
         name := paths[0]
         nextPaths := paths[1:]
 
-        idx, ok := tree.findNode(name)
-        if !ok </span><span class="cov8" title="1">{
+        idx := tree.index(name)
+        if idx == -1 </span><span class="cov8" title="1">{
                 *tree = append(*tree, Node{
                         Name:     name,
                         Profiles: make(Profiles, 0),
@@ -449,24 +467,23 @@ func (tree *Tree) add(paths []string, p *Profile) <span class="cov8" title="1">{
         <span class="cov8" title="1">t[idx].SubDirs.add(nextPaths, p)</span>
 }
 
-func (tree *Tree) findNode(name string) (int, bool) <span class="cov8" title="1">{
+func (tree *Tree) index(name string) int <span class="cov8" title="1">{
         for i, t := range *tree </span><span class="cov8" title="1">{
                 if t.Name == name </span><span class="cov8" title="1">{
-                        return i, true
+                        return i
                 }</span>
         }
-        <span class="cov8" title="1">return 0, false</span>
+        <span class="cov8" title="1">return -1</span>
 }
 
-// 子のディレクトリが1つしか無いものをマージしていく
-func (tree *Tree) merge() <span class="cov8" title="1">{
+func (tree *Tree) mergeSingreDir() <span class="cov8" title="1">{
         tt := *tree
         for i, t := range *tree </span><span class="cov8" title="1">{
-                t.SubDirs.merge()
+                t.SubDirs.mergeSingreDir()
 
                 if len(t.Profiles) == 0 &amp;&amp; len(t.SubDirs) == 1 </span><span class="cov8" title="1">{
                         sub := t.SubDirs[0]
-                        tt[i].Name = fmt.Sprintf("%s/%s", t.Name, sub.Name)
+                        tt[i].Name = filepath.Join(t.Name, sub.Name)
                         tt[i].Profiles = sub.Profiles
                         tt[i].SubDirs = sub.SubDirs
                 }</span>
@@ -474,7 +491,7 @@ func (tree *Tree) merge() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package reader
+		<pre class="file" id="file5" style="display: none">package reader
 
 import (
         "fmt"
@@ -495,28 +512,28 @@ type reader struct {
         prefix     string
 }
 
-func New() Reader <span class="cov0" title="0">{
+func New() Reader <span class="cov8" title="1">{
         return &amp;reader{}
 }</span>
 
-func (r *reader) Read(path string) ([]byte, error) <span class="cov0" title="0">{
+func (r *reader) Read(path string) ([]byte, error) <span class="cov8" title="1">{
         file, err := r.find(path)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov0" title="0">return ioutil.ReadFile(file)</span>
+        <span class="cov8" title="1">return ioutil.ReadFile(file)</span>
 }
 
-func (r *reader) find(path string) (string, error) <span class="cov0" title="0">{
+func (r *reader) find(path string) (string, error) <span class="cov8" title="1">{
         dir, file := filepath.Split(path)
 
-        if r.pkg == nil </span><span class="cov0" title="0">{
+        if r.pkg == nil </span><span class="cov8" title="1">{
                 pkg, err := build.Import(dir, ".", build.FindOnly)
                 if err != nil </span><span class="cov0" title="0">{
                         return "", fmt.Errorf("can't find %q: %v", path, err)
                 }</span>
-                <span class="cov0" title="0">r.pkg = pkg
+                <span class="cov8" title="1">r.pkg = pkg
 
                 src := filepath.Join(r.pkg.SrcRoot, path)
                 if _, err := os.Stat(src); err == nil </span><span class="cov0" title="0">{
@@ -524,8 +541,8 @@ func (r *reader) find(path string) (string, error) <span class="cov0" title="0">
                         return src, nil
                 }</span>
 
-                <span class="cov0" title="0">src = filepath.Join(r.pkg.Dir, file)
-                if _, err := os.Stat(src); err == nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">src = filepath.Join(r.pkg.Dir, file)
+                if _, err := os.Stat(src); err == nil </span><span class="cov8" title="1">{
                         r.hasSrcRoot = false
                         r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
                         return src, nil

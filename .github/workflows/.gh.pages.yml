@@ -23,7 +23,7 @@ jobs:
       - name: Coverage
         run: |
           mkdir public
-          go test -coverpkg ./internal/...  -coverprofile=coverage.out ./test/...
+          go test -coverprofile=coverage.out ./internal/...
           go tool cover -html=coverage.out -o coverage.html
           mv coverage.html ./public/coverage.html
           go run cover.go

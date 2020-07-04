@@ -26,6 +26,7 @@ type TemplateData struct {
 }
 
 type File struct {
+	ID       int
 	Name     string
 	Body     template.HTML
 	Coverage float64
@@ -52,6 +53,7 @@ func WriteTreeView(
 		writeSource(buf, b, &p)
 
 		data.Files = append(data.Files, File{
+			ID:       p.ID,
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
 			Coverage: p.Blocks.Coverage(),

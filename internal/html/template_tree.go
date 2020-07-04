@@ -75,7 +75,7 @@ const treeTemplate = `<!DOCTYPE html>
 			<div class="tree">{{.Tree}}</div>
 			<div id="cov" class="content">
 				{{range $i, $f := .Files}}
-				<div id="file{{$i}}" class="source" style="display: none">
+				<div id="file{{$f.ID}}" class="source" style="display: none">
 					<pre>{{$f.Body}}</pre>
 				</div>
 				{{end}}

@@ -55,47 +55,20 @@ func Scan(s *bufio.Scanner) (Profiles, error) {
 
 func toProfiles(files map[string]*Profile) Profiles {
 	profiles := make([]Profile, 0, len(files))
+	id := 0
 	for _, p := range files {
-		p.Blocks = filterBlocks(p.Blocks)
+		p.ID = id
+		p.Blocks = p.Blocks.Filter()
+		p.Blocks.Sort()
 		profiles = append(profiles, *p)
+		id++
 	}
 
 	sort.SliceStable(profiles, func(i, j int) bool {
 		return profiles[i].FileName < profiles[j].FileName
 	})
 
-	// ID振る
-	for i := range profiles {
-		profiles[i].ID = i
-	}
-
 	return profiles
-}
-
-func filterBlocks(blocks Blocks) Blocks {
-	pbm := make(map[string]Block)
-	for _, b := range blocks {
-		// TODO: やり方考える
-		k := fmt.Sprintf("%d-%d-%d-%d", b.StartLine, b.StartCol, b.EndLine, b.EndCol)
-		if _, ok := pbm[k]; !ok {
-			pbm[k] = b
-		}
-		if b.Count > 0 {
-			pbm[k] = b
-		}
-	}
-
-	pbs := make(Blocks, 0, len(pbm))
-	for _, b := range pbm {
-		pbs = append(pbs, b)
-	}
-
-	sort.SliceStable(pbs, func(i, j int) bool {
-		bi, bj := pbs[i], pbs[j]
-		return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
-	})
-
-	return pbs
 }
 
 func toInt(s string) int {

@@ -43,8 +43,13 @@ func WriteTreeView(
 		Files: make([]File, 0, len(profiles)),
 	}
 
+	pkgs, err := profiles.ToPackages()
+	if err != nil {
+		return err
+	}
+
 	for _, p := range profiles {
-		b, err := reader.Read(p.FileName)
+		b, err := reader.Read(pkgs, p.FileName)
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}

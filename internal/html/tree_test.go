@@ -44,7 +44,7 @@ func TestWriteTreeView(t *testing.T) {
 // stub
 type stubReader struct{}
 
-func (stub *stubReader) Read(s string) ([]byte, error) {
+func (stub *stubReader) Read(_ profile.Packages, s string) ([]byte, error) {
 	if s != "path/to/example.go" {
 		return nil, fmt.Errorf("file not found")
 	}

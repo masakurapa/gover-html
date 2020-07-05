@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"path/filepath"
 	"strings"
 )
 
@@ -13,12 +14,16 @@ type Profile struct {
 	Blocks   Blocks
 }
 
-func (prof *Profiles) ToTree() Tree {
+func (profs *Profiles) ToTree() Tree {
 	tree := make(Tree, 0)
-	for _, p := range *prof {
+	for _, p := range *profs {
 		tree.add(strings.Split(p.FileName, "/"), &p)
 	}
 
 	tree.mergeSingreDir()
 	return tree
+}
+
+func (prof *Profile) IsRelativeOrAbsolute() bool {
+	return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
 }

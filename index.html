@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (94.1%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">scan.go (97.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (69.6%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (93.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">package.go (0.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (83.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">scan.go (97.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree6" onclick="change(6);">reader.go (66.7%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file0" class="source" style="display: none">
@@ -115,8 +115,13 @@
 </span></li><li><span class="cov1">                Files: make([]File, 0, len(profiles)),
 </span></li><li><span class="cov1">        }
 </span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
-</span></li><li><span class="cov1">                b, err := reader.Read(p.FileName)
+</span></li><li><span class="cov1">        pkgs, err := profiles.ToPackages()
+</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                return err
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">for _, p := range profiles </span><span class="cov1">{
+</span></li><li><span class="cov1">                b, err := reader.Read(pkgs, p.FileName)
 </span></li><li><span class="cov1">                if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
 </span></li><li><span class="cov0">                }</span>
@@ -310,6 +315,77 @@
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
+</li><li>        "bytes"
+</li><li>        "encoding/json"
+</li><li>        "fmt"
+</li><li>        "io"
+</li><li>        "os/exec"
+</li><li>        "path"
+</li><li>        "path/filepath"
+</li><li>        "runtime"
+</li><li>)
+</li><li>
+</li><li>type Packages map[string]*Package
+</li><li>
+</li><li>type Package struct {
+</li><li>        Dir        string
+</li><li>        ImportPath string
+</li><li>        Error      *struct {
+</li><li>                Err string
+</li><li>        }
+</li><li>}
+</li><li>
+</li><li>func (profs *Profiles) ToPackages() (Packages, error) <span class="cov0">{
+</span></li><li><span class="cov0">        pkgs := make(Packages)
+</span></li><li><span class="cov0">        dirs := make([]string, 0, len(*profs))
+</span></li><li><span class="cov0">        for _, prof := range *profs </span><span class="cov0">{
+</span></li><li><span class="cov0">                if prof.IsRelativeOrAbsolute() </span><span class="cov0">{
+</span></li><li><span class="cov0">                        continue</span>
+</li><li>                }
+</li><li>
+</li><li>                <span class="cov0">dir := path.Dir(prof.FileName)
+</span></li><li><span class="cov0">                if _, ok := pkgs[dir]; !ok </span><span class="cov0">{
+</span></li><li><span class="cov0">                        pkgs[dir] = nil
+</span></li><li><span class="cov0">                        dirs = append(dirs, dir)
+</span></li><li><span class="cov0">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov0">if len(dirs) == 0 </span><span class="cov0">{
+</span></li><li><span class="cov0">                return pkgs, nil
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov0">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+</span></li><li><span class="cov0">        args := append([]string{"list", "-e", "-json"}, dirs...)
+</span></li><li><span class="cov0">        cmd := exec.Command(cmdName, args...)
+</span></li><li><span class="cov0">
+</span></li><li><span class="cov0">        stdout, err := cmd.Output()
+</span></li><li><span class="cov0">        if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                return nil, err
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov0">dec := json.NewDecoder(bytes.NewReader(stdout))
+</span></li><li><span class="cov0">        for </span><span class="cov0">{
+</span></li><li><span class="cov0">                var pkg Package
+</span></li><li><span class="cov0">                err := dec.Decode(&amp;pkg)
+</span></li><li><span class="cov0">                if err == io.EOF </span><span class="cov0">{
+</span></li><li><span class="cov0">                        break</span>
+</li><li>                }
+</li><li>                <span class="cov0">if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                        return nil, fmt.Errorf("decoding go list json: %v", err)
+</span></li><li><span class="cov0">                }</span>
+</li><li>                <span class="cov0">pkgs[pkg.ImportPath] = &amp;pkg</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov0">return pkgs, nil</span>
+</li><li>}
+</li></ol></pre>
+				</div>
+				
+				<div id="file3" class="source" style="display: none">
+					<pre><ol><li>package profile
+</li><li>
+</li><li>import (
+</li><li>        "path/filepath"
 </li><li>        "strings"
 </li><li>)
 </li><li>
@@ -322,19 +398,23 @@
 </li><li>        Blocks   Blocks
 </li><li>}
 </li><li>
-</li><li>func (prof *Profiles) ToTree() Tree <span class="cov1">{
+</li><li>func (profs *Profiles) ToTree() Tree <span class="cov1">{
 </span></li><li><span class="cov1">        tree := make(Tree, 0)
-</span></li><li><span class="cov1">        for _, p := range *prof </span><span class="cov1">{
+</span></li><li><span class="cov1">        for _, p := range *profs </span><span class="cov1">{
 </span></li><li><span class="cov1">                tree.add(strings.Split(p.FileName, "/"), &amp;p)
 </span></li><li><span class="cov1">        }</span>
 </li><li>
 </li><li>        <span class="cov1">tree.mergeSingreDir()
 </span></li><li><span class="cov1">        return tree</span>
 </li><li>}
+</li><li>
+</li><li>func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0">{
+</span></li><li><span class="cov0">        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+</span></li><li><span class="cov0">}</span>
 </li></ol></pre>
 				</div>
 				
-				<div id="file3" class="source" style="display: none">
+				<div id="file4" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -424,7 +504,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file4" class="source" style="display: none">
+				<div id="file5" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -486,69 +566,47 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file5" class="source" style="display: none">
+				<div id="file6" class="source" style="display: none">
 					<pre><ol><li>package reader
 </li><li>
 </li><li>import (
 </li><li>        "fmt"
-</li><li>        "go/build"
 </li><li>        "io/ioutil"
-</li><li>        "os"
+</li><li>        "path"
 </li><li>        "path/filepath"
-</li><li>        "strings"
+</li><li>
+</li><li>        "github.com/masakurapa/go-cover/internal/profile"
 </li><li>)
 </li><li>
 </li><li>type Reader interface {
-</li><li>        Read(path string) ([]byte, error)
+</li><li>        Read(profile.Packages, string) ([]byte, error)
 </li><li>}
 </li><li>
-</li><li>type reader struct {
-</li><li>        pkg        *build.Package
-</li><li>        hasSrcRoot bool
-</li><li>        prefix     string
-</li><li>}
+</li><li>type reader struct{}
 </li><li>
 </li><li>func New() Reader <span class="cov1">{
 </span></li><li><span class="cov1">        return &amp;reader{}
 </span></li><li><span class="cov1">}</span>
 </li><li>
-</li><li>func (r *reader) Read(path string) ([]byte, error) <span class="cov1">{
-</span></li><li><span class="cov1">        file, err := r.find(path)
+</li><li>func (r *reader) Read(pkgs profile.Packages, path string) ([]byte, error) <span class="cov1">{
+</span></li><li><span class="cov1">        file, err := r.find(pkgs, path)
 </span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
-</li><li>
 </li><li>        <span class="cov1">return ioutil.ReadFile(file)</span>
 </li><li>}
 </li><li>
-</li><li>func (r *reader) find(path string) (string, error) <span class="cov1">{
-</span></li><li><span class="cov1">        dir, file := filepath.Split(path)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        if r.pkg == nil </span><span class="cov1">{
-</span></li><li><span class="cov1">                pkg, err := build.Import(dir, ".", build.FindOnly)
-</span></li><li><span class="cov1">                if err != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                        return "", fmt.Errorf("can't find %q: %v", path, err)
-</span></li><li><span class="cov0">                }</span>
-</li><li>                <span class="cov1">r.pkg = pkg
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                src := filepath.Join(r.pkg.SrcRoot, path)
-</span></li><li><span class="cov1">                if _, err := os.Stat(src); err == nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                        r.hasSrcRoot = true
-</span></li><li><span class="cov0">                        return src, nil
-</span></li><li><span class="cov0">                }</span>
-</li><li>
-</li><li>                <span class="cov1">src = filepath.Join(r.pkg.Dir, file)
-</span></li><li><span class="cov1">                if _, err := os.Stat(src); err == nil </span><span class="cov1">{
-</span></li><li><span class="cov1">                        r.hasSrcRoot = false
-</span></li><li><span class="cov1">                        r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
-</span></li><li><span class="cov1">                        return src, nil
+</li><li>func (r *reader) find(pkgs profile.Packages, file string) (string, error) <span class="cov1">{
+</span></li><li><span class="cov1">        pkg := pkgs[path.Dir(file)]
+</span></li><li><span class="cov1">        if pkg != nil </span><span class="cov1">{
+</span></li><li><span class="cov1">                if pkg.Dir != "" </span><span class="cov1">{
+</span></li><li><span class="cov1">                        return filepath.Join(pkg.Dir, path.Base(file)), nil
 </span></li><li><span class="cov1">                }</span>
+</li><li>                <span class="cov0">if pkg.Error != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                        return "", fmt.Errorf(pkg.Error.Err)
+</span></li><li><span class="cov0">                }</span>
 </li><li>        }
-</li><li>
-</li><li>        <span class="cov0">if r.hasSrcRoot </span><span class="cov0">{
-</span></li><li><span class="cov0">                return filepath.Join(r.pkg.SrcRoot, path), nil
-</span></li><li><span class="cov0">        }</span>
-</li><li>        <span class="cov0">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
+</li><li>        <span class="cov0">return "", fmt.Errorf("file not found. %s", file)</span>
 </li><li>}
 </li></ol></pre>
 				</div>

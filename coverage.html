@@ -54,17 +54,19 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (94.1%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/tree.go (93.0%)</option>
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/profile/package.go (0.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (97.3%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/profile.go (83.3%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/scan.go (97.3%)</option>
 				
-				<option value="file5">github.com/masakurapa/go-cover/internal/reader/reader.go (69.6%)</option>
+				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
+				
+				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (66.7%)</option>
 				
 				</select>
 			</div>
@@ -123,8 +125,13 @@ func WriteTreeView(
                 Files: make([]File, 0, len(profiles)),
         }
 
-        for _, p := range profiles </span><span class="cov8" title="1">{
-                b, err := reader.Read(p.FileName)
+        pkgs, err := profiles.ToPackages()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">for _, p := range profiles </span><span class="cov8" title="1">{
+                b, err := reader.Read(pkgs, p.FileName)
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
@@ -314,6 +321,75 @@ func (blocks *Blocks) index(block *Block) int <span class="cov8" title="1">{
 		<pre class="file" id="file2" style="display: none">package profile
 
 import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "os/exec"
+        "path"
+        "path/filepath"
+        "runtime"
+)
+
+type Packages map[string]*Package
+
+type Package struct {
+        Dir        string
+        ImportPath string
+        Error      *struct {
+                Err string
+        }
+}
+
+func (profs *Profiles) ToPackages() (Packages, error) <span class="cov0" title="0">{
+        pkgs := make(Packages)
+        dirs := make([]string, 0, len(*profs))
+        for _, prof := range *profs </span><span class="cov0" title="0">{
+                if prof.IsRelativeOrAbsolute() </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov0" title="0">dir := path.Dir(prof.FileName)
+                if _, ok := pkgs[dir]; !ok </span><span class="cov0" title="0">{
+                        pkgs[dir] = nil
+                        dirs = append(dirs, dir)
+                }</span>
+        }
+
+        <span class="cov0" title="0">if len(dirs) == 0 </span><span class="cov0" title="0">{
+                return pkgs, nil
+        }</span>
+
+        <span class="cov0" title="0">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+        args := append([]string{"list", "-e", "-json"}, dirs...)
+        cmd := exec.Command(cmdName, args...)
+
+        stdout, err := cmd.Output()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">dec := json.NewDecoder(bytes.NewReader(stdout))
+        for </span><span class="cov0" title="0">{
+                var pkg Package
+                err := dec.Decode(&amp;pkg)
+                if err == io.EOF </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov0" title="0">if err != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("decoding go list json: %v", err)
+                }</span>
+                <span class="cov0" title="0">pkgs[pkg.ImportPath] = &amp;pkg</span>
+        }
+
+        <span class="cov0" title="0">return pkgs, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package profile
+
+import (
+        "path/filepath"
         "strings"
 )
 
@@ -326,18 +402,22 @@ type Profile struct {
         Blocks   Blocks
 }
 
-func (prof *Profiles) ToTree() Tree <span class="cov8" title="1">{
+func (profs *Profiles) ToTree() Tree <span class="cov8" title="1">{
         tree := make(Tree, 0)
-        for _, p := range *prof </span><span class="cov8" title="1">{
+        for _, p := range *profs </span><span class="cov8" title="1">{
                 tree.add(strings.Split(p.FileName, "/"), &amp;p)
         }</span>
 
         <span class="cov8" title="1">tree.mergeSingreDir()
         return tree</span>
 }
+
+func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0" title="0">{
+        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+}</span>
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "bufio"
@@ -425,7 +505,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file5" style="display: none">package profile
 
 import (
         "path/filepath"
@@ -485,68 +565,46 @@ func (tree *Tree) mergeSingreDir() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package reader
+		<pre class="file" id="file6" style="display: none">package reader
 
 import (
         "fmt"
-        "go/build"
         "io/ioutil"
-        "os"
+        "path"
         "path/filepath"
-        "strings"
+
+        "github.com/masakurapa/go-cover/internal/profile"
 )
 
 type Reader interface {
-        Read(path string) ([]byte, error)
+        Read(profile.Packages, string) ([]byte, error)
 }
 
-type reader struct {
-        pkg        *build.Package
-        hasSrcRoot bool
-        prefix     string
-}
+type reader struct{}
 
 func New() Reader <span class="cov8" title="1">{
         return &amp;reader{}
 }</span>
 
-func (r *reader) Read(path string) ([]byte, error) <span class="cov8" title="1">{
-        file, err := r.find(path)
+func (r *reader) Read(pkgs profile.Packages, path string) ([]byte, error) <span class="cov8" title="1">{
+        file, err := r.find(pkgs, path)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
-
         <span class="cov8" title="1">return ioutil.ReadFile(file)</span>
 }
 
-func (r *reader) find(path string) (string, error) <span class="cov8" title="1">{
-        dir, file := filepath.Split(path)
-
-        if r.pkg == nil </span><span class="cov8" title="1">{
-                pkg, err := build.Import(dir, ".", build.FindOnly)
-                if err != nil </span><span class="cov0" title="0">{
-                        return "", fmt.Errorf("can't find %q: %v", path, err)
+func (r *reader) find(pkgs profile.Packages, file string) (string, error) <span class="cov8" title="1">{
+        pkg := pkgs[path.Dir(file)]
+        if pkg != nil </span><span class="cov8" title="1">{
+                if pkg.Dir != "" </span><span class="cov8" title="1">{
+                        return filepath.Join(pkg.Dir, path.Base(file)), nil
                 }</span>
-                <span class="cov8" title="1">r.pkg = pkg
-
-                src := filepath.Join(r.pkg.SrcRoot, path)
-                if _, err := os.Stat(src); err == nil </span><span class="cov0" title="0">{
-                        r.hasSrcRoot = true
-                        return src, nil
-                }</span>
-
-                <span class="cov8" title="1">src = filepath.Join(r.pkg.Dir, file)
-                if _, err := os.Stat(src); err == nil </span><span class="cov8" title="1">{
-                        r.hasSrcRoot = false
-                        r.prefix = strings.TrimSuffix(r.pkg.ImportPath, strings.TrimPrefix(r.pkg.Dir, r.pkg.Root))
-                        return src, nil
+                <span class="cov0" title="0">if pkg.Error != nil </span><span class="cov0" title="0">{
+                        return "", fmt.Errorf(pkg.Error.Err)
                 }</span>
         }
-
-        <span class="cov0" title="0">if r.hasSrcRoot </span><span class="cov0" title="0">{
-                return filepath.Join(r.pkg.SrcRoot, path), nil
-        }</span>
-        <span class="cov0" title="0">return filepath.Join(r.pkg.Root, strings.TrimPrefix(path, r.prefix)), nil</span>
+        <span class="cov0" title="0">return "", fmt.Errorf("file not found. %s", file)</span>
 }
 </pre>
 		

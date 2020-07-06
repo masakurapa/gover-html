@@ -49,7 +49,7 @@ func WriteTreeView(
 	}
 
 	for _, p := range profiles {
-		b, err := reader.Read(pkgs, p.FileName)
+		b, err := reader.Read(pkgs, &p)
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}

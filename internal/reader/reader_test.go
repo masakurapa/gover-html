@@ -13,7 +13,7 @@ import (
 func TestReader(t *testing.T) {
 	type args struct {
 		pkgs profile.Packages
-		path string
+		prof *profile.Profile
 	}
 
 	r := reader.New()
@@ -49,7 +49,9 @@ func TestReader(t *testing.T) {
 						Dir: baseDir,
 					},
 				},
-				path: "github.com/masakurapa/go-cover/internal/reader/reader.go",
+				prof: &profile.Profile{
+					FileName: "github.com/masakurapa/go-cover/internal/reader/reader.go",
+				},
 			},
 			want:    want,
 			wantErr: false,
@@ -59,7 +61,7 @@ func TestReader(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := reader.New()
-			got, err := r.Read(tt.args.pkgs, tt.args.path)
+			got, err := r.Read(tt.args.pkgs, tt.args.prof)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("reader.Read() error = %v, wantErr %v", err, tt.wantErr)
 				return

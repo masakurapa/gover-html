@@ -10,7 +10,7 @@ import (
 )
 
 type Reader interface {
-	Read(profile.Packages, string) ([]byte, error)
+	Read(profile.Packages, *profile.Profile) ([]byte, error)
 }
 
 type reader struct{}
@@ -19,15 +19,20 @@ func New() Reader {
 	return &reader{}
 }
 
-func (r *reader) Read(pkgs profile.Packages, path string) ([]byte, error) {
-	file, err := r.find(pkgs, path)
+func (r *reader) Read(pkgs profile.Packages, prof *profile.Profile) ([]byte, error) {
+	file, err := r.find(pkgs, prof)
 	if err != nil {
 		return nil, err
 	}
 	return ioutil.ReadFile(file)
 }
 
-func (r *reader) find(pkgs profile.Packages, file string) (string, error) {
+func (r *reader) find(pkgs profile.Packages, prof *profile.Profile) (string, error) {
+	if prof.IsRelativeOrAbsolute() {
+		return prof.FileName, nil
+	}
+
+	file := prof.FileName
 	pkg := pkgs[path.Dir(file)]
 	if pkg != nil {
 		if pkg.Dir != "" {

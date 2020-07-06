@@ -58,15 +58,13 @@
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/profile/block.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/package.go (0.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (15.2%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/profile.go (83.3%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (97.3%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/scan.go (97.3%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
 				
-				<option value="file5">github.com/masakurapa/go-cover/internal/profile/tree.go (100.0%)</option>
-				
-				<option value="file6">github.com/masakurapa/go-cover/internal/reader/reader.go (66.7%)</option>
+				<option value="file5">github.com/masakurapa/go-cover/internal/reader/reader.go (66.7%)</option>
 				
 				</select>
 			</div>
@@ -131,7 +129,7 @@ func WriteTreeView(
         }</span>
 
         <span class="cov8" title="1">for _, p := range profiles </span><span class="cov8" title="1">{
-                b, err := reader.Read(pkgs, p.FileName)
+                b, err := reader.Read(pkgs, &amp;p)
                 if err != nil </span><span class="cov0" title="0">{
                         return fmt.Errorf("can't read %q: %v", p.FileName, err)
                 }</span>
@@ -329,17 +327,31 @@ import (
         "path"
         "path/filepath"
         "runtime"
+        "strings"
 )
 
-type Packages map[string]*Package
+type Profiles []Profile
 
-type Package struct {
-        Dir        string
-        ImportPath string
-        Error      *struct {
-                Err string
-        }
+type Profile struct {
+        ID       int
+        FileName string
+        Mode     string
+        Blocks   Blocks
 }
+
+func (profs *Profiles) ToTree() Tree <span class="cov8" title="1">{
+        tree := make(Tree, 0)
+        for _, p := range *profs </span><span class="cov8" title="1">{
+                tree.add(strings.Split(p.FileName, "/"), &amp;p)
+        }</span>
+
+        <span class="cov8" title="1">tree.mergeSingreDir()
+        return tree</span>
+}
+
+func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0" title="0">{
+        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+}</span>
 
 func (profs *Profiles) ToPackages() (Packages, error) <span class="cov0" title="0">{
         pkgs := make(Packages)
@@ -387,37 +399,6 @@ func (profs *Profiles) ToPackages() (Packages, error) <span class="cov0" title="
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package profile
-
-import (
-        "path/filepath"
-        "strings"
-)
-
-type Profiles []Profile
-
-type Profile struct {
-        ID       int
-        FileName string
-        Mode     string
-        Blocks   Blocks
-}
-
-func (profs *Profiles) ToTree() Tree <span class="cov8" title="1">{
-        tree := make(Tree, 0)
-        for _, p := range *profs </span><span class="cov8" title="1">{
-                tree.add(strings.Split(p.FileName, "/"), &amp;p)
-        }</span>
-
-        <span class="cov8" title="1">tree.mergeSingreDir()
-        return tree</span>
-}
-
-func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0" title="0">{
-        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
-}</span>
-</pre>
-		
-		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "bufio"
@@ -505,7 +486,7 @@ func toInt(s string) int <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package profile
+		<pre class="file" id="file4" style="display: none">package profile
 
 import (
         "path/filepath"
@@ -565,7 +546,7 @@ func (tree *Tree) mergeSingreDir() <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package reader
+		<pre class="file" id="file5" style="display: none">package reader
 
 import (
         "fmt"
@@ -577,7 +558,7 @@ import (
 )
 
 type Reader interface {
-        Read(profile.Packages, string) ([]byte, error)
+        Read(profile.Packages, *profile.Profile) ([]byte, error)
 }
 
 type reader struct{}
@@ -586,15 +567,20 @@ func New() Reader <span class="cov8" title="1">{
         return &amp;reader{}
 }</span>
 
-func (r *reader) Read(pkgs profile.Packages, path string) ([]byte, error) <span class="cov8" title="1">{
-        file, err := r.find(pkgs, path)
+func (r *reader) Read(pkgs profile.Packages, prof *profile.Profile) ([]byte, error) <span class="cov8" title="1">{
+        file, err := r.find(pkgs, prof)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
         <span class="cov8" title="1">return ioutil.ReadFile(file)</span>
 }
 
-func (r *reader) find(pkgs profile.Packages, file string) (string, error) <span class="cov8" title="1">{
+func (r *reader) find(pkgs profile.Packages, prof *profile.Profile) (string, error) <span class="cov8" title="1">{
+        if prof.IsRelativeOrAbsolute() </span><span class="cov0" title="0">{
+                return prof.FileName, nil
+        }</span>
+
+        <span class="cov8" title="1">file := prof.FileName
         pkg := pkgs[path.Dir(file)]
         if pkg != nil </span><span class="cov8" title="1">{
                 if pkg.Dir != "" </span><span class="cov8" title="1">{

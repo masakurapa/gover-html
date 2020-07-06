@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (93.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">package.go (0.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (83.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">scan.go (97.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree6" onclick="change(6);">reader.go (66.7%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div class="file" style="padding-inline-start: 60px" id="tree0" onclick="change(0);">tree.go (93.0%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">block.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">profile.go (15.2%)</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">scan.go (97.3%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">tree.go (100.0%)</div><div style="padding-inline-start: 30px">reader</div><div class="file" style="padding-inline-start: 60px" id="tree5" onclick="change(5);">reader.go (66.7%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file0" class="source" style="display: none">
@@ -121,7 +121,7 @@
 </span></li><li><span class="cov0">        }</span>
 </li><li>
 </li><li>        <span class="cov1">for _, p := range profiles </span><span class="cov1">{
-</span></li><li><span class="cov1">                b, err := reader.Read(pkgs, p.FileName)
+</span></li><li><span class="cov1">                b, err := reader.Read(pkgs, &amp;p)
 </span></li><li><span class="cov1">                if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
 </span></li><li><span class="cov0">                }</span>
@@ -323,17 +323,31 @@
 </li><li>        "path"
 </li><li>        "path/filepath"
 </li><li>        "runtime"
+</li><li>        "strings"
 </li><li>)
 </li><li>
-</li><li>type Packages map[string]*Package
+</li><li>type Profiles []Profile
 </li><li>
-</li><li>type Package struct {
-</li><li>        Dir        string
-</li><li>        ImportPath string
-</li><li>        Error      *struct {
-</li><li>                Err string
-</li><li>        }
+</li><li>type Profile struct {
+</li><li>        ID       int
+</li><li>        FileName string
+</li><li>        Mode     string
+</li><li>        Blocks   Blocks
 </li><li>}
+</li><li>
+</li><li>func (profs *Profiles) ToTree() Tree <span class="cov1">{
+</span></li><li><span class="cov1">        tree := make(Tree, 0)
+</span></li><li><span class="cov1">        for _, p := range *profs </span><span class="cov1">{
+</span></li><li><span class="cov1">                tree.add(strings.Split(p.FileName, "/"), &amp;p)
+</span></li><li><span class="cov1">        }</span>
+</li><li>
+</li><li>        <span class="cov1">tree.mergeSingreDir()
+</span></li><li><span class="cov1">        return tree</span>
+</li><li>}
+</li><li>
+</li><li>func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0">{
+</span></li><li><span class="cov0">        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+</span></li><li><span class="cov0">}</span>
 </li><li>
 </li><li>func (profs *Profiles) ToPackages() (Packages, error) <span class="cov0">{
 </span></li><li><span class="cov0">        pkgs := make(Packages)
@@ -382,39 +396,6 @@
 				</div>
 				
 				<div id="file3" class="source" style="display: none">
-					<pre><ol><li>package profile
-</li><li>
-</li><li>import (
-</li><li>        "path/filepath"
-</li><li>        "strings"
-</li><li>)
-</li><li>
-</li><li>type Profiles []Profile
-</li><li>
-</li><li>type Profile struct {
-</li><li>        ID       int
-</li><li>        FileName string
-</li><li>        Mode     string
-</li><li>        Blocks   Blocks
-</li><li>}
-</li><li>
-</li><li>func (profs *Profiles) ToTree() Tree <span class="cov1">{
-</span></li><li><span class="cov1">        tree := make(Tree, 0)
-</span></li><li><span class="cov1">        for _, p := range *profs </span><span class="cov1">{
-</span></li><li><span class="cov1">                tree.add(strings.Split(p.FileName, "/"), &amp;p)
-</span></li><li><span class="cov1">        }</span>
-</li><li>
-</li><li>        <span class="cov1">tree.mergeSingreDir()
-</span></li><li><span class="cov1">        return tree</span>
-</li><li>}
-</li><li>
-</li><li>func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov0">{
-</span></li><li><span class="cov0">        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
-</span></li><li><span class="cov0">}</span>
-</li></ol></pre>
-				</div>
-				
-				<div id="file4" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -504,7 +485,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file5" class="source" style="display: none">
+				<div id="file4" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -566,7 +547,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file6" class="source" style="display: none">
+				<div id="file5" class="source" style="display: none">
 					<pre><ol><li>package reader
 </li><li>
 </li><li>import (
@@ -579,7 +560,7 @@
 </li><li>)
 </li><li>
 </li><li>type Reader interface {
-</li><li>        Read(profile.Packages, string) ([]byte, error)
+</li><li>        Read(profile.Packages, *profile.Profile) ([]byte, error)
 </li><li>}
 </li><li>
 </li><li>type reader struct{}
@@ -588,15 +569,20 @@
 </span></li><li><span class="cov1">        return &amp;reader{}
 </span></li><li><span class="cov1">}</span>
 </li><li>
-</li><li>func (r *reader) Read(pkgs profile.Packages, path string) ([]byte, error) <span class="cov1">{
-</span></li><li><span class="cov1">        file, err := r.find(pkgs, path)
+</li><li>func (r *reader) Read(pkgs profile.Packages, prof *profile.Profile) ([]byte, error) <span class="cov1">{
+</span></li><li><span class="cov1">        file, err := r.find(pkgs, prof)
 </span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
 </li><li>        <span class="cov1">return ioutil.ReadFile(file)</span>
 </li><li>}
 </li><li>
-</li><li>func (r *reader) find(pkgs profile.Packages, file string) (string, error) <span class="cov1">{
+</li><li>func (r *reader) find(pkgs profile.Packages, prof *profile.Profile) (string, error) <span class="cov1">{
+</span></li><li><span class="cov1">        if prof.IsRelativeOrAbsolute() </span><span class="cov0">{
+</span></li><li><span class="cov0">                return prof.FileName, nil
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">file := prof.FileName
 </span></li><li><span class="cov1">        pkg := pkgs[path.Dir(file)]
 </span></li><li><span class="cov1">        if pkg != nil </span><span class="cov1">{
 </span></li><li><span class="cov1">                if pkg.Dir != "" </span><span class="cov1">{

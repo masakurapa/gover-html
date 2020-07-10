@@ -54,7 +54,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (93.7%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (96.8%)</option>
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
 				
@@ -88,22 +88,23 @@ import (
         "github.com/masakurapa/go-cover/internal/profile"
 )
 
-type TemplateData struct {
+type templateData struct {
         Tree  template.HTML
-        Files []File
+        Files []templateFile
 }
 
-type File struct {
+type templateFile struct {
         ID       int
         Name     string
         Body     template.HTML
         Coverage float64
 }
 
+// WriteTreeView outputs coverage as a tree view HTML file
 func WriteTreeView(out io.Writer, profiles []profile.Profile) error <span class="cov8" title="1">{
-        data := TemplateData{
-                Tree:  template.HTML(directoryTree(tree.Create(profiles))),
-                Files: make([]File, 0, len(profiles)),
+        data := templateData{
+                Tree:  template.HTML(directoryTree(profiles)),
+                Files: make([]templateFile, 0, len(profiles)),
         }
 
         for _, p := range profiles </span><span class="cov8" title="1">{
@@ -115,7 +116,7 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error <span class=
                 <span class="cov8" title="1">var buf bytes.Buffer
                 writeSource(&amp;buf, b, &amp;p)
 
-                data.Files = append(data.Files, File{
+                data.Files = append(data.Files, templateFile{
                         ID:       p.ID,
                         Name:     p.FileName,
                         Body:     template.HTML(buf.String()),
@@ -126,7 +127,8 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error <span class=
         <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, data)</span>
 }
 
-func directoryTree(nodes []tree.Node) string <span class="cov8" title="1">{
+func directoryTree(profiles []profile.Profile) string <span class="cov8" title="1">{
+        nodes := tree.Create(profiles)
         var buf bytes.Buffer
         writeDirectoryTree(&amp;buf, nodes, 0)
         s := buf.String()
@@ -199,20 +201,9 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
                 }
 
                 <span class="cov8" title="1">b := src[si]
-                switch b </span>{
-                case '&lt;':<span class="cov8" title="1">
-                        buf.WriteString("&amp;lt;")</span>
-                case '&gt;':<span class="cov0" title="0">
-                        buf.WriteString("&amp;gt;")</span>
-                case '&amp;':<span class="cov0" title="0">
-                        buf.WriteString("&amp;amp;")</span>
-                case '\t':<span class="cov8" title="1">
-                        buf.WriteString("        ")</span>
-                default:<span class="cov8" title="1">
-                        buf.WriteByte(b)</span>
-                }
+                buf.WriteString(escape(b))
 
-                <span class="cov8" title="1">if b == '\n' </span><span class="cov8" title="1">{
+                if b == '\n' </span><span class="cov8" title="1">{
                         if cov0 || cov1 </span><span class="cov8" title="1">{
                                 buf.WriteString("&lt;/span&gt;")
                         }</span>
@@ -227,6 +218,19 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
 
         <span class="cov8" title="1">buf.WriteString("&lt;/ol&gt;")</span>
 }
+
+func escape(b byte) string <span class="cov8" title="1">{
+        chars := map[byte]string{
+                '&lt;':  "&amp;lt;",
+                '&gt;':  "&amp;gt;",
+                '&amp;':  "&amp;amp;",
+                '\t': "        ",
+        }
+        if s, ok := chars[b]; ok </span><span class="cov8" title="1">{
+                return s
+        }</span>
+        <span class="cov8" title="1">return string(b)</span>
+}
 </pre>
 		
 		<pre class="file" id="file1" style="display: none">package tree
@@ -238,12 +242,14 @@ import (
         "github.com/masakurapa/go-cover/internal/profile"
 )
 
+// Node is single node of directory tree
 type Node struct {
         Name  string
         Files []profile.Profile
         Dirs  []Node
 }
 
+// Create returns directory tree
 func Create(profiles []profile.Profile) []Node <span class="cov8" title="1">{
         nodes := make([]Node, 0)
         for _, p := range profiles </span><span class="cov8" title="1">{

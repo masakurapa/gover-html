@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div style="padding-inline-start: 60px">tree</div><div class="file" style="padding-inline-start: 90px" id="tree2" onclick="change(2);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">html.go (93.7%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">scan.go (91.8%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div style="padding-inline-start: 60px">tree</div><div class="file" style="padding-inline-start: 90px" id="tree2" onclick="change(2);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">scan.go (91.8%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file1" class="source" style="display: none">
@@ -84,22 +84,23 @@
 </li><li>        "github.com/masakurapa/go-cover/internal/profile"
 </li><li>)
 </li><li>
-</li><li>type TemplateData struct {
+</li><li>type templateData struct {
 </li><li>        Tree  template.HTML
-</li><li>        Files []File
+</li><li>        Files []templateFile
 </li><li>}
 </li><li>
-</li><li>type File struct {
+</li><li>type templateFile struct {
 </li><li>        ID       int
 </li><li>        Name     string
 </li><li>        Body     template.HTML
 </li><li>        Coverage float64
 </li><li>}
 </li><li>
+</li><li>// WriteTreeView outputs coverage as a tree view HTML file
 </li><li>func WriteTreeView(out io.Writer, profiles []profile.Profile) error <span class="cov1">{
-</span></li><li><span class="cov1">        data := TemplateData{
-</span></li><li><span class="cov1">                Tree:  template.HTML(directoryTree(tree.Create(profiles))),
-</span></li><li><span class="cov1">                Files: make([]File, 0, len(profiles)),
+</span></li><li><span class="cov1">        data := templateData{
+</span></li><li><span class="cov1">                Tree:  template.HTML(directoryTree(profiles)),
+</span></li><li><span class="cov1">                Files: make([]templateFile, 0, len(profiles)),
 </span></li><li><span class="cov1">        }
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
@@ -111,7 +112,7 @@
 </li><li>                <span class="cov1">var buf bytes.Buffer
 </span></li><li><span class="cov1">                writeSource(&amp;buf, b, &amp;p)
 </span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                data.Files = append(data.Files, File{
+</span></li><li><span class="cov1">                data.Files = append(data.Files, templateFile{
 </span></li><li><span class="cov1">                        ID:       p.ID,
 </span></li><li><span class="cov1">                        Name:     p.FileName,
 </span></li><li><span class="cov1">                        Body:     template.HTML(buf.String()),
@@ -122,7 +123,8 @@
 </li><li>        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
 </li><li>}
 </li><li>
-</li><li>func directoryTree(nodes []tree.Node) string <span class="cov1">{
+</li><li>func directoryTree(profiles []profile.Profile) string <span class="cov1">{
+</span></li><li><span class="cov1">        nodes := tree.Create(profiles)
 </span></li><li><span class="cov1">        var buf bytes.Buffer
 </span></li><li><span class="cov1">        writeDirectoryTree(&amp;buf, nodes, 0)
 </span></li><li><span class="cov1">        s := buf.String()
@@ -195,20 +197,9 @@
 </li><li>                }
 </li><li>
 </li><li>                <span class="cov1">b := src[si]
-</span></li><li><span class="cov1">                switch b </span>{
-</li><li>                case '&lt;':<span class="cov1">
-</span></li><li><span class="cov1">                        buf.WriteString("&amp;lt;")</span>
-</li><li>                case '&gt;':<span class="cov0">
-</span></li><li><span class="cov0">                        buf.WriteString("&amp;gt;")</span>
-</li><li>                case '&amp;':<span class="cov0">
-</span></li><li><span class="cov0">                        buf.WriteString("&amp;amp;")</span>
-</li><li>                case '\t':<span class="cov1">
-</span></li><li><span class="cov1">                        buf.WriteString("        ")</span>
-</li><li>                default:<span class="cov1">
-</span></li><li><span class="cov1">                        buf.WriteByte(b)</span>
-</li><li>                }
-</li><li>
-</li><li>                <span class="cov1">if b == '\n' </span><span class="cov1">{
+</span></li><li><span class="cov1">                buf.WriteString(escape(b))
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                if b == '\n' </span><span class="cov1">{
 </span></li><li><span class="cov1">                        if cov0 || cov1 </span><span class="cov1">{
 </span></li><li><span class="cov1">                                buf.WriteString("&lt;/span&gt;")
 </span></li><li><span class="cov1">                        }</span>
@@ -223,6 +214,19 @@
 </li><li>
 </li><li>        <span class="cov1">buf.WriteString("&lt;/ol&gt;")</span>
 </li><li>}
+</li><li>
+</li><li>func escape(b byte) string <span class="cov1">{
+</span></li><li><span class="cov1">        chars := map[byte]string{
+</span></li><li><span class="cov1">                '&lt;':  "&amp;lt;",
+</span></li><li><span class="cov1">                '&gt;':  "&amp;gt;",
+</span></li><li><span class="cov1">                '&amp;':  "&amp;amp;",
+</span></li><li><span class="cov1">                '\t': "        ",
+</span></li><li><span class="cov1">        }
+</span></li><li><span class="cov1">        if s, ok := chars[b]; ok </span><span class="cov1">{
+</span></li><li><span class="cov1">                return s
+</span></li><li><span class="cov1">        }</span>
+</li><li>        <span class="cov1">return string(b)</span>
+</li><li>}
 </li></ol></pre>
 				</div>
 				
@@ -236,12 +240,14 @@
 </li><li>        "github.com/masakurapa/go-cover/internal/profile"
 </li><li>)
 </li><li>
+</li><li>// Node is single node of directory tree
 </li><li>type Node struct {
 </li><li>        Name  string
 </li><li>        Files []profile.Profile
 </li><li>        Dirs  []Node
 </li><li>}
 </li><li>
+</li><li>// Create returns directory tree
 </li><li>func Create(profiles []profile.Profile) []Node <span class="cov1">{
 </span></li><li><span class="cov1">        nodes := make([]Node, 0)
 </span></li><li><span class="cov1">        for _, p := range profiles </span><span class="cov1">{

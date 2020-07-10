@@ -12,22 +12,23 @@ import (
 	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-type TemplateData struct {
+type templateData struct {
 	Tree  template.HTML
-	Files []File
+	Files []templateFile
 }
 
-type File struct {
+type templateFile struct {
 	ID       int
 	Name     string
 	Body     template.HTML
 	Coverage float64
 }
 
+// WriteTreeView outputs coverage as a tree view HTML file
 func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
-	data := TemplateData{
-		Tree:  template.HTML(directoryTree(tree.Create(profiles))),
-		Files: make([]File, 0, len(profiles)),
+	data := templateData{
+		Tree:  template.HTML(directoryTree(profiles)),
+		Files: make([]templateFile, 0, len(profiles)),
 	}
 
 	for _, p := range profiles {
@@ -39,7 +40,7 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 		var buf bytes.Buffer
 		writeSource(&buf, b, &p)
 
-		data.Files = append(data.Files, File{
+		data.Files = append(data.Files, templateFile{
 			ID:       p.ID,
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
@@ -50,7 +51,8 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 	return parsedTreeTemplate.Execute(out, data)
 }
 
-func directoryTree(nodes []tree.Node) string {
+func directoryTree(profiles []profile.Profile) string {
+	nodes := tree.Create(profiles)
 	var buf bytes.Buffer
 	writeDirectoryTree(&buf, nodes, 0)
 	s := buf.String()
@@ -123,18 +125,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 		}
 
 		b := src[si]
-		switch b {
-		case '<':
-			buf.WriteString("&lt;")
-		case '>':
-			buf.WriteString("&gt;")
-		case '&':
-			buf.WriteString("&amp;")
-		case '\t':
-			buf.WriteString("        ")
-		default:
-			buf.WriteByte(b)
-		}
+		buf.WriteString(escape(b))
 
 		if b == '\n' {
 			if cov0 || cov1 {
@@ -150,4 +141,17 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 	}
 
 	buf.WriteString("</ol>")
+}
+
+func escape(b byte) string {
+	chars := map[byte]string{
+		'<':  "&lt;",
+		'>':  "&gt;",
+		'&':  "&amp;",
+		'\t': "        ",
+	}
+	if s, ok := chars[b]; ok {
+		return s
+	}
+	return string(b)
 }

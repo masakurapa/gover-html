@@ -1,80 +1,56 @@
 package profile
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"os/exec"
+	"math"
 	"path"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
-type Profiles []Profile
-
+// Profile is profiling data for each file
 type Profile struct {
 	ID       int
+	Dir      string
 	FileName string
-	Mode     string
-	Blocks   Blocks
+	Blocks   []Block
 }
 
-func (profs *Profiles) ToTree() Tree {
-	tree := make(Tree, 0)
-	for _, p := range *profs {
-		tree.add(strings.Split(p.FileName, "/"), &p)
+// Block is single block of profiling data
+type Block struct {
+	StartLine int
+	StartCol  int
+	EndLine   int
+	EndCol    int
+	NumState  int
+	Count     int
+}
+
+// Coverage returns covered ratio for file
+func (prof *Profile) Coverage() float64 {
+	var total, covered int64
+	for _, b := range prof.Blocks {
+		total += int64(b.NumState)
+		if b.Count > 0 {
+			covered += int64(b.NumState)
+		}
 	}
 
-	tree.mergeSingreDir()
-	return tree
+	if total == 0 {
+		return 0
+	}
+
+	return math.Round((float64(covered)/float64(total)*100)*10) / 10
 }
 
+// IsRelativeOrAbsolute returns true if FileName is relative path or absolute path
 func (prof *Profile) IsRelativeOrAbsolute() bool {
 	return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
 }
 
-func (profs *Profiles) ToPackages() (Packages, error) {
-	pkgs := make(Packages)
-	dirs := make([]string, 0, len(*profs))
-	for _, prof := range *profs {
-		if prof.IsRelativeOrAbsolute() {
-			continue
-		}
-
-		dir := path.Dir(prof.FileName)
-		if _, ok := pkgs[dir]; !ok {
-			pkgs[dir] = nil
-			dirs = append(dirs, dir)
-		}
+// FilePath returns readable file path
+func (prof *Profile) FilePath() string {
+	if prof.IsRelativeOrAbsolute() {
+		return prof.FileName
 	}
-
-	if len(dirs) == 0 {
-		return pkgs, nil
-	}
-
-	cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-	args := append([]string{"list", "-e", "-json"}, dirs...)
-	cmd := exec.Command(cmdName, args...)
-
-	stdout, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(stdout))
-	for {
-		var pkg Package
-		err := dec.Decode(&pkg)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("decoding go list json: %v", err)
-		}
-		pkgs[pkg.ImportPath] = &pkg
-	}
-
-	return pkgs, nil
+	return filepath.Join(prof.Dir, path.Base(prof.FileName))
 }

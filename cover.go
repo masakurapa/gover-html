@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
 
 	"github.com/masakurapa/go-cover/internal/html"
 	"github.com/masakurapa/go-cover/internal/profile"
-	"github.com/masakurapa/go-cover/internal/reader"
 )
 
 var (
@@ -25,8 +23,7 @@ func main() {
 	}
 	defer f.Close()
 
-	buf := bufio.NewReader(f)
-	profiles, err := profile.Scan(bufio.NewScanner(buf))
+	profiles, err := profile.Read(f)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +35,7 @@ func main() {
 	}
 	defer out.Close()
 
-	if err = html.WriteTreeView(reader.New(), out, profiles, profiles.ToTree()); err != nil {
+	if err = html.WriteTreeView(out, profiles); err != nil {
 		panic(err)
 	}
 }

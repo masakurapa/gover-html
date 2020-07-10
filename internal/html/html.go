@@ -5,19 +5,11 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"path/filepath"
-	"sync"
 
+	"github.com/masakurapa/go-cover/internal/html/tree"
 	"github.com/masakurapa/go-cover/internal/profile"
-	"github.com/masakurapa/go-cover/internal/reader"
-)
-
-var (
-	writePool = sync.Pool{
-		New: func() interface{} {
-			return &bytes.Buffer{}
-		},
-	}
 )
 
 type TemplateData struct {
@@ -32,65 +24,50 @@ type File struct {
 	Coverage float64
 }
 
-func WriteTreeView(
-	reader reader.Reader,
-	out io.Writer,
-	profiles profile.Profiles,
-	tree profile.Tree,
-) error {
+func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 	data := TemplateData{
-		Tree:  template.HTML(directoryTree(tree)),
+		Tree:  template.HTML(directoryTree(tree.Create(profiles))),
 		Files: make([]File, 0, len(profiles)),
 	}
 
-	pkgs, err := profiles.ToPackages()
-	if err != nil {
-		return err
-	}
-
 	for _, p := range profiles {
-		b, err := reader.Read(pkgs, &p)
+		b, err := ioutil.ReadFile(p.FilePath())
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
 
-		buf := writePool.Get().(*bytes.Buffer)
-		writeSource(buf, b, &p)
+		var buf bytes.Buffer
+		writeSource(&buf, b, &p)
 
 		data.Files = append(data.Files, File{
 			ID:       p.ID,
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
-			Coverage: p.Blocks.Coverage(),
+			Coverage: p.Coverage(),
 		})
-
-		buf.Reset()
-		writePool.Put(buf)
 	}
 
 	return parsedTreeTemplate.Execute(out, data)
 }
 
-func directoryTree(tree profile.Tree) string {
-	buf := writePool.Get().(*bytes.Buffer)
-	writeDirectoryTree(buf, tree, 0)
+func directoryTree(nodes []tree.Node) string {
+	var buf bytes.Buffer
+	writeDirectoryTree(&buf, nodes, 0)
 	s := buf.String()
-	buf.Reset()
-	writePool.Put(buf)
 	return s
 }
 
-func writeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
-	for _, t := range tree {
+func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
+	for _, node := range nodes {
 		buf.WriteString(fmt.Sprintf(
 			`<div style="padding-inline-start: %dpx">%s</div>`,
 			indent*30,
-			t.Name,
+			node.Name,
 		))
 
-		writeDirectoryTree(buf, t.SubDirs, indent+1)
+		writeDirectoryTree(buf, node.Dirs, indent+1)
 
-		for _, p := range t.Profiles {
+		for _, p := range node.Files {
 			_, f := filepath.Split(p.FileName)
 			buf.WriteString(fmt.Sprintf(
 				`<div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);">%s (%.1f%%)</div>`,
@@ -98,7 +75,7 @@ func writeDirectoryTree(buf *bytes.Buffer, tree profile.Tree, indent int) {
 				p.ID,
 				p.ID,
 				f,
-				p.Blocks.Coverage(),
+				p.Coverage(),
 			))
 		}
 	}

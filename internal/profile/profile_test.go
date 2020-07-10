@@ -1,49 +1,155 @@
 package profile_test
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-func TestProfiles_ToTree(t *testing.T) {
-	prof := profile.Profiles{
-		profile.Profile{FileName: "path/to/dir1/file0.go"},
-		profile.Profile{FileName: "path/to/dir1/file1.go"},
-		profile.Profile{FileName: "path/to/dir2/file1.go"},
-		profile.Profile{FileName: "path/to/dir3/sub/file1.go"},
+func TestProfile_Coverage(t *testing.T) {
+	type fields struct {
+		ID       int
+		FileName string
+		Blocks   []profile.Block
 	}
-
 	tests := []struct {
-		name string
-		prof profile.Profiles
-		want profile.Tree
+		name   string
+		fields fields
+		want   float64
 	}{
 		{
-			name: "ファイルが無いディレクトリはマージされ、ディレクトリごとに階層化されたスライスが返却される",
-			prof: prof,
-			want: profile.Tree{
-				{Name: "path/to", Profiles: profile.Profiles{}, SubDirs: profile.Tree{
-					{Name: "dir1", Profiles: profile.Profiles{
-						profile.Profile{FileName: "path/to/dir1/file0.go"},
-						profile.Profile{FileName: "path/to/dir1/file1.go"},
-					}, SubDirs: profile.Tree{}},
-					{Name: "dir2", Profiles: profile.Profiles{
-						profile.Profile{FileName: "path/to/dir2/file1.go"},
-					}, SubDirs: profile.Tree{}},
-					{Name: "dir3/sub", Profiles: profile.Profiles{
-						profile.Profile{FileName: "path/to/dir3/sub/file1.go"},
-					}, SubDirs: profile.Tree{}},
-				}},
+			name: "全ブロックのカウントが1以上の場合、100を返す",
+			fields: fields{
+				Blocks: []profile.Block{
+					{NumState: 41, Count: 1},
+					{NumState: 42, Count: 2},
+				},
 			},
+			want: 100,
+		},
+		{
+			name: "カウントが0のブロックが存在する場合、小数点第二位を四捨五入した値を返す",
+			fields: fields{
+				Blocks: []profile.Block{
+					{NumState: 41, Count: 1},
+					{NumState: 42, Count: 0},
+				},
+			},
+			want: 49.4, // 41 / (41 + 42) * 100 = 49.39759036144578
+		},
+		{
+			name: "全ブロックのカウントが0の場合、0を返す",
+			fields: fields{
+				Blocks: []profile.Block{
+					{NumState: 41, Count: 0},
+					{NumState: 42, Count: 0},
+				},
+			},
+			want: 0,
+		},
+		{
+			name:   "ブロックが空の場合、0を返す",
+			fields: fields{Blocks: []profile.Block{}},
+			want:   0,
+		},
+		{
+			name:   "ブロックがnilの場合、0を返す",
+			fields: fields{Blocks: nil},
+			want:   0,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.prof.ToTree(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Profiles.ToTree() = %#v, want %#v", got, tt.want)
+			prof := &profile.Profile{
+				ID:       tt.fields.ID,
+				FileName: tt.fields.FileName,
+				Blocks:   tt.fields.Blocks,
+			}
+			if got := prof.Coverage(); got != tt.want {
+				t.Errorf("Profile.Coverage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProfile_IsRelativeOrAbsolute(t *testing.T) {
+	type fields struct {
+		ID       int
+		FileName string
+		Blocks   []profile.Block
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name:   "ファイル名の先頭がドットの場合、trueを返す",
+			fields: fields{FileName: "./path/to/file.go"},
+			want:   true,
+		},
+		{
+			name:   "ファイル名が絶対パスの場合、trueを返す",
+			fields: fields{FileName: "/path/to/file.go"},
+			want:   true,
+		},
+		{
+			name:   "ファイル名がドット始まり、絶対パス以外の場合、falseを返す",
+			fields: fields{FileName: "github.com/path/to/package"},
+			want:   false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			prof := &profile.Profile{
+				ID:       tt.fields.ID,
+				FileName: tt.fields.FileName,
+				Blocks:   tt.fields.Blocks,
+			}
+			if got := prof.IsRelativeOrAbsolute(); got != tt.want {
+				t.Errorf("Profile.IsRelativeOrAbsolute() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProfile_FilePath(t *testing.T) {
+	type fields struct {
+		Dir      string
+		FileName string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name:   "FileNameが相対パスの場合、FileNameと同じ値を返す",
+			fields: fields{Dir: "/path/to/dir", FileName: "./path/to/file.go"},
+			want:   "./path/to/file.go",
+		},
+		{
+			name:   "FileNameが絶対パスの場合、FileNameと同じ値を返す",
+			fields: fields{Dir: "/path/to/dir", FileName: "/path/to/file.go"},
+			want:   "/path/to/file.go",
+		},
+		{
+			name:   "FileNameが相対パス、絶対パスの以外の場合、Dir+ファイル名を連結した値を返す",
+			fields: fields{Dir: "/path/to/dir", FileName: "path/to/file.go"},
+			want:   "/path/to/dir/file.go",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			prof := &profile.Profile{
+				Dir:      tt.fields.Dir,
+				FileName: tt.fields.FileName,
+			}
+			if got := prof.FilePath(); got != tt.want {
+				t.Errorf("Profile.FilePath() = %v, want %v", got, tt.want)
 			}
 		})
 	}

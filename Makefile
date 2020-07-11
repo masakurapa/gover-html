@@ -3,3 +3,6 @@ build:
 
 cover:
 	go test -coverprofile=coverage.out ./internal/...
+
+bench:
+	go test -bench=. ./internal/... -benchmem

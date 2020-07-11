@@ -1,0 +1,70 @@
+name: github pages
+
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v1
+        with:
+          version: v1.28
+
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    outputs:
+      profile: coverage.out
+    steps:
+      - name: Set up Go 1.14.4
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14.4
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Test
+        run: make cover
+      - name: Upload math result for test
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverprofile
+          path: coverage.out
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+    needs:
+      - lint
+      - test
+    steps:
+      - name: Set up Go 1.14.4
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14.4
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Download math result for test
+        uses: actions/download-artifact@v1
+        with:
+          name: coverprofile
+      - name: Coverage
+        run: |
+          mkdir public
+          make
+          go-cover -o ./public/index.html
+          go tool cover -html=coverage.out -o ./public/coverage.html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public

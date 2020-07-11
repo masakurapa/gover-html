@@ -61,7 +61,7 @@ jobs:
         run: |
           mkdir public
           make
-          go-cover -o ./public/index.html
+          ./go-cover -o ./public/index.html
           go tool cover -html=coverage.out -o ./public/coverage.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

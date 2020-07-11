@@ -1,34 +1,71 @@
 name: github pages
 
-on:
-  push:
-    branches:
-      - master
-
 jobs:
-  deploy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.14.3
         uses: actions/setup-go@v2
         with:
           go-version: 1.14.3
-
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 0
+      - name: go lint
+        run: go test -coverprofile=coverage.out ./internal/...
 
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    outputs:
+      profile: coverage.out
+    steps:
+      - name: Set up Go 1.14.3
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14.3
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: Test
+        id: test
+        run: go test -coverprofile=coverage.out ./internal/...
+      - name: Upload math result for job 1
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverprofile
+          path: coverage.out
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+    needs:
+      - lint
+      - test
+    steps:
+      - name: Set up Go 1.14.3
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14.3
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v1
+        with:
+          name: coverprofile
       - name: Coverage
         run: |
           mkdir public
-          go test -coverprofile=coverage.out ./internal/...
-          go tool cover -html=coverage.out -o coverage.html
-          mv coverage.html ./public/coverage.html
-          go run cover.go
-          mv coverage.html ./public/index.html
-
+          go tool cover -html=coverage.out -o ./public/coverage.html
+          go run cover.go -o ./public/index.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

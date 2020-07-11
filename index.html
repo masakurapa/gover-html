@@ -3,20 +3,23 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<style>
+			body {
+				margin: 0;
+			}
 			.main {
 				height: 100%;
 				width: 100%;
 				display: flex;
-				padding: 8px;
 			}
 			.tree {
 				width: 25%;
 				height: 95vh;
+				padding-top: 8px;
 				white-space: nowrap;
 				overflow: scroll;
 			}
 			.tree div {
-				padding: 3px 0;
+				padding: 4px 0;
 			}
 			.file {
 				cursor: pointer;
@@ -27,16 +30,17 @@
 			}
 			.content {
 				width: 70%;
-				margin-left: 32px;
+				margin-left: 16px;
 				margin-right: 32px;
+				border-left: 1px solid #000000;
 			}
 			.source {
 				white-space: nowrap;
 				overflow-x: scroll;
+				height: 95vh;
 			}
 			pre {
 				counter-reset: line;
-				height: 90vh;
 				font-family: Menlo, monospace;
 				font-weight: bold;
 				color: rgb(80, 80, 80);
@@ -66,7 +70,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal/</div><div style="padding-inline-start: 30px">html/</div><div style="padding-inline-start: 60px">tree/</div><div class="file" style="padding-inline-start: 90px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile/</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 30px" id="tree1" onclick="change(1);">cover.go (91.0%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 8px">github.com/masakurapa/go-cover/internal/</div><div style="padding-inline-start: 38px">html/</div><div style="padding-inline-start: 68px">tree/</div><div class="file" style="padding-inline-start: 98px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 68px" id="tree2" onclick="change(2);">html.go (96.9%)</div><div style="padding-inline-start: 38px">profile/</div><div class="file" style="padding-inline-start: 68px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 38px" id="tree1" onclick="change(1);">cover.go (91.0%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file1" class="source" style="display: none">
@@ -341,10 +345,14 @@
 </span></li><li><span class="cov1">}</span>
 </li><li>
 </li><li>func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) <span class="cov1">{
-</span></li><li><span class="cov1">        for _, node := range nodes </span><span class="cov1">{
+</span></li><li><span class="cov1">        indentSize := func(i int) int </span><span class="cov1">{
+</span></li><li><span class="cov1">                return i*30 + 8
+</span></li><li><span class="cov1">        }</span>
+</li><li>
+</li><li>        <span class="cov1">for _, node := range nodes </span><span class="cov1">{
 </span></li><li><span class="cov1">                buf.WriteString(fmt.Sprintf(
 </span></li><li><span class="cov1">                        `&lt;div style="padding-inline-start: %dpx"&gt;%s/&lt;/div&gt;`,
-</span></li><li><span class="cov1">                        indent*30,
+</span></li><li><span class="cov1">                        indentSize(indent),
 </span></li><li><span class="cov1">                        node.Name,
 </span></li><li><span class="cov1">                ))
 </span></li><li><span class="cov1">
@@ -353,7 +361,7 @@
 </span></li><li><span class="cov1">                for _, p := range node.Files </span><span class="cov1">{
 </span></li><li><span class="cov1">                        buf.WriteString(fmt.Sprintf(
 </span></li><li><span class="cov1">                                `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
-</span></li><li><span class="cov1">                                (indent+1)*30,
+</span></li><li><span class="cov1">                                indentSize(indent+1),
 </span></li><li><span class="cov1">                                p.ID,
 </span></li><li><span class="cov1">                                p.ID,
 </span></li><li><span class="cov1">                                path.Base(p.FileName),

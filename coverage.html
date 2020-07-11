@@ -56,7 +56,7 @@
 				
 				<option value="file0">github.com/masakurapa/go-cover/internal/cover.go (91.0%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (96.8%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (96.9%)</option>
 				
 				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
 				
@@ -343,10 +343,14 @@ func directoryTree(profiles []profile.Profile) string <span class="cov8" title="
 }</span>
 
 func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) <span class="cov8" title="1">{
-        for _, node := range nodes </span><span class="cov8" title="1">{
+        indentSize := func(i int) int </span><span class="cov8" title="1">{
+                return i*30 + 8
+        }</span>
+
+        <span class="cov8" title="1">for _, node := range nodes </span><span class="cov8" title="1">{
                 buf.WriteString(fmt.Sprintf(
                         `&lt;div style="padding-inline-start: %dpx"&gt;%s/&lt;/div&gt;`,
-                        indent*30,
+                        indentSize(indent),
                         node.Name,
                 ))
 
@@ -355,7 +359,7 @@ func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) <span 
                 for _, p := range node.Files </span><span class="cov8" title="1">{
                         buf.WriteString(fmt.Sprintf(
                                 `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
-                                (indent+1)*30,
+                                indentSize(indent+1),
                                 p.ID,
                                 p.ID,
                                 path.Base(p.FileName),

@@ -9,20 +9,23 @@ const treeTemplate = `<!DOCTYPE html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<style>
+			body {
+				margin: 0;
+			}
 			.main {
 				height: 100%;
 				width: 100%;
 				display: flex;
-				padding: 8px;
 			}
 			.tree {
 				width: 25%;
 				height: 95vh;
+				padding-top: 8px;
 				white-space: nowrap;
 				overflow: scroll;
 			}
 			.tree div {
-				padding: 3px 0;
+				padding: 4px 0;
 			}
 			.file {
 				cursor: pointer;
@@ -33,16 +36,17 @@ const treeTemplate = `<!DOCTYPE html>
 			}
 			.content {
 				width: 70%;
-				margin-left: 32px;
+				margin-left: 16px;
 				margin-right: 32px;
+				border-left: 1px solid #000000;
 			}
 			.source {
 				white-space: nowrap;
 				overflow-x: scroll;
+				height: 95vh;
 			}
 			pre {
 				counter-reset: line;
-				height: 90vh;
 				font-family: Menlo, monospace;
 				font-weight: bold;
 				color: rgb(80, 80, 80);

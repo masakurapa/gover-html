@@ -69,10 +69,14 @@ func directoryTree(profiles []profile.Profile) string {
 }
 
 func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
+	indentSize := func(i int) int {
+		return i*30 + 8
+	}
+
 	for _, node := range nodes {
 		buf.WriteString(fmt.Sprintf(
 			`<div style="padding-inline-start: %dpx">%s/</div>`,
-			indent*30,
+			indentSize(indent),
 			node.Name,
 		))
 
@@ -81,7 +85,7 @@ func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
 		for _, p := range node.Files {
 			buf.WriteString(fmt.Sprintf(
 				`<div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);">%s (%.1f%%)</div>`,
-				(indent+1)*30,
+				indentSize(indent+1),
 				p.ID,
 				p.ID,
 				path.Base(p.FileName),

@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: make cover
       - name: Upload math result for test
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: coverprofile
           path: coverage.out
@@ -54,9 +54,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Download math result for test
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v2
         with:
           name: coverprofile
+          path: coverage.out
       - name: Coverage
         run: |
           mkdir public

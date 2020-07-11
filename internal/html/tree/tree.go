@@ -30,11 +30,7 @@ func addNode(nodes *[]Node, paths []string, p *profile.Profile) {
 
 	idx := index(*nodes, name)
 	if idx == -1 {
-		*nodes = append(*nodes, Node{
-			Name:  name,
-			Files: make([]profile.Profile, 0),
-			Dirs:  make([]Node, 0),
-		})
+		*nodes = append(*nodes, Node{Name: name})
 		idx = len(*nodes) - 1
 	}
 
@@ -56,17 +52,32 @@ func index(nodes []Node, name string) int {
 	return -1
 }
 
+// merge directories with no files and only one child directory
+//
+// path/
+//   to/
+//     file.go
+//
+// to
+//
+// path/to/
+//   file.go
+//
 func mergeSingreDir(nodes []Node) []Node {
-	for i, t := range nodes {
-		mergeSingreDir(t.Dirs)
-
-		if len(t.Files) == 0 && len(t.Dirs) == 1 {
-			sub := t.Dirs[0]
-			nodes[i].Name = filepath.Join(t.Name, sub.Name)
-			nodes[i].Files = sub.Files
-			nodes[i].Dirs = sub.Dirs
+	for i, n := range nodes {
+		if len(n.Dirs) == 0 {
+			continue
 		}
-	}
 
+		mergeSingreDir(n.Dirs)
+		if len(n.Files) > 0 || len(n.Dirs) != 1 {
+			continue
+		}
+
+		sub := n.Dirs[0]
+		nodes[i].Name = filepath.Join(n.Name, sub.Name)
+		nodes[i].Files = sub.Files
+		nodes[i].Dirs = sub.Dirs
+	}
 	return nodes
 }

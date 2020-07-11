@@ -76,7 +76,7 @@ func toInt(s string) int {
 }
 
 func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) {
-	dirs, err := importPath(files)
+	dirs, err := makeImportDirMap(files)
 	if err != nil {
 		return nil, err
 	}
@@ -129,33 +129,15 @@ func filterBlocks(blocks []profile.Block) []profile.Block {
 	return newBlocks
 }
 
-func importPath(files map[string]*profile.Profile) (map[string]string, error) {
-	dirs := make([]string, 0, len(files))
-	pkgs := make(map[string]string)
-
-	for _, p := range files {
-		if p.IsRelativeOrAbsolute() {
-			continue
-		}
-
-		dir := path.Dir(p.FileName)
-		if _, ok := pkgs[dir]; !ok {
-			pkgs[dir] = ""
-			dirs = append(dirs, dir)
-		}
-	}
-
-	if len(dirs) == 0 {
-		return pkgs, nil
-	}
-
-	cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-	args := append([]string{"list", "-e", "-json"}, dirs...)
-	cmd := exec.Command(cmdName, args...)
-
-	stdout, err := cmd.Output()
+func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) {
+	stdout, err := execGoList(files)
 	if err != nil {
 		return nil, err
+	}
+
+	pkgs := make(map[string]string)
+	if len(stdout) == 0 {
+		return pkgs, nil
 	}
 
 	type pkg struct {
@@ -179,8 +161,36 @@ func importPath(files map[string]*profile.Profile) (map[string]string, error) {
 		if p.Error != nil {
 			return nil, fmt.Errorf(p.Error.Err)
 		}
+		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
 		pkgs[p.ImportPath] = p.Dir
 	}
 
 	return pkgs, nil
+}
+
+// execute "go list" command
+func execGoList(files map[string]*profile.Profile) ([]byte, error) {
+	dirs := make([]string, 0, len(files))
+	m := make(map[string]struct{})
+
+	for _, p := range files {
+		if p.IsRelativeOrAbsolute() {
+			continue
+		}
+		dir := path.Dir(p.FileName)
+		if _, ok := m[dir]; !ok {
+			m[dir] = struct{}{}
+			dirs = append(dirs, dir)
+		}
+	}
+
+	if len(dirs) == 0 {
+		return make([]byte, 0), nil
+	}
+
+	cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+	args := append([]string{"list", "-e", "-json"}, dirs...)
+	cmd := exec.Command(cmdName, args...)
+
+	return cmd.Output()
 }

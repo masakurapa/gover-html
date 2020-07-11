@@ -28,17 +28,17 @@ func TestCreate(t *testing.T) {
 				},
 			},
 			want: []tree.Node{
-				{Name: "path/to", Files: []profile.Profile{}, Dirs: []tree.Node{
+				{Name: "path/to", Dirs: []tree.Node{
 					{Name: "dir1", Files: []profile.Profile{
 						{FileName: "path/to/dir1/file0.go"},
 						{FileName: "path/to/dir1/file1.go"},
-					}, Dirs: []tree.Node{}},
+					}},
 					{Name: "dir2", Files: []profile.Profile{
 						{FileName: "path/to/dir2/file1.go"},
-					}, Dirs: []tree.Node{}},
+					}},
 					{Name: "dir3/sub", Files: []profile.Profile{
 						{FileName: "path/to/dir3/sub/file1.go"},
-					}, Dirs: []tree.Node{}},
+					}},
 				}},
 			},
 		},

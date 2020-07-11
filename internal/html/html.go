@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
-	"path/filepath"
+	"path"
 
 	"github.com/masakurapa/go-cover/internal/html/tree"
 	"github.com/masakurapa/go-cover/internal/profile"
@@ -40,21 +40,21 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 		Files: make([]templateFile, 0, len(profiles)),
 	}
 
+	var buf bytes.Buffer
 	for _, p := range profiles {
 		b, err := ioutil.ReadFile(p.FilePath())
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}
 
-		var buf bytes.Buffer
 		writeSource(&buf, b, &p)
-
 		data.Files = append(data.Files, templateFile{
 			ID:       p.ID,
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
 			Coverage: p.Coverage(),
 		})
+		buf.Reset()
 	}
 
 	return parsedTreeTemplate.Execute(out, data)
@@ -71,7 +71,7 @@ func directoryTree(profiles []profile.Profile) string {
 func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
 	for _, node := range nodes {
 		buf.WriteString(fmt.Sprintf(
-			`<div style="padding-inline-start: %dpx">%s</div>`,
+			`<div style="padding-inline-start: %dpx">%s/</div>`,
 			indent*30,
 			node.Name,
 		))
@@ -79,13 +79,12 @@ func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
 		writeDirectoryTree(buf, node.Dirs, indent+1)
 
 		for _, p := range node.Files {
-			_, f := filepath.Split(p.FileName)
 			buf.WriteString(fmt.Sprintf(
 				`<div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);">%s (%.1f%%)</div>`,
 				(indent+1)*30,
 				p.ID,
 				p.ID,
-				f,
+				path.Base(p.FileName),
 				p.Coverage(),
 			))
 		}

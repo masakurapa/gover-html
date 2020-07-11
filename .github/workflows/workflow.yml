@@ -6,17 +6,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.14.3
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.14.3
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
-          submodules: true
           fetch-depth: 0
-      - name: go lint
-        run: go test -coverprofile=coverage.out ./internal/...
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v1
+        with:
+          version: v1.28
 
   test:
     runs-on: ubuntu-latest
@@ -25,19 +22,17 @@ jobs:
     outputs:
       profile: coverage.out
     steps:
-      - name: Set up Go 1.14.3
+      - name: Set up Go 1.14.4
         uses: actions/setup-go@v2
         with:
-          go-version: 1.14.3
+          go-version: 1.14.4
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
-          submodules: true
           fetch-depth: 0
       - name: Test
-        id: test
-        run: go test -coverprofile=coverage.out ./internal/...
-      - name: Upload math result for job 1
+        run: make cover
+      - name: Upload math result for test
         uses: actions/upload-artifact@v1
         with:
           name: coverprofile
@@ -50,24 +45,24 @@ jobs:
       - lint
       - test
     steps:
-      - name: Set up Go 1.14.3
+      - name: Set up Go 1.14.4
         uses: actions/setup-go@v2
         with:
-          go-version: 1.14.3
+          go-version: 1.14.4
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
         with:
-          submodules: true
           fetch-depth: 0
-      - name: Download math result for job 1
+      - name: Download math result for test
         uses: actions/download-artifact@v1
         with:
           name: coverprofile
       - name: Coverage
         run: |
           mkdir public
+          make
+          go-cover -o ./public/index.html
           go tool cover -html=coverage.out -o ./public/coverage.html
-          go run cover.go -o ./public/index.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

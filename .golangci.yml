@@ -1,0 +1,36 @@
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  goimports:
+    local-prefixes: github.com/masakurapa/go-cover
+  golint:
+    min-confidence: 0.8
+  govet:
+    check-shadowing: true
+    settings:
+      printf:
+        funcs:
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+
+linters:
+  disable-all: true
+  enable:
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+
+issues:
+  exclude-use-default: false
+  # exclude-rules:
+
+run:
+  skip-dirs:
+    - testdata

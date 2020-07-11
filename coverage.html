@@ -54,13 +54,13 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/html/html.go (96.8%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/cover.go (91.8%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (96.8%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/profile/scan.go (91.8%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -74,7 +74,195 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package html
+		<pre class="file" id="file0" style="display: none">package cover
+
+import (
+        "bufio"
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "os/exec"
+        "path"
+        "path/filepath"
+        "regexp"
+        "runtime"
+        "sort"
+        "strconv"
+        "strings"
+
+        "github.com/masakurapa/go-cover/internal/profile"
+)
+
+var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
+
+// ReadProfile is reads profiling data
+func ReadProfile(r io.Reader) ([]profile.Profile, error) <span class="cov8" title="1">{
+        files := make(map[string]*profile.Profile)
+        modeOk := false
+        id := 1
+
+        s := bufio.NewScanner(r)
+        for s.Scan() </span><span class="cov8" title="1">{
+                line := s.Text()
+
+                // first line must be "mode: xxx"
+                if !modeOk </span><span class="cov8" title="1">{
+                        const p = "mode: "
+                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov8" title="1">{
+                                return nil, fmt.Errorf("first line must be mode: %q", line)
+                        }</span>
+                        <span class="cov8" title="1">modeOk = true
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">matches := reg.FindStringSubmatch(line)
+                if matches == nil </span><span class="cov8" title="1">{
+                        return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
+                }</span>
+
+                <span class="cov8" title="1">fileName := matches[1]
+                p := files[fileName]
+
+                if p == nil </span><span class="cov8" title="1">{
+                        p = &amp;profile.Profile{ID: id, FileName: fileName}
+                        files[fileName] = p
+                        id++
+                }</span>
+
+                <span class="cov8" title="1">p.Blocks = append(p.Blocks, profile.Block{
+                        StartLine: toInt(matches[2]),
+                        StartCol:  toInt(matches[3]),
+                        EndLine:   toInt(matches[4]),
+                        EndCol:    toInt(matches[5]),
+                        NumState:  toInt(matches[6]),
+                        Count:     toInt(matches[7]),
+                })</span>
+        }
+
+        <span class="cov8" title="1">return toProfiles(files)</span>
+}
+
+func toInt(s string) int <span class="cov8" title="1">{
+        i, err := strconv.Atoi(s)
+        if err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov8" title="1">return i</span>
+}
+
+func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) <span class="cov8" title="1">{
+        dirs, err := importPath(files)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">profiles := make([]profile.Profile, 0, len(files))
+        for _, p := range files </span><span class="cov8" title="1">{
+                p.Blocks = filterBlocks(p.Blocks)
+                sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov8" title="1">{
+                        bi, bj := p.Blocks[i], p.Blocks[j]
+                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+                }</span>)
+
+                <span class="cov8" title="1">p.Dir = dirs[path.Dir(p.FileName)]
+
+                profiles = append(profiles, *p)</span>
+        }
+
+        <span class="cov8" title="1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov8" title="1">{
+                return profiles[i].FileName &lt; profiles[j].FileName
+        }</span>)
+
+        <span class="cov8" title="1">return profiles, nil</span>
+}
+
+func filterBlocks(blocks []profile.Block) []profile.Block <span class="cov8" title="1">{
+        index := func(bs []profile.Block, b *profile.Block) int </span><span class="cov8" title="1">{
+                for i, bb := range bs </span><span class="cov8" title="1">{
+                        if bb.StartLine == b.StartLine &amp;&amp;
+                                bb.StartCol == b.StartCol &amp;&amp;
+                                bb.EndLine == b.EndLine &amp;&amp;
+                                bb.EndCol == b.EndCol </span><span class="cov8" title="1">{
+                                return i
+                        }</span>
+                }
+                <span class="cov8" title="1">return -1</span>
+        }
+
+        <span class="cov8" title="1">newBlocks := make([]profile.Block, 0, len(blocks))
+        for _, b := range blocks </span><span class="cov8" title="1">{
+                i := index(newBlocks, &amp;b)
+                if i == -1 </span><span class="cov8" title="1">{
+                        newBlocks = append(newBlocks, b)
+                        continue</span>
+                }
+                <span class="cov8" title="1">if b.Count &gt; 0 </span><span class="cov8" title="1">{
+                        newBlocks[i] = b
+                }</span>
+        }
+
+        <span class="cov8" title="1">return newBlocks</span>
+}
+
+func importPath(files map[string]*profile.Profile) (map[string]string, error) <span class="cov8" title="1">{
+        dirs := make([]string, 0, len(files))
+        pkgs := make(map[string]string)
+
+        for _, p := range files </span><span class="cov8" title="1">{
+                if p.IsRelativeOrAbsolute() </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">dir := path.Dir(p.FileName)
+                if _, ok := pkgs[dir]; !ok </span><span class="cov8" title="1">{
+                        pkgs[dir] = ""
+                        dirs = append(dirs, dir)
+                }</span>
+        }
+
+        <span class="cov8" title="1">if len(dirs) == 0 </span><span class="cov0" title="0">{
+                return pkgs, nil
+        }</span>
+
+        <span class="cov8" title="1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+        args := append([]string{"list", "-e", "-json"}, dirs...)
+        cmd := exec.Command(cmdName, args...)
+
+        stdout, err := cmd.Output()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">type pkg struct {
+                Dir        string
+                ImportPath string
+                Error      *struct {
+                        Err string
+                }
+        }
+
+        dec := json.NewDecoder(bytes.NewReader(stdout))
+        for </span><span class="cov8" title="1">{
+                var p pkg
+                err := dec.Decode(&amp;p)
+                if err == io.EOF </span><span class="cov8" title="1">{
+                        break</span>
+                }
+                <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("decoding go list json: %v", err)
+                }</span>
+                <span class="cov8" title="1">if p.Error != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf(p.Error.Err)
+                }</span>
+                <span class="cov8" title="1">pkgs[p.ImportPath] = p.Dir</span>
+        }
+
+        <span class="cov8" title="1">return pkgs, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package html
 
 import (
         "bytes"
@@ -236,7 +424,7 @@ func escape(b byte) string <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package tree
+		<pre class="file" id="file2" style="display: none">package tree
 
 import (
         "path/filepath"
@@ -310,7 +498,7 @@ func mergeSingreDir(nodes []Node) []Node <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package profile
+		<pre class="file" id="file3" style="display: none">package profile
 
 import (
         "math"
@@ -365,192 +553,6 @@ func (prof *Profile) FilePath() string <span class="cov8" title="1">{
                 return prof.FileName
         }</span>
         <span class="cov8" title="1">return filepath.Join(prof.Dir, path.Base(prof.FileName))</span>
-}
-</pre>
-		
-		<pre class="file" id="file3" style="display: none">package profile
-
-import (
-        "bufio"
-        "bytes"
-        "encoding/json"
-        "fmt"
-        "io"
-        "os/exec"
-        "path"
-        "path/filepath"
-        "regexp"
-        "runtime"
-        "sort"
-        "strconv"
-        "strings"
-)
-
-var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
-
-// Read is reads profiling data
-func Read(r io.Reader) ([]Profile, error) <span class="cov8" title="1">{
-        files := make(map[string]*Profile)
-        modeOk := false
-        id := 1
-
-        s := bufio.NewScanner(r)
-        for s.Scan() </span><span class="cov8" title="1">{
-                line := s.Text()
-
-                // first line must be "mode: xxx"
-                if !modeOk </span><span class="cov8" title="1">{
-                        const p = "mode: "
-                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov8" title="1">{
-                                return nil, fmt.Errorf("first line must be mode: %q", line)
-                        }</span>
-                        <span class="cov8" title="1">modeOk = true
-                        continue</span>
-                }
-
-                <span class="cov8" title="1">m := reg.FindStringSubmatch(line)
-                if m == nil </span><span class="cov8" title="1">{
-                        return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
-                }</span>
-
-                <span class="cov8" title="1">fileName := m[1]
-                p := files[fileName]
-
-                if p == nil </span><span class="cov8" title="1">{
-                        p = &amp;Profile{ID: id, FileName: fileName}
-                        files[fileName] = p
-                        id++
-                }</span>
-
-                <span class="cov8" title="1">p.Blocks = append(p.Blocks, Block{
-                        StartLine: toInt(m[2]),
-                        StartCol:  toInt(m[3]),
-                        EndLine:   toInt(m[4]),
-                        EndCol:    toInt(m[5]),
-                        NumState:  toInt(m[6]),
-                        Count:     toInt(m[7]),
-                })</span>
-        }
-
-        <span class="cov8" title="1">return toProfiles(files)</span>
-}
-
-func toInt(s string) int <span class="cov8" title="1">{
-        i, err := strconv.Atoi(s)
-        if err != nil </span><span class="cov0" title="0">{
-                panic(err)</span>
-        }
-        <span class="cov8" title="1">return i</span>
-}
-
-func toProfiles(files map[string]*Profile) ([]Profile, error) <span class="cov8" title="1">{
-        dirs, err := importPath(files)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov8" title="1">profiles := make([]Profile, 0, len(files))
-        for _, p := range files </span><span class="cov8" title="1">{
-                p.Blocks = filterBlocks(p.Blocks)
-                sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov8" title="1">{
-                        bi, bj := p.Blocks[i], p.Blocks[j]
-                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-                }</span>)
-
-                <span class="cov8" title="1">p.Dir = dirs[path.Dir(p.FileName)]
-
-                profiles = append(profiles, *p)</span>
-        }
-
-        <span class="cov8" title="1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov8" title="1">{
-                return profiles[i].FileName &lt; profiles[j].FileName
-        }</span>)
-
-        <span class="cov8" title="1">return profiles, nil</span>
-}
-
-func filterBlocks(blocks []Block) []Block <span class="cov8" title="1">{
-        index := func(bs []Block, b *Block) int </span><span class="cov8" title="1">{
-                for i, bb := range bs </span><span class="cov8" title="1">{
-                        if bb.StartLine == b.StartLine &amp;&amp;
-                                bb.StartCol == b.StartCol &amp;&amp;
-                                bb.EndLine == b.EndLine &amp;&amp;
-                                bb.EndCol == b.EndCol </span><span class="cov8" title="1">{
-                                return i
-                        }</span>
-                }
-                <span class="cov8" title="1">return -1</span>
-        }
-
-        <span class="cov8" title="1">newBlocks := make([]Block, 0, len(blocks))
-        for _, b := range blocks </span><span class="cov8" title="1">{
-                i := index(newBlocks, &amp;b)
-                if i == -1 </span><span class="cov8" title="1">{
-                        newBlocks = append(newBlocks, b)
-                        continue</span>
-                }
-                <span class="cov8" title="1">if b.Count &gt; 0 </span><span class="cov8" title="1">{
-                        newBlocks[i] = b
-                }</span>
-        }
-
-        <span class="cov8" title="1">return newBlocks</span>
-}
-
-func importPath(files map[string]*Profile) (map[string]string, error) <span class="cov8" title="1">{
-        dirs := make([]string, 0, len(files))
-        pkgs := make(map[string]string)
-
-        for _, p := range files </span><span class="cov8" title="1">{
-                if p.IsRelativeOrAbsolute() </span><span class="cov0" title="0">{
-                        continue</span>
-                }
-
-                <span class="cov8" title="1">dir := path.Dir(p.FileName)
-                if _, ok := pkgs[dir]; !ok </span><span class="cov8" title="1">{
-                        pkgs[dir] = ""
-                        dirs = append(dirs, dir)
-                }</span>
-        }
-
-        <span class="cov8" title="1">if len(dirs) == 0 </span><span class="cov0" title="0">{
-                return pkgs, nil
-        }</span>
-
-        <span class="cov8" title="1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-        args := append([]string{"list", "-e", "-json"}, dirs...)
-        cmd := exec.Command(cmdName, args...)
-
-        stdout, err := cmd.Output()
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov8" title="1">type pkg struct {
-                Dir        string
-                ImportPath string
-                Error      *struct {
-                        Err string
-                }
-        }
-
-        dec := json.NewDecoder(bytes.NewReader(stdout))
-        for </span><span class="cov8" title="1">{
-                var p pkg
-                err := dec.Decode(&amp;p)
-                if err == io.EOF </span><span class="cov8" title="1">{
-                        break</span>
-                }
-                <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
-                        return nil, fmt.Errorf("decoding go list json: %v", err)
-                }</span>
-                <span class="cov8" title="1">if p.Error != nil </span><span class="cov0" title="0">{
-                        return nil, fmt.Errorf(p.Error.Err)
-                }</span>
-                <span class="cov8" title="1">pkgs[p.ImportPath] = p.Dir</span>
-        }
-
-        <span class="cov8" title="1">return pkgs, nil</span>
 }
 </pre>
 		

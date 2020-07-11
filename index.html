@@ -66,10 +66,200 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div style="padding-inline-start: 60px">tree</div><div class="file" style="padding-inline-start: 90px" id="tree2" onclick="change(2);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree1" onclick="change(1);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree3" onclick="change(3);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">scan.go (91.8%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div style="padding-inline-start: 60px">tree</div><div class="file" style="padding-inline-start: 90px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 30px" id="tree1" onclick="change(1);">cover.go (91.8%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file1" class="source" style="display: none">
+					<pre><ol><li>package cover
+</li><li>
+</li><li>import (
+</li><li>        "bufio"
+</li><li>        "bytes"
+</li><li>        "encoding/json"
+</li><li>        "fmt"
+</li><li>        "io"
+</li><li>        "os/exec"
+</li><li>        "path"
+</li><li>        "path/filepath"
+</li><li>        "regexp"
+</li><li>        "runtime"
+</li><li>        "sort"
+</li><li>        "strconv"
+</li><li>        "strings"
+</li><li>
+</li><li>        "github.com/masakurapa/go-cover/internal/profile"
+</li><li>)
+</li><li>
+</li><li>var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
+</li><li>
+</li><li>// ReadProfile is reads profiling data
+</li><li>func ReadProfile(r io.Reader) ([]profile.Profile, error) <span class="cov1">{
+</span></li><li><span class="cov1">        files := make(map[string]*profile.Profile)
+</span></li><li><span class="cov1">        modeOk := false
+</span></li><li><span class="cov1">        id := 1
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        s := bufio.NewScanner(r)
+</span></li><li><span class="cov1">        for s.Scan() </span><span class="cov1">{
+</span></li><li><span class="cov1">                line := s.Text()
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                // first line must be "mode: xxx"
+</span></li><li><span class="cov1">                if !modeOk </span><span class="cov1">{
+</span></li><li><span class="cov1">                        const p = "mode: "
+</span></li><li><span class="cov1">                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov1">{
+</span></li><li><span class="cov1">                                return nil, fmt.Errorf("first line must be mode: %q", line)
+</span></li><li><span class="cov1">                        }</span>
+</li><li>                        <span class="cov1">modeOk = true
+</span></li><li><span class="cov1">                        continue</span>
+</li><li>                }
+</li><li>
+</li><li>                <span class="cov1">matches := reg.FindStringSubmatch(line)
+</span></li><li><span class="cov1">                if matches == nil </span><span class="cov1">{
+</span></li><li><span class="cov1">                        return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
+</span></li><li><span class="cov1">                }</span>
+</li><li>
+</li><li>                <span class="cov1">fileName := matches[1]
+</span></li><li><span class="cov1">                p := files[fileName]
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                if p == nil </span><span class="cov1">{
+</span></li><li><span class="cov1">                        p = &amp;profile.Profile{ID: id, FileName: fileName}
+</span></li><li><span class="cov1">                        files[fileName] = p
+</span></li><li><span class="cov1">                        id++
+</span></li><li><span class="cov1">                }</span>
+</li><li>
+</li><li>                <span class="cov1">p.Blocks = append(p.Blocks, profile.Block{
+</span></li><li><span class="cov1">                        StartLine: toInt(matches[2]),
+</span></li><li><span class="cov1">                        StartCol:  toInt(matches[3]),
+</span></li><li><span class="cov1">                        EndLine:   toInt(matches[4]),
+</span></li><li><span class="cov1">                        EndCol:    toInt(matches[5]),
+</span></li><li><span class="cov1">                        NumState:  toInt(matches[6]),
+</span></li><li><span class="cov1">                        Count:     toInt(matches[7]),
+</span></li><li><span class="cov1">                })</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">return toProfiles(files)</span>
+</li><li>}
+</li><li>
+</li><li>func toInt(s string) int <span class="cov1">{
+</span></li><li><span class="cov1">        i, err := strconv.Atoi(s)
+</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                panic(err)</span>
+</li><li>        }
+</li><li>        <span class="cov1">return i</span>
+</li><li>}
+</li><li>
+</li><li>func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) <span class="cov1">{
+</span></li><li><span class="cov1">        dirs, err := importPath(files)
+</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                return nil, err
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">profiles := make([]profile.Profile, 0, len(files))
+</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
+</span></li><li><span class="cov1">                p.Blocks = filterBlocks(p.Blocks)
+</span></li><li><span class="cov1">                sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov1">{
+</span></li><li><span class="cov1">                        bi, bj := p.Blocks[i], p.Blocks[j]
+</span></li><li><span class="cov1">                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
+</span></li><li><span class="cov1">                }</span>)
+</li><li>
+</li><li>                <span class="cov1">p.Dir = dirs[path.Dir(p.FileName)]
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">                profiles = append(profiles, *p)</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov1">{
+</span></li><li><span class="cov1">                return profiles[i].FileName &lt; profiles[j].FileName
+</span></li><li><span class="cov1">        }</span>)
+</li><li>
+</li><li>        <span class="cov1">return profiles, nil</span>
+</li><li>}
+</li><li>
+</li><li>func filterBlocks(blocks []profile.Block) []profile.Block <span class="cov1">{
+</span></li><li><span class="cov1">        index := func(bs []profile.Block, b *profile.Block) int </span><span class="cov1">{
+</span></li><li><span class="cov1">                for i, bb := range bs </span><span class="cov1">{
+</span></li><li><span class="cov1">                        if bb.StartLine == b.StartLine &amp;&amp;
+</span></li><li><span class="cov1">                                bb.StartCol == b.StartCol &amp;&amp;
+</span></li><li><span class="cov1">                                bb.EndLine == b.EndLine &amp;&amp;
+</span></li><li><span class="cov1">                                bb.EndCol == b.EndCol </span><span class="cov1">{
+</span></li><li><span class="cov1">                                return i
+</span></li><li><span class="cov1">                        }</span>
+</li><li>                }
+</li><li>                <span class="cov1">return -1</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">newBlocks := make([]profile.Block, 0, len(blocks))
+</span></li><li><span class="cov1">        for _, b := range blocks </span><span class="cov1">{
+</span></li><li><span class="cov1">                i := index(newBlocks, &amp;b)
+</span></li><li><span class="cov1">                if i == -1 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        newBlocks = append(newBlocks, b)
+</span></li><li><span class="cov1">                        continue</span>
+</li><li>                }
+</li><li>                <span class="cov1">if b.Count &gt; 0 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        newBlocks[i] = b
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">return newBlocks</span>
+</li><li>}
+</li><li>
+</li><li>func importPath(files map[string]*profile.Profile) (map[string]string, error) <span class="cov1">{
+</span></li><li><span class="cov1">        dirs := make([]string, 0, len(files))
+</span></li><li><span class="cov1">        pkgs := make(map[string]string)
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
+</span></li><li><span class="cov1">                if p.IsRelativeOrAbsolute() </span><span class="cov0">{
+</span></li><li><span class="cov0">                        continue</span>
+</li><li>                }
+</li><li>
+</li><li>                <span class="cov1">dir := path.Dir(p.FileName)
+</span></li><li><span class="cov1">                if _, ok := pkgs[dir]; !ok </span><span class="cov1">{
+</span></li><li><span class="cov1">                        pkgs[dir] = ""
+</span></li><li><span class="cov1">                        dirs = append(dirs, dir)
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
+</span></li><li><span class="cov0">                return pkgs, nil
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+</span></li><li><span class="cov1">        args := append([]string{"list", "-e", "-json"}, dirs...)
+</span></li><li><span class="cov1">        cmd := exec.Command(cmdName, args...)
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        stdout, err := cmd.Output()
+</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                return nil, err
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">type pkg struct {
+</span></li><li><span class="cov1">                Dir        string
+</span></li><li><span class="cov1">                ImportPath string
+</span></li><li><span class="cov1">                Error      *struct {
+</span></li><li><span class="cov1">                        Err string
+</span></li><li><span class="cov1">                }
+</span></li><li><span class="cov1">        }
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        dec := json.NewDecoder(bytes.NewReader(stdout))
+</span></li><li><span class="cov1">        for </span><span class="cov1">{
+</span></li><li><span class="cov1">                var p pkg
+</span></li><li><span class="cov1">                err := dec.Decode(&amp;p)
+</span></li><li><span class="cov1">                if err == io.EOF </span><span class="cov1">{
+</span></li><li><span class="cov1">                        break</span>
+</li><li>                }
+</li><li>                <span class="cov1">if err != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                        return nil, fmt.Errorf("decoding go list json: %v", err)
+</span></li><li><span class="cov0">                }</span>
+</li><li>                <span class="cov1">if p.Error != nil </span><span class="cov0">{
+</span></li><li><span class="cov0">                        return nil, fmt.Errorf(p.Error.Err)
+</span></li><li><span class="cov0">                }</span>
+</li><li>                <span class="cov1">pkgs[p.ImportPath] = p.Dir</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">return pkgs, nil</span>
+</li><li>}
+</li></ol></pre>
+				</div>
+				
+				<div id="file2" class="source" style="display: none">
 					<pre><ol><li>package html
 </li><li>
 </li><li>import (
@@ -233,7 +423,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file2" class="source" style="display: none">
+				<div id="file3" class="source" style="display: none">
 					<pre><ol><li>package tree
 </li><li>
 </li><li>import (
@@ -309,7 +499,7 @@
 </li></ol></pre>
 				</div>
 				
-				<div id="file3" class="source" style="display: none">
+				<div id="file4" class="source" style="display: none">
 					<pre><ol><li>package profile
 </li><li>
 </li><li>import (
@@ -365,194 +555,6 @@
 </span></li><li><span class="cov1">                return prof.FileName
 </span></li><li><span class="cov1">        }</span>
 </li><li>        <span class="cov1">return filepath.Join(prof.Dir, path.Base(prof.FileName))</span>
-</li><li>}
-</li></ol></pre>
-				</div>
-				
-				<div id="file4" class="source" style="display: none">
-					<pre><ol><li>package profile
-</li><li>
-</li><li>import (
-</li><li>        "bufio"
-</li><li>        "bytes"
-</li><li>        "encoding/json"
-</li><li>        "fmt"
-</li><li>        "io"
-</li><li>        "os/exec"
-</li><li>        "path"
-</li><li>        "path/filepath"
-</li><li>        "regexp"
-</li><li>        "runtime"
-</li><li>        "sort"
-</li><li>        "strconv"
-</li><li>        "strings"
-</li><li>)
-</li><li>
-</li><li>var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
-</li><li>
-</li><li>// Read is reads profiling data
-</li><li>func Read(r io.Reader) ([]Profile, error) <span class="cov1">{
-</span></li><li><span class="cov1">        files := make(map[string]*Profile)
-</span></li><li><span class="cov1">        modeOk := false
-</span></li><li><span class="cov1">        id := 1
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        s := bufio.NewScanner(r)
-</span></li><li><span class="cov1">        for s.Scan() </span><span class="cov1">{
-</span></li><li><span class="cov1">                line := s.Text()
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                // first line must be "mode: xxx"
-</span></li><li><span class="cov1">                if !modeOk </span><span class="cov1">{
-</span></li><li><span class="cov1">                        const p = "mode: "
-</span></li><li><span class="cov1">                        if !strings.HasPrefix(line, p) || line == p </span><span class="cov1">{
-</span></li><li><span class="cov1">                                return nil, fmt.Errorf("first line must be mode: %q", line)
-</span></li><li><span class="cov1">                        }</span>
-</li><li>                        <span class="cov1">modeOk = true
-</span></li><li><span class="cov1">                        continue</span>
-</li><li>                }
-</li><li>
-</li><li>                <span class="cov1">m := reg.FindStringSubmatch(line)
-</span></li><li><span class="cov1">                if m == nil </span><span class="cov1">{
-</span></li><li><span class="cov1">                        return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
-</span></li><li><span class="cov1">                }</span>
-</li><li>
-</li><li>                <span class="cov1">fileName := m[1]
-</span></li><li><span class="cov1">                p := files[fileName]
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                if p == nil </span><span class="cov1">{
-</span></li><li><span class="cov1">                        p = &amp;Profile{ID: id, FileName: fileName}
-</span></li><li><span class="cov1">                        files[fileName] = p
-</span></li><li><span class="cov1">                        id++
-</span></li><li><span class="cov1">                }</span>
-</li><li>
-</li><li>                <span class="cov1">p.Blocks = append(p.Blocks, Block{
-</span></li><li><span class="cov1">                        StartLine: toInt(m[2]),
-</span></li><li><span class="cov1">                        StartCol:  toInt(m[3]),
-</span></li><li><span class="cov1">                        EndLine:   toInt(m[4]),
-</span></li><li><span class="cov1">                        EndCol:    toInt(m[5]),
-</span></li><li><span class="cov1">                        NumState:  toInt(m[6]),
-</span></li><li><span class="cov1">                        Count:     toInt(m[7]),
-</span></li><li><span class="cov1">                })</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">return toProfiles(files)</span>
-</li><li>}
-</li><li>
-</li><li>func toInt(s string) int <span class="cov1">{
-</span></li><li><span class="cov1">        i, err := strconv.Atoi(s)
-</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                panic(err)</span>
-</li><li>        }
-</li><li>        <span class="cov1">return i</span>
-</li><li>}
-</li><li>
-</li><li>func toProfiles(files map[string]*Profile) ([]Profile, error) <span class="cov1">{
-</span></li><li><span class="cov1">        dirs, err := importPath(files)
-</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                return nil, err
-</span></li><li><span class="cov0">        }</span>
-</li><li>
-</li><li>        <span class="cov1">profiles := make([]Profile, 0, len(files))
-</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
-</span></li><li><span class="cov1">                p.Blocks = filterBlocks(p.Blocks)
-</span></li><li><span class="cov1">                sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov1">{
-</span></li><li><span class="cov1">                        bi, bj := p.Blocks[i], p.Blocks[j]
-</span></li><li><span class="cov1">                        return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
-</span></li><li><span class="cov1">                }</span>)
-</li><li>
-</li><li>                <span class="cov1">p.Dir = dirs[path.Dir(p.FileName)]
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                profiles = append(profiles, *p)</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov1">{
-</span></li><li><span class="cov1">                return profiles[i].FileName &lt; profiles[j].FileName
-</span></li><li><span class="cov1">        }</span>)
-</li><li>
-</li><li>        <span class="cov1">return profiles, nil</span>
-</li><li>}
-</li><li>
-</li><li>func filterBlocks(blocks []Block) []Block <span class="cov1">{
-</span></li><li><span class="cov1">        index := func(bs []Block, b *Block) int </span><span class="cov1">{
-</span></li><li><span class="cov1">                for i, bb := range bs </span><span class="cov1">{
-</span></li><li><span class="cov1">                        if bb.StartLine == b.StartLine &amp;&amp;
-</span></li><li><span class="cov1">                                bb.StartCol == b.StartCol &amp;&amp;
-</span></li><li><span class="cov1">                                bb.EndLine == b.EndLine &amp;&amp;
-</span></li><li><span class="cov1">                                bb.EndCol == b.EndCol </span><span class="cov1">{
-</span></li><li><span class="cov1">                                return i
-</span></li><li><span class="cov1">                        }</span>
-</li><li>                }
-</li><li>                <span class="cov1">return -1</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">newBlocks := make([]Block, 0, len(blocks))
-</span></li><li><span class="cov1">        for _, b := range blocks </span><span class="cov1">{
-</span></li><li><span class="cov1">                i := index(newBlocks, &amp;b)
-</span></li><li><span class="cov1">                if i == -1 </span><span class="cov1">{
-</span></li><li><span class="cov1">                        newBlocks = append(newBlocks, b)
-</span></li><li><span class="cov1">                        continue</span>
-</li><li>                }
-</li><li>                <span class="cov1">if b.Count &gt; 0 </span><span class="cov1">{
-</span></li><li><span class="cov1">                        newBlocks[i] = b
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">return newBlocks</span>
-</li><li>}
-</li><li>
-</li><li>func importPath(files map[string]*Profile) (map[string]string, error) <span class="cov1">{
-</span></li><li><span class="cov1">        dirs := make([]string, 0, len(files))
-</span></li><li><span class="cov1">        pkgs := make(map[string]string)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
-</span></li><li><span class="cov1">                if p.IsRelativeOrAbsolute() </span><span class="cov0">{
-</span></li><li><span class="cov0">                        continue</span>
-</li><li>                }
-</li><li>
-</li><li>                <span class="cov1">dir := path.Dir(p.FileName)
-</span></li><li><span class="cov1">                if _, ok := pkgs[dir]; !ok </span><span class="cov1">{
-</span></li><li><span class="cov1">                        pkgs[dir] = ""
-</span></li><li><span class="cov1">                        dirs = append(dirs, dir)
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
-</span></li><li><span class="cov0">                return pkgs, nil
-</span></li><li><span class="cov0">        }</span>
-</li><li>
-</li><li>        <span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-</span></li><li><span class="cov1">        args := append([]string{"list", "-e", "-json"}, dirs...)
-</span></li><li><span class="cov1">        cmd := exec.Command(cmdName, args...)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        stdout, err := cmd.Output()
-</span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                return nil, err
-</span></li><li><span class="cov0">        }</span>
-</li><li>
-</li><li>        <span class="cov1">type pkg struct {
-</span></li><li><span class="cov1">                Dir        string
-</span></li><li><span class="cov1">                ImportPath string
-</span></li><li><span class="cov1">                Error      *struct {
-</span></li><li><span class="cov1">                        Err string
-</span></li><li><span class="cov1">                }
-</span></li><li><span class="cov1">        }
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        dec := json.NewDecoder(bytes.NewReader(stdout))
-</span></li><li><span class="cov1">        for </span><span class="cov1">{
-</span></li><li><span class="cov1">                var p pkg
-</span></li><li><span class="cov1">                err := dec.Decode(&amp;p)
-</span></li><li><span class="cov1">                if err == io.EOF </span><span class="cov1">{
-</span></li><li><span class="cov1">                        break</span>
-</li><li>                }
-</li><li>                <span class="cov1">if err != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                        return nil, fmt.Errorf("decoding go list json: %v", err)
-</span></li><li><span class="cov0">                }</span>
-</li><li>                <span class="cov1">if p.Error != nil </span><span class="cov0">{
-</span></li><li><span class="cov0">                        return nil, fmt.Errorf(p.Error.Err)
-</span></li><li><span class="cov0">                }</span>
-</li><li>                <span class="cov1">pkgs[p.ImportPath] = p.Dir</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">return pkgs, nil</span>
 </li><li>}
 </li></ol></pre>
 				</div>

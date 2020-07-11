@@ -1,4 +1,4 @@
-package profile_test
+package cover_test
 
 import (
 	"io"
@@ -7,15 +7,16 @@ import (
 	"strings"
 	"testing"
 
+	cover "github.com/masakurapa/go-cover/internal"
 	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-func TestRead(t *testing.T) {
-	absDir1, err := filepath.Abs("../../testdata/dir1")
+func TestReadProfile(t *testing.T) {
+	absDir1, err := filepath.Abs("../testdata/dir1")
 	if err != nil {
 		t.Fatal(err)
 	}
-	absDir2, err := filepath.Abs("../../testdata/dir2")
+	absDir2, err := filepath.Abs("../testdata/dir2")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,11 +111,21 @@ github.com/masakurapa/go-cover/testdata/dir1/file0.go,2.12,22.32 42 52
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "2行目以降のフォーマットが不正な場合はエラーが返却される!",
+			args: args{
+				r: strings.NewReader(`mode: set
+github.com/masakurapa/go-cover/testdata/dir1/file0.go:2,12,22,32 42 0
+`),
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := profile.Read(tt.args.r)
+			got, err := cover.ReadProfile(tt.args.r)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("Read() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -126,7 +137,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file0.go,2.12,22.32 42 52
 	}
 }
 
-func BenchmarkRead(b *testing.B) {
+func BenchmarkReadProfile(b *testing.B) {
 	r := strings.NewReader(`mode: set
 github.com/masakurapa/go-cover/testdata/dir2/file1.go:1.11,21.31 41 51
 github.com/masakurapa/go-cover/testdata/dir1/file0.go:2.12,22.32 42 52
@@ -136,6 +147,6 @@ github.com/masakurapa/go-cover/testdata/dir1/file1.go:4.14,24.34 44 54
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		profile.Read(r)
+		cover.ReadProfile(r)
 	}
 }

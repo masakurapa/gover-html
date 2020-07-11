@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	cover "github.com/masakurapa/go-cover/internal"
 	"github.com/masakurapa/go-cover/internal/html"
-	"github.com/masakurapa/go-cover/internal/profile"
 )
 
 var (
@@ -23,7 +23,7 @@ func main() {
 	}
 	defer f.Close()
 
-	profiles, err := profile.Read(f)
+	profiles, err := cover.ReadProfile(f)
 	if err != nil {
 		panic(err)
 	}

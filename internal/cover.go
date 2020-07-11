@@ -1,4 +1,4 @@
-package profile
+package cover
 
 import (
 	"bufio"
@@ -14,13 +14,15 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-var reg = regexp.MustCompile(`^(.+):([0-9]+).([0-9]+),([0-9]+).([0-9]+) ([0-9]+) ([0-9]+)$`)
+var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 
-// Read is reads profiling data
-func Read(r io.Reader) ([]Profile, error) {
-	files := make(map[string]*Profile)
+// ReadProfile is reads profiling data
+func ReadProfile(r io.Reader) ([]profile.Profile, error) {
+	files := make(map[string]*profile.Profile)
 	modeOk := false
 	id := 1
 
@@ -38,27 +40,27 @@ func Read(r io.Reader) ([]Profile, error) {
 			continue
 		}
 
-		m := reg.FindStringSubmatch(line)
-		if m == nil {
+		matches := reg.FindStringSubmatch(line)
+		if matches == nil {
 			return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
 		}
 
-		fileName := m[1]
+		fileName := matches[1]
 		p := files[fileName]
 
 		if p == nil {
-			p = &Profile{ID: id, FileName: fileName}
+			p = &profile.Profile{ID: id, FileName: fileName}
 			files[fileName] = p
 			id++
 		}
 
-		p.Blocks = append(p.Blocks, Block{
-			StartLine: toInt(m[2]),
-			StartCol:  toInt(m[3]),
-			EndLine:   toInt(m[4]),
-			EndCol:    toInt(m[5]),
-			NumState:  toInt(m[6]),
-			Count:     toInt(m[7]),
+		p.Blocks = append(p.Blocks, profile.Block{
+			StartLine: toInt(matches[2]),
+			StartCol:  toInt(matches[3]),
+			EndLine:   toInt(matches[4]),
+			EndCol:    toInt(matches[5]),
+			NumState:  toInt(matches[6]),
+			Count:     toInt(matches[7]),
 		})
 	}
 
@@ -73,13 +75,13 @@ func toInt(s string) int {
 	return i
 }
 
-func toProfiles(files map[string]*Profile) ([]Profile, error) {
+func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) {
 	dirs, err := importPath(files)
 	if err != nil {
 		return nil, err
 	}
 
-	profiles := make([]Profile, 0, len(files))
+	profiles := make([]profile.Profile, 0, len(files))
 	for _, p := range files {
 		p.Blocks = filterBlocks(p.Blocks)
 		sort.SliceStable(p.Blocks, func(i, j int) bool {
@@ -99,8 +101,8 @@ func toProfiles(files map[string]*Profile) ([]Profile, error) {
 	return profiles, nil
 }
 
-func filterBlocks(blocks []Block) []Block {
-	index := func(bs []Block, b *Block) int {
+func filterBlocks(blocks []profile.Block) []profile.Block {
+	index := func(bs []profile.Block, b *profile.Block) int {
 		for i, bb := range bs {
 			if bb.StartLine == b.StartLine &&
 				bb.StartCol == b.StartCol &&
@@ -112,7 +114,7 @@ func filterBlocks(blocks []Block) []Block {
 		return -1
 	}
 
-	newBlocks := make([]Block, 0, len(blocks))
+	newBlocks := make([]profile.Block, 0, len(blocks))
 	for _, b := range blocks {
 		i := index(newBlocks, &b)
 		if i == -1 {
@@ -127,7 +129,7 @@ func filterBlocks(blocks []Block) []Block {
 	return newBlocks
 }
 
-func importPath(files map[string]*Profile) (map[string]string, error) {
+func importPath(files map[string]*profile.Profile) (map[string]string, error) {
 	dirs := make([]string, 0, len(files))
 	pkgs := make(map[string]string)
 

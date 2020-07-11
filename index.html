@@ -84,6 +84,15 @@
 </li><li>        "github.com/masakurapa/go-cover/internal/profile"
 </li><li>)
 </li><li>
+</li><li>var (
+</li><li>        escapeChar = map[byte]string{
+</li><li>                '&lt;':  "&amp;lt;",
+</li><li>                '&gt;':  "&amp;gt;",
+</li><li>                '&amp;':  "&amp;amp;",
+</li><li>                '\t': "        ",
+</li><li>        }
+</li><li>)
+</li><li>
 </li><li>type templateData struct {
 </li><li>        Tree  template.HTML
 </li><li>        Files []templateFile
@@ -216,13 +225,7 @@
 </li><li>}
 </li><li>
 </li><li>func escape(b byte) string <span class="cov1">{
-</span></li><li><span class="cov1">        chars := map[byte]string{
-</span></li><li><span class="cov1">                '&lt;':  "&amp;lt;",
-</span></li><li><span class="cov1">                '&gt;':  "&amp;gt;",
-</span></li><li><span class="cov1">                '&amp;':  "&amp;amp;",
-</span></li><li><span class="cov1">                '\t': "        ",
-</span></li><li><span class="cov1">        }
-</span></li><li><span class="cov1">        if s, ok := chars[b]; ok </span><span class="cov1">{
+</span></li><li><span class="cov1">        if s, ok := escapeChar[b]; ok </span><span class="cov1">{
 </span></li><li><span class="cov1">                return s
 </span></li><li><span class="cov1">        }</span>
 </li><li>        <span class="cov1">return string(b)</span>

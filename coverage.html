@@ -88,6 +88,15 @@ import (
         "github.com/masakurapa/go-cover/internal/profile"
 )
 
+var (
+        escapeChar = map[byte]string{
+                '&lt;':  "&amp;lt;",
+                '&gt;':  "&amp;gt;",
+                '&amp;':  "&amp;amp;",
+                '\t': "        ",
+        }
+)
+
 type templateData struct {
         Tree  template.HTML
         Files []templateFile
@@ -220,13 +229,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
 }
 
 func escape(b byte) string <span class="cov8" title="1">{
-        chars := map[byte]string{
-                '&lt;':  "&amp;lt;",
-                '&gt;':  "&amp;gt;",
-                '&amp;':  "&amp;amp;",
-                '\t': "        ",
-        }
-        if s, ok := chars[b]; ok </span><span class="cov8" title="1">{
+        if s, ok := escapeChar[b]; ok </span><span class="cov8" title="1">{
                 return s
         }</span>
         <span class="cov8" title="1">return string(b)</span>

@@ -66,7 +66,7 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal</div><div style="padding-inline-start: 30px">html</div><div style="padding-inline-start: 60px">tree</div><div class="file" style="padding-inline-start: 90px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 30px" id="tree1" onclick="change(1);">cover.go (91.8%)</div></div>
+			<div class="tree"><div style="padding-inline-start: 0px">github.com/masakurapa/go-cover/internal/</div><div style="padding-inline-start: 30px">html/</div><div style="padding-inline-start: 60px">tree/</div><div class="file" style="padding-inline-start: 90px" id="tree3" onclick="change(3);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 60px" id="tree2" onclick="change(2);">html.go (96.8%)</div><div style="padding-inline-start: 30px">profile/</div><div class="file" style="padding-inline-start: 60px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 30px" id="tree1" onclick="change(1);">cover.go (91.0%)</div></div>
 			<div id="cov" class="content">
 				
 				<div id="file1" class="source" style="display: none">
@@ -148,7 +148,7 @@
 </li><li>}
 </li><li>
 </li><li>func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) <span class="cov1">{
-</span></li><li><span class="cov1">        dirs, err := importPath(files)
+</span></li><li><span class="cov1">        dirs, err := makeImportDirMap(files)
 </span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
@@ -201,33 +201,15 @@
 </li><li>        <span class="cov1">return newBlocks</span>
 </li><li>}
 </li><li>
-</li><li>func importPath(files map[string]*profile.Profile) (map[string]string, error) <span class="cov1">{
-</span></li><li><span class="cov1">        dirs := make([]string, 0, len(files))
-</span></li><li><span class="cov1">        pkgs := make(map[string]string)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
-</span></li><li><span class="cov1">                if p.IsRelativeOrAbsolute() </span><span class="cov0">{
-</span></li><li><span class="cov0">                        continue</span>
-</li><li>                }
-</li><li>
-</li><li>                <span class="cov1">dir := path.Dir(p.FileName)
-</span></li><li><span class="cov1">                if _, ok := pkgs[dir]; !ok </span><span class="cov1">{
-</span></li><li><span class="cov1">                        pkgs[dir] = ""
-</span></li><li><span class="cov1">                        dirs = append(dirs, dir)
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
-</span></li><li><span class="cov0">                return pkgs, nil
-</span></li><li><span class="cov0">        }</span>
-</li><li>
-</li><li>        <span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-</span></li><li><span class="cov1">        args := append([]string{"list", "-e", "-json"}, dirs...)
-</span></li><li><span class="cov1">        cmd := exec.Command(cmdName, args...)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">        stdout, err := cmd.Output()
+</li><li>func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) <span class="cov1">{
+</span></li><li><span class="cov1">        stdout, err := execGoList(files)
 </span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">pkgs := make(map[string]string)
+</span></li><li><span class="cov1">        if len(stdout) == 0 </span><span class="cov0">{
+</span></li><li><span class="cov0">                return pkgs, nil
 </span></li><li><span class="cov0">        }</span>
 </li><li>
 </li><li>        <span class="cov1">type pkg struct {
@@ -251,10 +233,38 @@
 </li><li>                <span class="cov1">if p.Error != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        return nil, fmt.Errorf(p.Error.Err)
 </span></li><li><span class="cov0">                }</span>
+</li><li>                // should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
 </li><li>                <span class="cov1">pkgs[p.ImportPath] = p.Dir</span>
 </li><li>        }
 </li><li>
 </li><li>        <span class="cov1">return pkgs, nil</span>
+</li><li>}
+</li><li>
+</li><li>// execute "go list" command
+</li><li>func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="cov1">{
+</span></li><li><span class="cov1">        dirs := make([]string, 0, len(files))
+</span></li><li><span class="cov1">        m := make(map[string]struct{})
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
+</span></li><li><span class="cov1">                if p.IsRelativeOrAbsolute() </span><span class="cov0">{
+</span></li><li><span class="cov0">                        continue</span>
+</li><li>                }
+</li><li>                <span class="cov1">dir := path.Dir(p.FileName)
+</span></li><li><span class="cov1">                if _, ok := m[dir]; !ok </span><span class="cov1">{
+</span></li><li><span class="cov1">                        m[dir] = struct{}{}
+</span></li><li><span class="cov1">                        dirs = append(dirs, dir)
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
+</span></li><li><span class="cov0">                return make([]byte, 0), nil
+</span></li><li><span class="cov0">        }</span>
+</li><li>
+</li><li>        <span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+</span></li><li><span class="cov1">        args := append([]string{"list", "-e", "-json"}, dirs...)
+</span></li><li><span class="cov1">        cmd := exec.Command(cmdName, args...)
+</span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        return cmd.Output()</span>
 </li><li>}
 </li></ol></pre>
 				</div>
@@ -268,7 +278,7 @@
 </li><li>        "html/template"
 </li><li>        "io"
 </li><li>        "io/ioutil"
-</li><li>        "path/filepath"
+</li><li>        "path"
 </li><li>
 </li><li>        "github.com/masakurapa/go-cover/internal/html/tree"
 </li><li>        "github.com/masakurapa/go-cover/internal/profile"
@@ -302,21 +312,21 @@
 </span></li><li><span class="cov1">                Files: make([]templateFile, 0, len(profiles)),
 </span></li><li><span class="cov1">        }
 </span></li><li><span class="cov1">
+</span></li><li><span class="cov1">        var buf bytes.Buffer
 </span></li><li><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
 </span></li><li><span class="cov1">                b, err := ioutil.ReadFile(p.FilePath())
 </span></li><li><span class="cov1">                if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
 </span></li><li><span class="cov0">                }</span>
 </li><li>
-</li><li>                <span class="cov1">var buf bytes.Buffer
-</span></li><li><span class="cov1">                writeSource(&amp;buf, b, &amp;p)
-</span></li><li><span class="cov1">
+</li><li>                <span class="cov1">writeSource(&amp;buf, b, &amp;p)
 </span></li><li><span class="cov1">                data.Files = append(data.Files, templateFile{
 </span></li><li><span class="cov1">                        ID:       p.ID,
 </span></li><li><span class="cov1">                        Name:     p.FileName,
 </span></li><li><span class="cov1">                        Body:     template.HTML(buf.String()),
 </span></li><li><span class="cov1">                        Coverage: p.Coverage(),
-</span></li><li><span class="cov1">                })</span>
+</span></li><li><span class="cov1">                })
+</span></li><li><span class="cov1">                buf.Reset()</span>
 </li><li>        }
 </li><li>
 </li><li>        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
@@ -333,7 +343,7 @@
 </li><li>func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) <span class="cov1">{
 </span></li><li><span class="cov1">        for _, node := range nodes </span><span class="cov1">{
 </span></li><li><span class="cov1">                buf.WriteString(fmt.Sprintf(
-</span></li><li><span class="cov1">                        `&lt;div style="padding-inline-start: %dpx"&gt;%s&lt;/div&gt;`,
+</span></li><li><span class="cov1">                        `&lt;div style="padding-inline-start: %dpx"&gt;%s/&lt;/div&gt;`,
 </span></li><li><span class="cov1">                        indent*30,
 </span></li><li><span class="cov1">                        node.Name,
 </span></li><li><span class="cov1">                ))
@@ -341,13 +351,12 @@
 </span></li><li><span class="cov1">                writeDirectoryTree(buf, node.Dirs, indent+1)
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                for _, p := range node.Files </span><span class="cov1">{
-</span></li><li><span class="cov1">                        _, f := filepath.Split(p.FileName)
 </span></li><li><span class="cov1">                        buf.WriteString(fmt.Sprintf(
 </span></li><li><span class="cov1">                                `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
 </span></li><li><span class="cov1">                                (indent+1)*30,
 </span></li><li><span class="cov1">                                p.ID,
 </span></li><li><span class="cov1">                                p.ID,
-</span></li><li><span class="cov1">                                f,
+</span></li><li><span class="cov1">                                path.Base(p.FileName),
 </span></li><li><span class="cov1">                                p.Coverage(),
 </span></li><li><span class="cov1">                        ))
 </span></li><li><span class="cov1">                }</span>
@@ -456,11 +465,7 @@
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">        idx := index(*nodes, name)
 </span></li><li><span class="cov1">        if idx == -1 </span><span class="cov1">{
-</span></li><li><span class="cov1">                *nodes = append(*nodes, Node{
-</span></li><li><span class="cov1">                        Name:  name,
-</span></li><li><span class="cov1">                        Files: make([]profile.Profile, 0),
-</span></li><li><span class="cov1">                        Dirs:  make([]Node, 0),
-</span></li><li><span class="cov1">                })
+</span></li><li><span class="cov1">                *nodes = append(*nodes, Node{Name: name})
 </span></li><li><span class="cov1">                idx = len(*nodes) - 1
 </span></li><li><span class="cov1">        }</span>
 </li><li>
@@ -482,18 +487,33 @@
 </li><li>        <span class="cov1">return -1</span>
 </li><li>}
 </li><li>
+</li><li>// merge directories with no files and only one child directory
+</li><li>//
+</li><li>// path/
+</li><li>//   to/
+</li><li>//     file.go
+</li><li>//
+</li><li>// to
+</li><li>//
+</li><li>// path/to/
+</li><li>//   file.go
+</li><li>//
 </li><li>func mergeSingreDir(nodes []Node) []Node <span class="cov1">{
-</span></li><li><span class="cov1">        for i, t := range nodes </span><span class="cov1">{
-</span></li><li><span class="cov1">                mergeSingreDir(t.Dirs)
-</span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                if len(t.Files) == 0 &amp;&amp; len(t.Dirs) == 1 </span><span class="cov1">{
-</span></li><li><span class="cov1">                        sub := t.Dirs[0]
-</span></li><li><span class="cov1">                        nodes[i].Name = filepath.Join(t.Name, sub.Name)
-</span></li><li><span class="cov1">                        nodes[i].Files = sub.Files
-</span></li><li><span class="cov1">                        nodes[i].Dirs = sub.Dirs
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
+</span></li><li><span class="cov1">        for i, n := range nodes </span><span class="cov1">{
+</span></li><li><span class="cov1">                if len(n.Dirs) == 0 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        continue</span>
+</li><li>                }
 </li><li>
+</li><li>                <span class="cov1">mergeSingreDir(n.Dirs)
+</span></li><li><span class="cov1">                if len(n.Files) &gt; 0 || len(n.Dirs) != 1 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        continue</span>
+</li><li>                }
+</li><li>
+</li><li>                <span class="cov1">sub := n.Dirs[0]
+</span></li><li><span class="cov1">                nodes[i].Name = filepath.Join(n.Name, sub.Name)
+</span></li><li><span class="cov1">                nodes[i].Files = sub.Files
+</span></li><li><span class="cov1">                nodes[i].Dirs = sub.Dirs</span>
+</li><li>        }
 </li><li>        <span class="cov1">return nodes</span>
 </li><li>}
 </li></ol></pre>

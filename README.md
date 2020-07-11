@@ -1,5 +1,7 @@
 # go-cover
 
+![github pages](https://github.com/masakurapa/go-cover/workflows/github%20pages/badge.svg)
+
 ## Installing
 
 ```sh

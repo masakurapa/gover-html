@@ -28,7 +28,6 @@ func main() {
 		panic(err)
 	}
 
-	// output
 	out, err := os.Create(*output)
 	if err != nil {
 		panic(err)

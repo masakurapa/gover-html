@@ -40,7 +40,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+    # if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
     needs:
       - lint
       - test
@@ -58,6 +58,8 @@ jobs:
         with:
           name: coverprofile
           path: coverage.out
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Coverage
         run: |
           mkdir public

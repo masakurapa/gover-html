@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	input  = flag.String("i", "coverage.out", "coverage profile")
-	output = flag.String("o", "coverage.html", "html file output")
+	input  = flag.String("i", "coverage.out", "coverage profile for input")
+	output = flag.String("o", "coverage.html", "file for output")
 )
 
 func main() {
@@ -40,7 +40,17 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "Output coverage in HTML.")
+	fmt.Fprintln(os.Stderr, `Usage of 'go-cover':
+'go-cover' requires coverage profle by 'go test':
+	go test -coverprofile=coverage.out
+
+Write out HTML file:
+	go-cover
+
+Specify input file and output file:
+	go-cover -i c.out -o c.html`)
+
+	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Flags:")
 	flag.PrintDefaults()
 	os.Exit(2)

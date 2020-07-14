@@ -2,7 +2,12 @@ package html
 
 import "html/template"
 
-var parsedTreeTemplate = template.Must(template.New("html").Funcs(template.FuncMap{}).Parse(treeTemplate))
+var parsedTreeTemplate = template.
+	Must(template.New("html").
+		Funcs(template.FuncMap{
+			"indent": func(i int) int { return i*30 + 8 },
+		}).
+		Parse(treeTemplate))
 
 const treeTemplate = `<!DOCTYPE html>
 <html>
@@ -13,18 +18,23 @@ const treeTemplate = `<!DOCTYPE html>
 				margin: 0;
 			}
 			.main {
-				height: 100%;
 				width: 100%;
 				display: flex;
 			}
-			.tree {
+			#tree {
 				width: 25%;
-				height: 95vh;
-				padding-top: 8px;
+				height: 100vh;
+				padding: 8px 0;
 				white-space: nowrap;
 				overflow: scroll;
+				position: sticky;
+				position: -webkit-sticky;
+				top: 0;
+				left: 0;
+				background: #FFFFFF;
+				border-right: 1px solid #000000;
 			}
-			.tree div {
+			#tree div {
 				padding: 4px 0;
 			}
 			.file {
@@ -38,12 +48,9 @@ const treeTemplate = `<!DOCTYPE html>
 				width: 70%;
 				margin-left: 16px;
 				margin-right: 32px;
-				border-left: 1px solid #000000;
 			}
 			.source {
 				white-space: nowrap;
-				overflow-x: scroll;
-				height: 95vh;
 			}
 			pre {
 				counter-reset: line;
@@ -76,17 +83,33 @@ const treeTemplate = `<!DOCTYPE html>
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree">{{.Tree}}</div>
+			<div id="tree">
+			{{range $i, $t := .Tree}}
+				{{if $t.IsFile}}
+				<div class="file" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});">
+					{{$t.Name}} ({{$t.Coverage}}%)
+				</div>
+				{{else}}
+				<div style="padding-inline-start: {{indent $t.Indent}}px">{{$t.Name}}/</div>
+				{{end}}
+			{{end}}
+			</div>
+
 			<div id="cov" class="content">
 				{{range $i, $f := .Files}}
-				<div id="file{{$f.ID}}" class="source" style="display: none">
-					<pre>{{$f.Body}}</pre>
+				<div id="file{{$f.ID}}"  style="display: none">
+					<div class="source">
+						<pre>{{$f.Body}}</pre>
+					</div>
 				</div>
 				{{end}}
 			</div>
 		</div>
 
 		<script>
+			// tree max width
+			const scrollWidth = document.getElementById('tree').scrollWidth;
+
 			let current;
 			let currentTree;
 
@@ -103,7 +126,7 @@ const treeTemplate = `<!DOCTYPE html>
 				current.scrollLeft = 0;
 				current.scrollTop = 0;
 			}
-			function selectTree(n) {
+			function selectTree(n, indent) {
 				if (currentTree) {
 					currentTree.classList.remove('current');
 				}
@@ -113,11 +136,11 @@ const treeTemplate = `<!DOCTYPE html>
 					return;
 				}
 				currentTree.classList.add('current');
+				currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
 			}
-
-			function change(n) {
+			function change(n, i) {
 				select(n);
-				selectTree(n);
+				selectTree(n, i);
 			}
 		</script>
 	</body>

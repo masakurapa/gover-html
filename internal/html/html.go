@@ -22,8 +22,16 @@ var (
 )
 
 type templateData struct {
-	Tree  template.HTML
+	Tree  []templateTree
 	Files []templateFile
+}
+
+type templateTree struct {
+	ID       int
+	Name     string
+	Indent   int
+	Coverage float64
+	IsFile   bool
 }
 
 type templateFile struct {
@@ -35,8 +43,12 @@ type templateFile struct {
 
 // WriteTreeView outputs coverage as a tree view HTML file
 func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
+	nodes := tree.Create(profiles)
+	tree := make([]templateTree, 0)
+	makeTemplateTree(&tree, nodes, 0)
+
 	data := templateData{
-		Tree:  template.HTML(directoryTree(profiles)),
+		Tree:  tree,
 		Files: make([]templateFile, 0, len(profiles)),
 	}
 
@@ -60,37 +72,23 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 	return parsedTreeTemplate.Execute(out, data)
 }
 
-func directoryTree(profiles []profile.Profile) string {
-	nodes := tree.Create(profiles)
-	var buf bytes.Buffer
-	writeDirectoryTree(&buf, nodes, 0)
-	s := buf.String()
-	return s
-}
-
-func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) {
-	indentSize := func(i int) int {
-		return i*30 + 8
-	}
-
+func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) {
 	for _, node := range nodes {
-		buf.WriteString(fmt.Sprintf(
-			`<div style="padding-inline-start: %dpx">%s/</div>`,
-			indentSize(indent),
-			node.Name,
-		))
+		*tree = append(*tree, templateTree{
+			Name:   node.Name,
+			Indent: indent,
+		})
 
-		writeDirectoryTree(buf, node.Dirs, indent+1)
+		makeTemplateTree(tree, node.Dirs, indent+1)
 
 		for _, p := range node.Files {
-			buf.WriteString(fmt.Sprintf(
-				`<div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);">%s (%.1f%%)</div>`,
-				indentSize(indent+1),
-				p.ID,
-				p.ID,
-				path.Base(p.FileName),
-				p.Coverage(),
-			))
+			*tree = append(*tree, templateTree{
+				ID:       p.ID,
+				Name:     path.Base(p.FileName),
+				Indent:   indent + 1,
+				Coverage: p.Coverage(),
+				IsFile:   true,
+			})
 		}
 	}
 }

@@ -79,6 +79,28 @@ const treeTemplate = `<!DOCTYPE html>
 			.cov1 {
 				color: rgb(44, 212, 149);
 			}
+			table, tr, td, th {
+				border-collapse: collapse;
+				border:1px solid #BBBBBB;
+			}
+			table {
+				margin: 16px 0 32px 74px;
+			}
+			table .total {
+				min-width: 300px;
+				text-align: left;
+				padding-left: 8px;
+			}
+			table .fnc {
+				min-width: 300px;
+				text-align: left;
+				padding-left: 20px;
+			}
+			table .cov {
+				width: 70px;
+				text-align: right;
+				padding-right: 8px;
+			}
 		</style>
 	</head>
 	<body>
@@ -98,6 +120,14 @@ const treeTemplate = `<!DOCTYPE html>
 			<div id="cov" class="content">
 				{{range $i, $f := .Files}}
 				<div id="file{{$f.ID}}"  style="display: none">
+					<table>
+						<tr><th colspan="2">Coverages</th></tr>
+						<tr><td class="total">Total</td><td class="cov">{{$f.Coverage}}%</td></tr>
+						{{range $j, $fn := .Functions}}
+						<tr><td class="fnc">{{$fn.Name}}</td><td class="cov">{{$fn.Coverage}}%</td></tr>
+						{{end}}
+					</table>
+
 					<div class="source">
 						<pre>{{$f.Body}}</pre>
 					</div>

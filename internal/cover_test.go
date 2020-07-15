@@ -49,6 +49,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file1.go:4.14,24.34 44 54
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
 					},
+					Functions: profile.Functions{},
 				},
 				{
 					ID:       3,
@@ -57,6 +58,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file1.go:4.14,24.34 44 54
 					Blocks: []profile.Block{
 						{StartLine: 4, StartCol: 14, EndLine: 24, EndCol: 34, NumState: 44, Count: 54},
 					},
+					Functions: profile.Functions{},
 				},
 				{
 					ID:       1,
@@ -65,6 +67,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file1.go:4.14,24.34 44 54
 					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
+					Functions: profile.Functions{},
 				},
 			},
 			wantErr: false,
@@ -87,6 +90,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file0.go:3.13,23.33 43 53
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
 					},
+					Functions: profile.Functions{},
 				},
 			},
 			wantErr: false,

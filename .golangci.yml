@@ -29,7 +29,11 @@ linters:
 
 issues:
   exclude-use-default: false
-  # exclude-rules:
+  exclude-rules:
+    - path: template.go
+      linters:
+        - lll
+
 
 run:
   skip-dirs:

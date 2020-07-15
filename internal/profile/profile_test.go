@@ -6,73 +6,6 @@ import (
 	"github.com/masakurapa/go-cover/internal/profile"
 )
 
-func TestProfile_Coverage(t *testing.T) {
-	type fields struct {
-		ID       int
-		FileName string
-		Blocks   []profile.Block
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   float64
-	}{
-		{
-			name: "全ブロックのカウントが1以上の場合、100を返す",
-			fields: fields{
-				Blocks: []profile.Block{
-					{NumState: 41, Count: 1},
-					{NumState: 42, Count: 2},
-				},
-			},
-			want: 100,
-		},
-		{
-			name: "カウントが0のブロックが存在する場合、小数点第二位を四捨五入した値を返す",
-			fields: fields{
-				Blocks: []profile.Block{
-					{NumState: 41, Count: 1},
-					{NumState: 42, Count: 0},
-				},
-			},
-			want: 49.4, // 41 / (41 + 42) * 100 = 49.39759036144578
-		},
-		{
-			name: "全ブロックのカウントが0の場合、0を返す",
-			fields: fields{
-				Blocks: []profile.Block{
-					{NumState: 41, Count: 0},
-					{NumState: 42, Count: 0},
-				},
-			},
-			want: 0,
-		},
-		{
-			name:   "ブロックが空の場合、0を返す",
-			fields: fields{Blocks: []profile.Block{}},
-			want:   0,
-		},
-		{
-			name:   "ブロックがnilの場合、0を返す",
-			fields: fields{Blocks: nil},
-			want:   0,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			prof := &profile.Profile{
-				ID:       tt.fields.ID,
-				FileName: tt.fields.FileName,
-				Blocks:   tt.fields.Blocks,
-			}
-			if got := prof.Coverage(); got != tt.want {
-				t.Errorf("Profile.Coverage() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestProfile_IsRelativeOrAbsolute(t *testing.T) {
 	type fields struct {
 		ID       int
@@ -150,6 +83,52 @@ func TestProfile_FilePath(t *testing.T) {
 			}
 			if got := prof.FilePath(); got != tt.want {
 				t.Errorf("Profile.FilePath() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBlocks_Coverage(t *testing.T) {
+	tests := []struct {
+		name   string
+		blocks *profile.Blocks
+		want   float64
+	}{
+		{
+			name: "全ブロックのカウントが1以上の場合、100を返す",
+			blocks: &profile.Blocks{
+				{NumState: 41, Count: 1},
+				{NumState: 42, Count: 2},
+			},
+			want: 100,
+		},
+		{
+			name: "カウントが0のブロックが存在する場合、小数点第二位を四捨五入した値を返す",
+			blocks: &profile.Blocks{
+				{NumState: 41, Count: 1},
+				{NumState: 42, Count: 0},
+			},
+			want: 49.4, // 41 / (41 + 42) * 100 = 49.39759036144578
+		},
+		{
+			name: "全ブロックのカウントが0の場合、0を返す",
+			blocks: &profile.Blocks{
+				{NumState: 41, Count: 0},
+				{NumState: 42, Count: 0},
+			},
+			want: 0,
+		},
+		{
+			name:   "ブロックが空の場合、0を返す",
+			blocks: &profile.Blocks{},
+			want:   0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.blocks.Coverage(); got != tt.want {
+				t.Errorf("Blocks.Coverage() = %v, want %v", got, tt.want)
 			}
 		})
 	}

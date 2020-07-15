@@ -42,7 +42,7 @@ type templateFile struct {
 }
 
 // WriteTreeView outputs coverage as a tree view HTML file
-func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
+func WriteTreeView(out io.Writer, profiles profile.Profiles) error {
 	nodes := tree.Create(profiles)
 	tree := make([]templateTree, 0)
 	makeTemplateTree(&tree, nodes, 0)
@@ -64,7 +64,7 @@ func WriteTreeView(out io.Writer, profiles []profile.Profile) error {
 			ID:       p.ID,
 			Name:     p.FileName,
 			Body:     template.HTML(buf.String()),
-			Coverage: p.Coverage(),
+			Coverage: p.Blocks.Coverage(),
 		})
 		buf.Reset()
 	}
@@ -86,7 +86,7 @@ func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) {
 				ID:       p.ID,
 				Name:     path.Base(p.FileName),
 				Indent:   indent + 1,
-				Coverage: p.Coverage(),
+				Coverage: p.Blocks.Coverage(),
 				IsFile:   true,
 			})
 		}

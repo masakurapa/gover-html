@@ -10,12 +10,12 @@ import (
 // Node is single node of directory tree
 type Node struct {
 	Name  string
-	Files []profile.Profile
+	Files profile.Profiles
 	Dirs  []Node
 }
 
 // Create returns directory tree
-func Create(profiles []profile.Profile) []Node {
+func Create(profiles profile.Profiles) []Node {
 	nodes := make([]Node, 0)
 	for _, p := range profiles {
 		addNode(&nodes, strings.Split(p.FileName, "/"), &p)

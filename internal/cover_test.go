@@ -27,7 +27,7 @@ func TestReadProfile(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []profile.Profile
+		want    profile.Profiles
 		wantErr bool
 	}{
 		{
@@ -40,7 +40,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file0.go:3.13,23.33 43 53
 github.com/masakurapa/go-cover/testdata/dir1/file1.go:4.14,24.34 44 54
 `),
 			},
-			want: []profile.Profile{
+			want: profile.Profiles{
 				{
 					ID:       2,
 					Dir:      absDir1,
@@ -78,7 +78,7 @@ github.com/masakurapa/go-cover/testdata/dir1/file0.go:2.12,22.32 42 52
 github.com/masakurapa/go-cover/testdata/dir1/file0.go:3.13,23.33 43 53
 `),
 			},
-			want: []profile.Profile{
+			want: profile.Profiles{
 				{
 					ID:       1,
 					Dir:      absDir1,

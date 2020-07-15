@@ -21,7 +21,7 @@ import (
 var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader) ([]profile.Profile, error) {
+func ReadProfile(r io.Reader) (profile.Profiles, error) {
 	files := make(map[string]*profile.Profile)
 	modeOk := false
 	id := 1
@@ -75,13 +75,13 @@ func toInt(s string) int {
 	return i
 }
 
-func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) {
+func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) {
 	dirs, err := makeImportDirMap(files)
 	if err != nil {
 		return nil, err
 	}
 
-	profiles := make([]profile.Profile, 0, len(files))
+	profiles := make(profile.Profiles, 0, len(files))
 	for _, p := range files {
 		p.Blocks = filterBlocks(p.Blocks)
 		sort.SliceStable(p.Blocks, func(i, j int) bool {

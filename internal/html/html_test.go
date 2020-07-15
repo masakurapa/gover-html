@@ -16,7 +16,7 @@ func TestWriteTreeView(t *testing.T) {
 	}
 
 	var writer bytes.Buffer
-	profiles := []profile.Profile{
+	profiles := profile.Profiles{
 		{
 			ID:       1,
 			Dir:      dir,
@@ -51,7 +51,7 @@ func BenchmarkWriteTreeView(b *testing.B) {
 	}
 
 	var writer bytes.Buffer
-	profiles := []profile.Profile{
+	profiles := profile.Profiles{
 		{
 			ID:       1,
 			Dir:      dir,

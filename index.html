@@ -7,18 +7,23 @@
 				margin: 0;
 			}
 			.main {
-				height: 100%;
 				width: 100%;
 				display: flex;
 			}
-			.tree {
+			#tree {
 				width: 25%;
-				height: 95vh;
-				padding-top: 8px;
+				height: 100vh;
+				padding: 8px 0;
 				white-space: nowrap;
 				overflow: scroll;
+				position: sticky;
+				position: -webkit-sticky;
+				top: 0;
+				left: 0;
+				background: #FFFFFF;
+				border-right: 1px solid #000000;
 			}
-			.tree div {
+			#tree div {
 				padding: 4px 0;
 			}
 			.file {
@@ -32,12 +37,9 @@
 				width: 70%;
 				margin-left: 16px;
 				margin-right: 32px;
-				border-left: 1px solid #000000;
 			}
 			.source {
 				white-space: nowrap;
-				overflow-x: scroll;
-				height: 95vh;
 			}
 			pre {
 				counter-reset: line;
@@ -70,11 +72,61 @@
 	</head>
 	<body>
 		<div class="main">
-			<div class="tree"><div style="padding-inline-start: 8px">github.com/masakurapa/go-cover/internal/</div><div style="padding-inline-start: 38px">html/</div><div style="padding-inline-start: 68px">tree/</div><div class="file" style="padding-inline-start: 98px" id="tree2" onclick="change(2);">tree.go (100.0%)</div><div class="file" style="padding-inline-start: 68px" id="tree3" onclick="change(3);">html.go (96.9%)</div><div style="padding-inline-start: 38px">profile/</div><div class="file" style="padding-inline-start: 68px" id="tree4" onclick="change(4);">profile.go (100.0%)</div><div class="file" style="padding-inline-start: 38px" id="tree1" onclick="change(1);">cover.go (91.0%)</div></div>
+			<div id="tree">
+			
+				
+				<div style="padding-inline-start: 8px">github.com/masakurapa/go-cover/internal/</div>
+				
+			
+				
+				<div style="padding-inline-start: 38px">html/</div>
+				
+			
+				
+				<div style="padding-inline-start: 68px">tree/</div>
+				
+			
+				
+				<div class="file" style="padding-inline-start: 98px;" id="tree4" onclick="change( 4 ,  3 );">
+					tree.go (100%)
+				</div>
+				
+			
+				
+				<div class="file" style="padding-inline-start: 68px;" id="tree2" onclick="change( 2 ,  2 );">
+					html.go (96.7%)
+				</div>
+				
+			
+				
+				<div class="file" style="padding-inline-start: 68px;" id="tree3" onclick="change( 3 ,  2 );">
+					template.go (100%)
+				</div>
+				
+			
+				
+				<div style="padding-inline-start: 38px">profile/</div>
+				
+			
+				
+				<div class="file" style="padding-inline-start: 68px;" id="tree5" onclick="change( 5 ,  2 );">
+					profile.go (100%)
+				</div>
+				
+			
+				
+				<div class="file" style="padding-inline-start: 38px;" id="tree1" onclick="change( 1 ,  1 );">
+					cover.go (91%)
+				</div>
+				
+			
+			</div>
+
 			<div id="cov" class="content">
 				
-				<div id="file1" class="source" style="display: none">
-					<pre><ol><li>package cover
+				<div id="file1"  style="display: none">
+					<div class="source">
+						<pre><ol><li>package cover
 </li><li>
 </li><li>import (
 </li><li>        "bufio"
@@ -97,7 +149,7 @@
 </li><li>var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 </li><li>
 </li><li>// ReadProfile is reads profiling data
-</li><li>func ReadProfile(r io.Reader) ([]profile.Profile, error) <span class="cov1">{
+</li><li>func ReadProfile(r io.Reader) (profile.Profiles, error) <span class="cov1">{
 </span></li><li><span class="cov1">        files := make(map[string]*profile.Profile)
 </span></li><li><span class="cov1">        modeOk := false
 </span></li><li><span class="cov1">        id := 1
@@ -151,13 +203,13 @@
 </li><li>        <span class="cov1">return i</span>
 </li><li>}
 </li><li>
-</li><li>func toProfiles(files map[string]*profile.Profile) ([]profile.Profile, error) <span class="cov1">{
+</li><li>func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <span class="cov1">{
 </span></li><li><span class="cov1">        dirs, err := makeImportDirMap(files)
 </span></li><li><span class="cov1">        if err != nil </span><span class="cov0">{
 </span></li><li><span class="cov0">                return nil, err
 </span></li><li><span class="cov0">        }</span>
 </li><li>
-</li><li>        <span class="cov1">profiles := make([]profile.Profile, 0, len(files))
+</li><li>        <span class="cov1">profiles := make(profile.Profiles, 0, len(files))
 </span></li><li><span class="cov1">        for _, p := range files </span><span class="cov1">{
 </span></li><li><span class="cov1">                p.Blocks = filterBlocks(p.Blocks)
 </span></li><li><span class="cov1">                sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov1">{
@@ -271,10 +323,12 @@
 </span></li><li><span class="cov1">        return cmd.Output()</span>
 </li><li>}
 </li></ol></pre>
+					</div>
 				</div>
 				
-				<div id="file3" class="source" style="display: none">
-					<pre><ol><li>package html
+				<div id="file2"  style="display: none">
+					<div class="source">
+						<pre><ol><li>package html
 </li><li>
 </li><li>import (
 </li><li>        "bytes"
@@ -298,8 +352,16 @@
 </li><li>)
 </li><li>
 </li><li>type templateData struct {
-</li><li>        Tree  template.HTML
+</li><li>        Tree  []templateTree
 </li><li>        Files []templateFile
+</li><li>}
+</li><li>
+</li><li>type templateTree struct {
+</li><li>        ID       int
+</li><li>        Name     string
+</li><li>        Indent   int
+</li><li>        Coverage float64
+</li><li>        IsFile   bool
 </li><li>}
 </li><li>
 </li><li>type templateFile struct {
@@ -310,9 +372,13 @@
 </li><li>}
 </li><li>
 </li><li>// WriteTreeView outputs coverage as a tree view HTML file
-</li><li>func WriteTreeView(out io.Writer, profiles []profile.Profile) error <span class="cov1">{
+</li><li>func WriteTreeView(out io.Writer, profiles profile.Profiles) error <span class="cov1">{
+</span></li><li><span class="cov1">        nodes := tree.Create(profiles)
+</span></li><li><span class="cov1">        tree := make([]templateTree, 0)
+</span></li><li><span class="cov1">        makeTemplateTree(&amp;tree, nodes, 0)
+</span></li><li><span class="cov1">
 </span></li><li><span class="cov1">        data := templateData{
-</span></li><li><span class="cov1">                Tree:  template.HTML(directoryTree(profiles)),
+</span></li><li><span class="cov1">                Tree:  tree,
 </span></li><li><span class="cov1">                Files: make([]templateFile, 0, len(profiles)),
 </span></li><li><span class="cov1">        }
 </span></li><li><span class="cov1">
@@ -328,7 +394,7 @@
 </span></li><li><span class="cov1">                        ID:       p.ID,
 </span></li><li><span class="cov1">                        Name:     p.FileName,
 </span></li><li><span class="cov1">                        Body:     template.HTML(buf.String()),
-</span></li><li><span class="cov1">                        Coverage: p.Coverage(),
+</span></li><li><span class="cov1">                        Coverage: p.Blocks.Coverage(),
 </span></li><li><span class="cov1">                })
 </span></li><li><span class="cov1">                buf.Reset()</span>
 </li><li>        }
@@ -336,37 +402,23 @@
 </li><li>        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
 </li><li>}
 </li><li>
-</li><li>func directoryTree(profiles []profile.Profile) string <span class="cov1">{
-</span></li><li><span class="cov1">        nodes := tree.Create(profiles)
-</span></li><li><span class="cov1">        var buf bytes.Buffer
-</span></li><li><span class="cov1">        writeDirectoryTree(&amp;buf, nodes, 0)
-</span></li><li><span class="cov1">        s := buf.String()
-</span></li><li><span class="cov1">        return s
-</span></li><li><span class="cov1">}</span>
-</li><li>
-</li><li>func writeDirectoryTree(buf *bytes.Buffer, nodes []tree.Node, indent int) <span class="cov1">{
-</span></li><li><span class="cov1">        indentSize := func(i int) int </span><span class="cov1">{
-</span></li><li><span class="cov1">                return i*30 + 8
-</span></li><li><span class="cov1">        }</span>
-</li><li>
-</li><li>        <span class="cov1">for _, node := range nodes </span><span class="cov1">{
-</span></li><li><span class="cov1">                buf.WriteString(fmt.Sprintf(
-</span></li><li><span class="cov1">                        `&lt;div style="padding-inline-start: %dpx"&gt;%s/&lt;/div&gt;`,
-</span></li><li><span class="cov1">                        indentSize(indent),
-</span></li><li><span class="cov1">                        node.Name,
-</span></li><li><span class="cov1">                ))
+</li><li>func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) <span class="cov1">{
+</span></li><li><span class="cov1">        for _, node := range nodes </span><span class="cov1">{
+</span></li><li><span class="cov1">                *tree = append(*tree, templateTree{
+</span></li><li><span class="cov1">                        Name:   node.Name,
+</span></li><li><span class="cov1">                        Indent: indent,
+</span></li><li><span class="cov1">                })
 </span></li><li><span class="cov1">
-</span></li><li><span class="cov1">                writeDirectoryTree(buf, node.Dirs, indent+1)
+</span></li><li><span class="cov1">                makeTemplateTree(tree, node.Dirs, indent+1)
 </span></li><li><span class="cov1">
 </span></li><li><span class="cov1">                for _, p := range node.Files </span><span class="cov1">{
-</span></li><li><span class="cov1">                        buf.WriteString(fmt.Sprintf(
-</span></li><li><span class="cov1">                                `&lt;div class="file" style="padding-inline-start: %dpx" id="tree%d" onclick="change(%d);"&gt;%s (%.1f%%)&lt;/div&gt;`,
-</span></li><li><span class="cov1">                                indentSize(indent+1),
-</span></li><li><span class="cov1">                                p.ID,
-</span></li><li><span class="cov1">                                p.ID,
-</span></li><li><span class="cov1">                                path.Base(p.FileName),
-</span></li><li><span class="cov1">                                p.Coverage(),
-</span></li><li><span class="cov1">                        ))
+</span></li><li><span class="cov1">                        *tree = append(*tree, templateTree{
+</span></li><li><span class="cov1">                                ID:       p.ID,
+</span></li><li><span class="cov1">                                Name:     path.Base(p.FileName),
+</span></li><li><span class="cov1">                                Indent:   indent + 1,
+</span></li><li><span class="cov1">                                Coverage: p.Blocks.Coverage(),
+</span></li><li><span class="cov1">                                IsFile:   true,
+</span></li><li><span class="cov1">                        })
 </span></li><li><span class="cov1">                }</span>
 </li><li>        }
 </li><li>}
@@ -438,10 +490,166 @@
 </li><li>        <span class="cov1">return string(b)</span>
 </li><li>}
 </li></ol></pre>
+					</div>
 				</div>
 				
-				<div id="file2" class="source" style="display: none">
-					<pre><ol><li>package tree
+				<div id="file3"  style="display: none">
+					<div class="source">
+						<pre><ol><li>package html
+</li><li>
+</li><li>import "html/template"
+</li><li>
+</li><li>var parsedTreeTemplate = template.
+</li><li>        Must(template.New("html").
+</li><li>                Funcs(template.FuncMap{
+</li><li>                        "indent": func(i int) int <span class="cov1">{ return i*30 + 8 }</span>,
+</li><li>                }).
+</li><li>                Parse(treeTemplate))
+</li><li>
+</li><li>const treeTemplate = `&lt;!DOCTYPE html&gt;
+</li><li>&lt;html&gt;
+</li><li>        &lt;head&gt;
+</li><li>                &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+</li><li>                &lt;style&gt;
+</li><li>                        body {
+</li><li>                                margin: 0;
+</li><li>                        }
+</li><li>                        .main {
+</li><li>                                width: 100%;
+</li><li>                                display: flex;
+</li><li>                        }
+</li><li>                        #tree {
+</li><li>                                width: 25%;
+</li><li>                                height: 100vh;
+</li><li>                                padding: 8px 0;
+</li><li>                                white-space: nowrap;
+</li><li>                                overflow: scroll;
+</li><li>                                position: sticky;
+</li><li>                                position: -webkit-sticky;
+</li><li>                                top: 0;
+</li><li>                                left: 0;
+</li><li>                                background: #FFFFFF;
+</li><li>                                border-right: 1px solid #000000;
+</li><li>                        }
+</li><li>                        #tree div {
+</li><li>                                padding: 4px 0;
+</li><li>                        }
+</li><li>                        .file {
+</li><li>                                cursor: pointer;
+</li><li>                        }
+</li><li>                        .current {
+</li><li>                                font-weight: bold;
+</li><li>                                background-color: #E1F5FF;
+</li><li>                        }
+</li><li>                        .content {
+</li><li>                                width: 70%;
+</li><li>                                margin-left: 16px;
+</li><li>                                margin-right: 32px;
+</li><li>                        }
+</li><li>                        .source {
+</li><li>                                white-space: nowrap;
+</li><li>                        }
+</li><li>                        pre {
+</li><li>                                counter-reset: line;
+</li><li>                                font-family: Menlo, monospace;
+</li><li>                                font-weight: bold;
+</li><li>                                color: rgb(80, 80, 80);
+</li><li>                        }
+</li><li>                        ol {
+</li><li>                                list-style: none;
+</li><li>                                counter-reset: number;
+</li><li>                                margin: 0;
+</li><li>                                padding: 0;
+</li><li>                        }
+</li><li>                        li:before {
+</li><li>                                counter-increment: number;
+</li><li>                                content: counter(number);
+</li><li>                                margin-right: 24px;
+</li><li>                                display: inline-block;
+</li><li>                                width: 50px;
+</li><li>                                text-align: right;
+</li><li>                                color: rgb(200, 200, 200);
+</li><li>                        }
+</li><li>                        .cov0 {
+</li><li>                                color: rgb(192, 0, 0);
+</li><li>                        }
+</li><li>                        .cov1 {
+</li><li>                                color: rgb(44, 212, 149);
+</li><li>                        }
+</li><li>                &lt;/style&gt;
+</li><li>        &lt;/head&gt;
+</li><li>        &lt;body&gt;
+</li><li>                &lt;div class="main"&gt;
+</li><li>                        &lt;div id="tree"&gt;
+</li><li>                        {{range $i, $t := .Tree}}
+</li><li>                                {{if $t.IsFile}}
+</li><li>                                &lt;div class="file" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
+</li><li>                                        {{$t.Name}} ({{$t.Coverage}}%)
+</li><li>                                &lt;/div&gt;
+</li><li>                                {{else}}
+</li><li>                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/&lt;/div&gt;
+</li><li>                                {{end}}
+</li><li>                        {{end}}
+</li><li>                        &lt;/div&gt;
+</li><li>
+</li><li>                        &lt;div id="cov" class="content"&gt;
+</li><li>                                {{range $i, $f := .Files}}
+</li><li>                                &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
+</li><li>                                        &lt;div class="source"&gt;
+</li><li>                                                &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
+</li><li>                                        &lt;/div&gt;
+</li><li>                                &lt;/div&gt;
+</li><li>                                {{end}}
+</li><li>                        &lt;/div&gt;
+</li><li>                &lt;/div&gt;
+</li><li>
+</li><li>                &lt;script&gt;
+</li><li>                        // tree max width
+</li><li>                        const scrollWidth = document.getElementById('tree').scrollWidth;
+</li><li>
+</li><li>                        let current;
+</li><li>                        let currentTree;
+</li><li>
+</li><li>                        function select(n) {
+</li><li>                                if (current) {
+</li><li>                                        current.style.display = 'none';
+</li><li>                                }
+</li><li>
+</li><li>                                current = document.getElementById('file' + n);
+</li><li>                                if (!current) {
+</li><li>                                        return;
+</li><li>                                }
+</li><li>                                current.style.display = 'block';
+</li><li>                                current.scrollLeft = 0;
+</li><li>                                current.scrollTop = 0;
+</li><li>                        }
+</li><li>                        function selectTree(n, indent) {
+</li><li>                                if (currentTree) {
+</li><li>                                        currentTree.classList.remove('current');
+</li><li>                                }
+</li><li>
+</li><li>                                currentTree = document.getElementById('tree' + n);
+</li><li>                                if (!current) {
+</li><li>                                        return;
+</li><li>                                }
+</li><li>                                currentTree.classList.add('current');
+</li><li>                                currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+</li><li>                        }
+</li><li>                        function change(n, i) {
+</li><li>                                select(n);
+</li><li>                                selectTree(n, i);
+</li><li>                        }
+</li><li>                &lt;/script&gt;
+</li><li>        &lt;/body&gt;
+</li><li>&lt;/html&gt;
+</li><li>`
+</li></ol></pre>
+					</div>
+				</div>
+				
+				<div id="file4"  style="display: none">
+					<div class="source">
+						<pre><ol><li>package tree
 </li><li>
 </li><li>import (
 </li><li>        "path/filepath"
@@ -453,12 +661,12 @@
 </li><li>// Node is single node of directory tree
 </li><li>type Node struct {
 </li><li>        Name  string
-</li><li>        Files []profile.Profile
+</li><li>        Files profile.Profiles
 </li><li>        Dirs  []Node
 </li><li>}
 </li><li>
 </li><li>// Create returns directory tree
-</li><li>func Create(profiles []profile.Profile) []Node <span class="cov1">{
+</li><li>func Create(profiles profile.Profiles) []Node <span class="cov1">{
 </span></li><li><span class="cov1">        nodes := make([]Node, 0)
 </span></li><li><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
 </span></li><li><span class="cov1">                addNode(&amp;nodes, strings.Split(p.FileName, "/"), &amp;p)
@@ -525,10 +733,12 @@
 </li><li>        <span class="cov1">return nodes</span>
 </li><li>}
 </li></ol></pre>
+					</div>
 				</div>
 				
-				<div id="file4" class="source" style="display: none">
-					<pre><ol><li>package profile
+				<div id="file5"  style="display: none">
+					<div class="source">
+						<pre><ol><li>package profile
 </li><li>
 </li><li>import (
 </li><li>        "math"
@@ -537,13 +747,19 @@
 </li><li>        "strings"
 </li><li>)
 </li><li>
+</li><li>// Profiles is a type that represents a slice of Profile
+</li><li>type Profiles []Profile
+</li><li>
 </li><li>// Profile is profiling data for each file
 </li><li>type Profile struct {
 </li><li>        ID       int
 </li><li>        Dir      string
 </li><li>        FileName string
-</li><li>        Blocks   []Block
+</li><li>        Blocks   Blocks
 </li><li>}
+</li><li>
+</li><li>// Blocks is a type that represents a slice of Block
+</li><li>type Blocks []Block
 </li><li>
 </li><li>// Block is single block of profiling data
 </li><li>type Block struct {
@@ -553,23 +769,6 @@
 </li><li>        EndCol    int
 </li><li>        NumState  int
 </li><li>        Count     int
-</li><li>}
-</li><li>
-</li><li>// Coverage returns covered ratio for file
-</li><li>func (prof *Profile) Coverage() float64 <span class="cov1">{
-</span></li><li><span class="cov1">        var total, covered int64
-</span></li><li><span class="cov1">        for _, b := range prof.Blocks </span><span class="cov1">{
-</span></li><li><span class="cov1">                total += int64(b.NumState)
-</span></li><li><span class="cov1">                if b.Count &gt; 0 </span><span class="cov1">{
-</span></li><li><span class="cov1">                        covered += int64(b.NumState)
-</span></li><li><span class="cov1">                }</span>
-</li><li>        }
-</li><li>
-</li><li>        <span class="cov1">if total == 0 </span><span class="cov1">{
-</span></li><li><span class="cov1">                return 0
-</span></li><li><span class="cov1">        }</span>
-</li><li>
-</li><li>        <span class="cov1">return math.Round((float64(covered)/float64(total)*100)*10) / 10</span>
 </li><li>}
 </li><li>
 </li><li>// IsRelativeOrAbsolute returns true if FileName is relative path or absolute path
@@ -584,13 +783,34 @@
 </span></li><li><span class="cov1">        }</span>
 </li><li>        <span class="cov1">return filepath.Join(prof.Dir, path.Base(prof.FileName))</span>
 </li><li>}
+</li><li>
+</li><li>// Coverage returns covered ratio for file
+</li><li>func (blocks *Blocks) Coverage() float64 <span class="cov1">{
+</span></li><li><span class="cov1">        var total, covered int64
+</span></li><li><span class="cov1">        for _, b := range *blocks </span><span class="cov1">{
+</span></li><li><span class="cov1">                total += int64(b.NumState)
+</span></li><li><span class="cov1">                if b.Count &gt; 0 </span><span class="cov1">{
+</span></li><li><span class="cov1">                        covered += int64(b.NumState)
+</span></li><li><span class="cov1">                }</span>
+</li><li>        }
+</li><li>
+</li><li>        <span class="cov1">if total == 0 </span><span class="cov1">{
+</span></li><li><span class="cov1">                return 0
+</span></li><li><span class="cov1">        }</span>
+</li><li>
+</li><li>        <span class="cov1">return math.Round((float64(covered)/float64(total)*100)*10) / 10</span>
+</li><li>}
 </li></ol></pre>
+					</div>
 				</div>
 				
 			</div>
 		</div>
 
 		<script>
+			
+			const scrollWidth = document.getElementById('tree').scrollWidth;
+
 			let current;
 			let currentTree;
 
@@ -607,7 +827,7 @@
 				current.scrollLeft = 0;
 				current.scrollTop = 0;
 			}
-			function selectTree(n) {
+			function selectTree(n, indent) {
 				if (currentTree) {
 					currentTree.classList.remove('current');
 				}
@@ -617,11 +837,11 @@
 					return;
 				}
 				currentTree.classList.add('current');
+				currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
 			}
-
-			function change(n) {
+			function change(n, i) {
 				select(n);
-				selectTree(n);
+				selectTree(n, i);
 			}
 		</script>
 	</body>

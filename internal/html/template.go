@@ -94,7 +94,7 @@ const treeTemplate = `<!DOCTYPE html>
 			table .fnc {
 				min-width: 300px;
 				text-align: left;
-				padding-left: 20px;
+				padding: 0 20px 0 20px;
 			}
 			table .cov {
 				width: 70px;

@@ -123,7 +123,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 
 	for si < len(src) {
 		if col == 1 {
-			buf.WriteString("<li>")
+			buf.WriteString(fmt.Sprintf(`<li id="file%d-%d">`, prof.ID, line))
 			if cov0 {
 				buf.WriteString(`<span class="cov0">`)
 			}

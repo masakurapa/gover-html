@@ -37,8 +37,10 @@ const treeTemplate = `<!DOCTYPE html>
 			#tree div {
 				padding: 4px 0;
 			}
-			.file {
+			.clickable {
 				cursor: pointer;
+				color: #0000ff;
+				text-decoration: underline;
 			}
 			.current {
 				font-weight: bold;
@@ -108,7 +110,7 @@ const treeTemplate = `<!DOCTYPE html>
 			<div id="tree">
 			{{range $i, $t := .Tree}}
 				{{if $t.IsFile}}
-				<div class="file" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});">
+				<div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});">
 					{{$t.Name}} ({{$t.Coverage}}%)
 				</div>
 				{{else}}
@@ -124,7 +126,10 @@ const treeTemplate = `<!DOCTYPE html>
 						<tr><th colspan="2">Coverages</th></tr>
 						<tr><td class="total">Total</td><td class="cov">{{$f.Coverage}}%</td></tr>
 						{{range $j, $fn := .Functions}}
-						<tr><td class="fnc">{{$fn.Name}}</td><td class="cov">{{$fn.Coverage}}%</td></tr>
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;">{{$fn.Name}}</span></td>
+							<td class="cov">{{$fn.Coverage}}%</td>
+						</tr>
 						{{end}}
 					</table>
 

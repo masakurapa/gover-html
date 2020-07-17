@@ -35,9 +35,16 @@ type templateTree struct {
 }
 
 type templateFile struct {
-	ID       int
+	ID        int
+	Name      string
+	Body      template.HTML
+	Coverage  float64
+	Functions []templateFunc
+}
+
+type templateFunc struct {
 	Name     string
-	Body     template.HTML
+	Line     int
 	Coverage float64
 }
 
@@ -60,13 +67,24 @@ func WriteTreeView(out io.Writer, profiles profile.Profiles) error {
 		}
 
 		writeSource(&buf, b, &p)
-		data.Files = append(data.Files, templateFile{
-			ID:       p.ID,
-			Name:     p.FileName,
-			Body:     template.HTML(buf.String()),
-			Coverage: p.Blocks.Coverage(),
-		})
+		f := templateFile{
+			ID:        p.ID,
+			Name:      p.FileName,
+			Body:      template.HTML(buf.String()),
+			Coverage:  p.Blocks.Coverage(),
+			Functions: make([]templateFunc, 0, len(p.Functions)),
+		}
 		buf.Reset()
+
+		for _, fn := range p.Functions {
+			f.Functions = append(f.Functions, templateFunc{
+				Name:     fn.Name,
+				Line:     fn.StartLine,
+				Coverage: fn.Blocks.Coverage(),
+			})
+		}
+
+		data.Files = append(data.Files, f)
 	}
 
 	return parsedTreeTemplate.Execute(out, data)
@@ -105,7 +123,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 
 	for si < len(src) {
 		if col == 1 {
-			buf.WriteString("<li>")
+			buf.WriteString(fmt.Sprintf(`<li id="file%d-%d">`, prof.ID, line))
 			if cov0 {
 				buf.WriteString(`<span class="cov0">`)
 			}

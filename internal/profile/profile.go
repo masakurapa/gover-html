@@ -12,10 +12,22 @@ type Profiles []Profile
 
 // Profile is profiling data for each file
 type Profile struct {
-	ID       int
-	Dir      string
-	FileName string
-	Blocks   Blocks
+	ID        int
+	Dir       string
+	FileName  string
+	Blocks    Blocks
+	Functions Functions
+}
+
+// Functions is a type that represents a slice of Function
+type Functions []Function
+
+// Function is single func of profiling data
+type Function struct {
+	Name      string
+	StartLine int
+	StartCol  int
+	Blocks    Blocks
 }
 
 // Blocks is a type that represents a slice of Block

@@ -91,6 +91,12 @@ func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) {
 
 		p.Dir = dirs[path.Dir(p.FileName)]
 
+		fn, err := makeFuncs(*p)
+		if err != nil {
+			return nil, err
+		}
+		p.Functions = fn
+
 		profiles = append(profiles, *p)
 	}
 

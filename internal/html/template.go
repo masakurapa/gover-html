@@ -37,8 +37,10 @@ const treeTemplate = `<!DOCTYPE html>
 			#tree div {
 				padding: 4px 0;
 			}
-			.file {
+			.clickable {
 				cursor: pointer;
+				color: #0000ff;
+				text-decoration: underline;
 			}
 			.current {
 				font-weight: bold;
@@ -79,6 +81,28 @@ const treeTemplate = `<!DOCTYPE html>
 			.cov1 {
 				color: rgb(44, 212, 149);
 			}
+			table, tr, td, th {
+				border-collapse: collapse;
+				border:1px solid #BBBBBB;
+			}
+			table {
+				margin: 16px 0 32px 74px;
+			}
+			table .total {
+				min-width: 300px;
+				text-align: left;
+				padding-left: 8px;
+			}
+			table .fnc {
+				min-width: 300px;
+				text-align: left;
+				padding: 0 20px 0 20px;
+			}
+			table .cov {
+				width: 70px;
+				text-align: right;
+				padding-right: 8px;
+			}
 		</style>
 	</head>
 	<body>
@@ -86,7 +110,7 @@ const treeTemplate = `<!DOCTYPE html>
 			<div id="tree">
 			{{range $i, $t := .Tree}}
 				{{if $t.IsFile}}
-				<div class="file" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});">
+				<div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});">
 					{{$t.Name}} ({{$t.Coverage}}%)
 				</div>
 				{{else}}
@@ -98,6 +122,17 @@ const treeTemplate = `<!DOCTYPE html>
 			<div id="cov" class="content">
 				{{range $i, $f := .Files}}
 				<div id="file{{$f.ID}}"  style="display: none">
+					<table>
+						<tr><th colspan="2">Coverages</th></tr>
+						<tr><td class="total">Total</td><td class="cov">{{$f.Coverage}}%</td></tr>
+						{{range $j, $fn := .Functions}}
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;">{{$fn.Name}}</span></td>
+							<td class="cov">{{$fn.Coverage}}%</td>
+						</tr>
+						{{end}}
+					</table>
+
 					<div class="source">
 						<pre>{{$f.Body}}</pre>
 					</div>

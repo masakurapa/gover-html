@@ -54,15 +54,17 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/go-cover/internal/cover.go (91.0%)</option>
+				<option value="file0">github.com/masakurapa/go-cover/internal/cover.go (90.3%)</option>
 				
-				<option value="file1">github.com/masakurapa/go-cover/internal/html/html.go (96.7%)</option>
+				<option value="file1">github.com/masakurapa/go-cover/internal/func.go (35.7%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/html/template.go (100.0%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/html.go (95.2%)</option>
 				
-				<option value="file3">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/go-cover/internal/html/template.go (100.0%)</option>
 				
-				<option value="file4">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
+				<option value="file4">github.com/masakurapa/go-cover/internal/html/tree/tree.go (100.0%)</option>
+				
+				<option value="file5">github.com/masakurapa/go-cover/internal/profile/profile.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -169,6 +171,12 @@ func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <sp
 
                 <span class="cov8" title="1">p.Dir = dirs[path.Dir(p.FileName)]
 
+                fn, err := makeFuncs(*p)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">p.Functions = fn
+
                 profiles = append(profiles, *p)</span>
         }
 
@@ -274,7 +282,128 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package html
+		<pre class="file" id="file1" style="display: none">package cover
+
+import (
+        "bytes"
+        "go/ast"
+        "go/format"
+        "go/parser"
+        "go/token"
+
+        "github.com/masakurapa/go-cover/internal/profile"
+)
+
+type funcExtent struct {
+        name      string
+        startLine int
+        startCol  int
+        endLine   int
+        endCol    int
+}
+
+type funcVisitor struct {
+        fset    *token.FileSet
+        name    string
+        astFile *ast.File
+        funcs   []*funcExtent
+}
+
+func (v *funcVisitor) Visit(node ast.Node) ast.Visitor <span class="cov8" title="1">{
+        switch n := node.(type) </span>{
+        case *ast.FuncDecl:<span class="cov0" title="0">
+                if n.Body == nil </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov0" title="0">start := v.fset.Position(n.Pos())
+                end := v.fset.Position(n.End())
+
+                var buf bytes.Buffer
+                err := format.Node(&amp;buf, token.NewFileSet(), &amp;ast.FuncDecl{
+                        Name: n.Name,
+                        Recv: n.Recv,
+                        Type: n.Type,
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+                <span class="cov0" title="0">src, err := format.Source(buf.Bytes())
+                if err != nil </span><span class="cov0" title="0">{
+                        panic(err)</span>
+                }
+
+                <span class="cov0" title="0">fe := &amp;funcExtent{
+                        name:      string(src),
+                        startLine: start.Line,
+                        startCol:  start.Column,
+                        endLine:   end.Line,
+                        endCol:    end.Column,
+                }
+                v.funcs = append(v.funcs, fe)</span>
+        }
+        <span class="cov8" title="1">return v</span>
+}
+
+func makeFuncs(prof profile.Profile) (profile.Functions, error) <span class="cov8" title="1">{
+        exts, err := findFuncs(prof.FilePath())
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return toFunctions(prof, exts), nil</span>
+}
+
+func findFuncs(name string) ([]*funcExtent, error) <span class="cov8" title="1">{
+        fset := token.NewFileSet()
+        parsedFile, err := parser.ParseFile(fset, name, nil, 0)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">visitor := &amp;funcVisitor{
+                fset:    fset,
+                name:    name,
+                astFile: parsedFile,
+        }
+        ast.Walk(visitor, visitor.astFile)
+        return visitor.funcs, nil</span>
+}
+
+func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions <span class="cov8" title="1">{
+        fncs := make(profile.Functions, 0, len(exts))
+
+        bi := 0
+        for _, e := range exts </span><span class="cov0" title="0">{
+                fnc := profile.Function{
+                        Name:      e.name,
+                        StartLine: e.startLine,
+                        StartCol:  e.startCol,
+                }
+
+                for bi &lt; len(prof.Blocks) </span><span class="cov0" title="0">{
+                        b := prof.Blocks[bi]
+
+                        if b.StartLine &lt; e.startLine </span><span class="cov0" title="0">{
+                                bi++
+                                continue</span>
+                        }
+
+                        <span class="cov0" title="0">if b.StartLine &gt;= e.startLine &amp;&amp;
+                                b.EndLine &lt;= e.endLine </span><span class="cov0" title="0">{
+                                fnc.Blocks = append(fnc.Blocks, b)
+                                bi++
+                                continue</span>
+                        }
+                        <span class="cov0" title="0">break</span>
+                }
+
+                <span class="cov0" title="0">fncs = append(fncs, fnc)</span>
+        }
+
+        <span class="cov8" title="1">return fncs</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package html
 
 import (
         "bytes"
@@ -311,9 +440,16 @@ type templateTree struct {
 }
 
 type templateFile struct {
-        ID       int
+        ID        int
+        Name      string
+        Body      template.HTML
+        Coverage  float64
+        Functions []templateFunc
+}
+
+type templateFunc struct {
         Name     string
-        Body     template.HTML
+        Line     int
         Coverage float64
 }
 
@@ -336,13 +472,24 @@ func WriteTreeView(out io.Writer, profiles profile.Profiles) error <span class="
                 }</span>
 
                 <span class="cov8" title="1">writeSource(&amp;buf, b, &amp;p)
-                data.Files = append(data.Files, templateFile{
-                        ID:       p.ID,
-                        Name:     p.FileName,
-                        Body:     template.HTML(buf.String()),
-                        Coverage: p.Blocks.Coverage(),
-                })
-                buf.Reset()</span>
+                f := templateFile{
+                        ID:        p.ID,
+                        Name:      p.FileName,
+                        Body:      template.HTML(buf.String()),
+                        Coverage:  p.Blocks.Coverage(),
+                        Functions: make([]templateFunc, 0, len(p.Functions)),
+                }
+                buf.Reset()
+
+                for _, fn := range p.Functions </span><span class="cov0" title="0">{
+                        f.Functions = append(f.Functions, templateFunc{
+                                Name:     fn.Name,
+                                Line:     fn.StartLine,
+                                Coverage: fn.Blocks.Coverage(),
+                        })
+                }</span>
+
+                <span class="cov8" title="1">data.Files = append(data.Files, f)</span>
         }
 
         <span class="cov8" title="1">return parsedTreeTemplate.Execute(out, data)</span>
@@ -381,7 +528,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
 
         for si &lt; len(src) </span><span class="cov8" title="1">{
                 if col == 1 </span><span class="cov8" title="1">{
-                        buf.WriteString("&lt;li&gt;")
+                        buf.WriteString(fmt.Sprintf(`&lt;li id="file%d-%d"&gt;`, prof.ID, line))
                         if cov0 </span><span class="cov0" title="0">{
                                 buf.WriteString(`&lt;span class="cov0"&gt;`)
                         }</span>
@@ -437,7 +584,7 @@ func escape(b byte) string <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package html
+		<pre class="file" id="file3" style="display: none">package html
 
 import "html/template"
 
@@ -476,8 +623,10 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                         #tree div {
                                 padding: 4px 0;
                         }
-                        .file {
+                        .clickable {
                                 cursor: pointer;
+                                color: #0000ff;
+                                text-decoration: underline;
                         }
                         .current {
                                 font-weight: bold;
@@ -518,6 +667,28 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                         .cov1 {
                                 color: rgb(44, 212, 149);
                         }
+                        table, tr, td, th {
+                                border-collapse: collapse;
+                                border:1px solid #BBBBBB;
+                        }
+                        table {
+                                margin: 16px 0 32px 74px;
+                        }
+                        table .total {
+                                min-width: 300px;
+                                text-align: left;
+                                padding-left: 8px;
+                        }
+                        table .fnc {
+                                min-width: 300px;
+                                text-align: left;
+                                padding: 0 20px 0 20px;
+                        }
+                        table .cov {
+                                width: 70px;
+                                text-align: right;
+                                padding-right: 8px;
+                        }
                 &lt;/style&gt;
         &lt;/head&gt;
         &lt;body&gt;
@@ -525,7 +696,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                         &lt;div id="tree"&gt;
                         {{range $i, $t := .Tree}}
                                 {{if $t.IsFile}}
-                                &lt;div class="file" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
+                                &lt;div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
                                         {{$t.Name}} ({{$t.Coverage}}%)
                                 &lt;/div&gt;
                                 {{else}}
@@ -537,6 +708,17 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                         &lt;div id="cov" class="content"&gt;
                                 {{range $i, $f := .Files}}
                                 &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
+                                        &lt;table&gt;
+                                                &lt;tr&gt;&lt;th colspan="2"&gt;Coverages&lt;/th&gt;&lt;/tr&gt;
+                                                &lt;tr&gt;&lt;td class="total"&gt;Total&lt;/td&gt;&lt;td class="cov"&gt;{{$f.Coverage}}%&lt;/td&gt;&lt;/tr&gt;
+                                                {{range $j, $fn := .Functions}}
+                                                &lt;tr&gt;
+                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
+                                                        &lt;td class="cov"&gt;{{$fn.Coverage}}%&lt;/td&gt;
+                                                &lt;/tr&gt;
+                                                {{end}}
+                                        &lt;/table&gt;
+
                                         &lt;div class="source"&gt;
                                                 &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
                                         &lt;/div&gt;
@@ -587,7 +769,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
 `
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package tree
+		<pre class="file" id="file4" style="display: none">package tree
 
 import (
         "path/filepath"
@@ -672,7 +854,7 @@ func mergeSingreDir(nodes []Node) []Node <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package profile
+		<pre class="file" id="file5" style="display: none">package profile
 
 import (
         "math"
@@ -686,10 +868,22 @@ type Profiles []Profile
 
 // Profile is profiling data for each file
 type Profile struct {
-        ID       int
-        Dir      string
-        FileName string
-        Blocks   Blocks
+        ID        int
+        Dir       string
+        FileName  string
+        Blocks    Blocks
+        Functions Functions
+}
+
+// Functions is a type that represents a slice of Function
+type Functions []Function
+
+// Function is single func of profiling data
+type Function struct {
+        Name      string
+        StartLine int
+        StartCol  int
+        Blocks    Blocks
 }
 
 // Blocks is a type that represents a slice of Block

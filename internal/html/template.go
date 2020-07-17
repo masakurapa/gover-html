@@ -13,6 +13,7 @@ const treeTemplate = `<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Coverage Report</title>
 		<style>
 			body {
 				margin: 0;

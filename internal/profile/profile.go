@@ -24,12 +24,10 @@ type Functions []Function
 
 // Function is single func of profiling data
 type Function struct {
-	Name        string
-	StartLine   int
-	StartCol    int
-	TypeEndLine int
-	TypeEndCol  int
-	Blocks      Blocks
+	Name      string
+	StartLine int
+	StartCol  int
+	Blocks    Blocks
 }
 
 // Blocks is a type that represents a slice of Block

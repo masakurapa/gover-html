@@ -1,7 +1,9 @@
 package cover
 
 import (
+	"bytes"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 
@@ -9,13 +11,11 @@ import (
 )
 
 type funcExtent struct {
-	name       string
-	startLine  int
-	startCol   int
-	endLine    int
-	endCol     int
-	fncEndLine int
-	fncEndCol  int
+	name      string
+	startLine int
+	startCol  int
+	endLine   int
+	endCol    int
 }
 
 type funcVisitor struct {
@@ -33,16 +33,27 @@ func (v *funcVisitor) Visit(node ast.Node) ast.Visitor {
 		}
 		start := v.fset.Position(n.Pos())
 		end := v.fset.Position(n.End())
-		tend := v.fset.Position((n.Type.End()))
+
+		var buf bytes.Buffer
+		err := format.Node(&buf, token.NewFileSet(), &ast.FuncDecl{
+			Name: n.Name,
+			Recv: n.Recv,
+			Type: n.Type,
+		})
+		if err != nil {
+			panic(err)
+		}
+		src, err := format.Source(buf.Bytes())
+		if err != nil {
+			panic(err)
+		}
 
 		fe := &funcExtent{
-			name:       n.Name.Name,
-			startLine:  start.Line,
-			startCol:   start.Column,
-			endLine:    end.Line,
-			endCol:     end.Column,
-			fncEndLine: tend.Line,
-			fncEndCol:  tend.Column,
+			name:      string(src),
+			startLine: start.Line,
+			startCol:  start.Column,
+			endLine:   end.Line,
+			endCol:    end.Column,
 		}
 		v.funcs = append(v.funcs, fe)
 	}
@@ -79,11 +90,9 @@ func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions {
 	bi := 0
 	for _, e := range exts {
 		fnc := profile.Function{
-			Name:        e.name,
-			StartLine:   e.startLine,
-			StartCol:    e.startCol,
-			TypeEndLine: e.fncEndLine,
-			TypeEndCol:  e.fncEndCol,
+			Name:      e.name,
+			StartLine: e.startLine,
+			StartCol:  e.startCol,
 		}
 
 		for bi < len(prof.Blocks) {

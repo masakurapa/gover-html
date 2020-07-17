@@ -78,7 +78,7 @@ func WriteTreeView(out io.Writer, profiles profile.Profiles) error {
 
 		for _, fn := range p.Functions {
 			f.Functions = append(f.Functions, templateFunc{
-				Name:     findFuncName(b, fn),
+				Name:     fn.Name,
 				Line:     fn.StartLine,
 				Coverage: fn.Blocks.Coverage(),
 			})
@@ -109,22 +109,6 @@ func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) {
 			})
 		}
 	}
-}
-
-func findFuncName(src []byte, fn profile.Function) string {
-	rows := bytes.Split(src, []byte("\n"))
-
-	if fn.StartLine == fn.TypeEndLine {
-		return string(rows[fn.StartLine-1][fn.StartCol-1 : fn.TypeEndCol])
-	}
-
-	name := rows[fn.StartLine-1][fn.StartCol-1:]
-	for i := fn.StartLine + 1; i < fn.TypeEndLine; i++ {
-		name = append(name, rows[i-1]...)
-	}
-	name = append(name, rows[fn.TypeEndLine-1][:fn.TypeEndCol]...)
-
-	return string(name)
 }
 
 func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {

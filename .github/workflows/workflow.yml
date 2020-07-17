@@ -38,6 +38,40 @@ jobs:
           name: coverprofile
           path: coverage.out
 
+  coverage:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    outputs:
+      gocover: go-cover.html
+      gotoolcover: go-tool-cover.html
+    steps:
+      - name: Set up Go 1.14.4
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.14.4
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Download math result for test
+        uses: actions/download-artifact@v2
+        with:
+          name: coverprofile
+      - name: Coverage
+        run: |
+          mkdir public
+          make
+          ./go-cover -i coverage.out -o go-cover.html
+          go tool cover -html=coverage.out -o go-tool-cover.html
+      - name: Upload math result for test
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverages
+          path: |
+            go-cover.html
+            go-tool-cover.html
+
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
@@ -56,15 +90,14 @@ jobs:
       - name: Download math result for test
         uses: actions/download-artifact@v2
         with:
-          name: coverprofile
+          name: coverages
       - name: Display structure of downloaded files
         run: ls -R
       - name: Coverage
         run: |
           mkdir public
-          make
-          ./go-cover -o ./public/index.html
-          go tool cover -html=coverage.out -o ./public/coverage.html
+          mv go-cover.html ./public/go-cover.html
+          mv go-tool-cover.html ./public/go-tool-cover.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:

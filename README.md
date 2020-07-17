@@ -17,6 +17,6 @@ $ open coverage.html
 ```
 
 ## Sample coverage
-- [masakurapa/go-cover](https://masakurapa.github.io/go-cover/index.html)
-- [go tool cover](https://masakurapa.github.io/go-cover/coverage.html)
+- [masakurapa/go-cover](https://masakurapa.github.io/go-cover/go-cover.html)
+- [go tool cover](https://masakurapa.github.io/go-cover/go-tool-cover.html)
 

@@ -153,11 +153,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 		}
 
 		b := src[si]
-		if s, ok := escape(b); ok {
-			buf.WriteString(s)
-		} else {
-			buf.WriteByte(b)
-		}
+		writeChar(buf, b)
 
 		if b == '\n' {
 			if cov0 || cov1 {
@@ -175,9 +171,9 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 	buf.WriteString("</ol>")
 }
 
-func escape(b byte) (string, bool) {
+func writeChar(buf *bytes.Buffer, b byte) {
 	if s, ok := escapeChar[b]; ok {
-		return s, true
+		buf.WriteString(s)
 	}
-	return "", false
+	buf.WriteByte(b)
 }

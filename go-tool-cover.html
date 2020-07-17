@@ -558,7 +558,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
                 }
 
                 <span class="cov8" title="1">b := src[si]
-                buf.WriteString(escape(b))
+                writeChar(buf, b)
 
                 if b == '\n' </span><span class="cov8" title="1">{
                         if cov0 || cov1 </span><span class="cov8" title="1">{
@@ -576,11 +576,11 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
         <span class="cov8" title="1">buf.WriteString("&lt;/ol&gt;")</span>
 }
 
-func escape(b byte) string <span class="cov8" title="1">{
+func writeChar(buf *bytes.Buffer, b byte) <span class="cov8" title="1">{
         if s, ok := escapeChar[b]; ok </span><span class="cov8" title="1">{
-                return s
+                buf.WriteString(s)
         }</span>
-        <span class="cov8" title="1">return string(b)</span>
+        <span class="cov8" title="1">buf.WriteByte(b)</span>
 }
 </pre>
 		
@@ -599,6 +599,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
 &lt;html&gt;
         &lt;head&gt;
                 &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+                &lt;title&gt;Coverage Report&lt;/title&gt;
                 &lt;style&gt;
                         body {
                                 margin: 0;

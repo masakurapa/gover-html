@@ -1,22 +1,22 @@
-# go-cover
+# gover-html
 
-![github pages](https://github.com/masakurapa/go-cover/workflows/github%20pages/badge.svg)
+![github pages](https://github.com/masakurapa/gover-html/workflows/github%20pages/badge.svg)
 
 ## Installing
 
 ```sh
-$ go get -u github.com/masakurapa/go-cover
+$ go get -u github.com/masakurapa/gover-html
 ```
 
 ## Usage
 
 ```
 $ go test -coverprofile=coverage.out ./...
-$ go-cover
+$ gover-html
 $ open coverage.html
 ```
 
 ## Sample coverage
-- [masakurapa/go-cover](https://masakurapa.github.io/go-cover/go-cover.html)
-- [go tool cover](https://masakurapa.github.io/go-cover/go-tool-cover.html)
+- [masakurapa/gover-html](https://masakurapa.github.io/gover-html/gover-html.html)
+- [go tool cover](https://masakurapa.github.io/gover-html/go-tool-cover.html)
 

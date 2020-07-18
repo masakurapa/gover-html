@@ -3,7 +3,7 @@ package profile_test
 import (
 	"testing"
 
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 func TestProfile_IsRelativeOrAbsolute(t *testing.T) {

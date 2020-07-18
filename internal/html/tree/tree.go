@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 // Node is single node of directory tree

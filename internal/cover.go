@@ -15,7 +15,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)

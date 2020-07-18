@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 	"path"
 
-	"github.com/masakurapa/go-cover/internal/html/tree"
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/html/tree"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 var (

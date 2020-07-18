@@ -57,14 +57,14 @@ jobs:
         run: |
           mkdir public
           make
-          ./go-cover -i coverage.out -o go-cover.html
+          ./gover-html -i coverage.out -o gover-html.html
           go tool cover -html=coverage.out -o go-tool-cover.html
       - name: Upload math result for test
         uses: actions/upload-artifact@v2
         with:
           name: coverages
           path: |
-            go-cover.html
+            gover-html.html
             go-tool-cover.html
 
   deploy:
@@ -90,7 +90,7 @@ jobs:
       - name: Coverage
         run: |
           mkdir public
-          mv go-cover.html ./public/go-cover.html
+          mv gover-html.html ./public/gover-html.html
           mv go-tool-cover.html ./public/go-tool-cover.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

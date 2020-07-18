@@ -7,7 +7,7 @@ import (
 	"go/parser"
 	"go/token"
 
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 type funcExtent struct {

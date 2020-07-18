@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/masakurapa/go-cover/internal/html"
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/html"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 func TestWriteTreeView(t *testing.T) {

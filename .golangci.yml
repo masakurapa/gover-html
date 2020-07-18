@@ -2,7 +2,7 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   goimports:
-    local-prefixes: github.com/masakurapa/go-cover
+    local-prefixes: github.com/masakurapa/gover-html
   golint:
     min-confidence: 0.8
   govet:

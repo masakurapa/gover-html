@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	cover "github.com/masakurapa/go-cover/internal"
-	"github.com/masakurapa/go-cover/internal/html"
+	cover "github.com/masakurapa/gover-html/internal"
+	"github.com/masakurapa/gover-html/internal/html"
 )
 
 var (
@@ -40,15 +40,15 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `Usage of 'go-cover':
-'go-cover' requires coverage profle by 'go test':
+	fmt.Fprintln(os.Stderr, `Usage of 'gover-html':
+'gover-html' requires coverage profle by 'go test':
 	go test -coverprofile=coverage.out
 
 Write out HTML file:
-	go-cover
+	gover-html
 
 Specify input file and output file:
-	go-cover -i c.out -o c.html`)
+	gover-html -i c.out -o c.html`)
 
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Flags:")

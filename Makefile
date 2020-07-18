@@ -1,5 +1,5 @@
 build:
-	go build -o go-cover cover.go
+	go build -o gover-html cover.go
 
 cover:
 	go test -coverprofile=coverage.out ./internal/...

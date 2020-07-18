@@ -1,3 +1,3 @@
-module github.com/masakurapa/go-cover
+module github.com/masakurapa/gover-html
 
 go 1.14

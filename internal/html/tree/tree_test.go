@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/masakurapa/go-cover/internal/html/tree"
-	"github.com/masakurapa/go-cover/internal/profile"
+	"github.com/masakurapa/gover-html/internal/html/tree"
+	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 func TestCreate(t *testing.T) {

@@ -174,6 +174,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) {
 func writeChar(buf *bytes.Buffer, b byte) {
 	if s, ok := escapeChar[b]; ok {
 		buf.WriteString(s)
+		return
 	}
 	buf.WriteByte(b)
 }

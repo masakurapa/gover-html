@@ -633,11 +633,12 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 font-weight: bold;
                                 background-color: #E1F5FF;
                         }
-                        .content {
+                        #coverage {
                                 width: 70%;
                                 margin-left: 16px;
                                 margin-right: 32px;
                         }
+
                         .source {
                                 white-space: nowrap;
                         }
@@ -705,8 +706,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 {{end}}
                         {{end}}
                         &lt;/div&gt;
-
-                        &lt;div id="cov" class="content"&gt;
+                        &lt;div id="coverage"&gt;
                                 {{range $i, $f := .Files}}
                                 &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
                                         &lt;table&gt;
@@ -714,7 +714,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                                 &lt;tr&gt;&lt;td class="total"&gt;Total&lt;/td&gt;&lt;td class="cov"&gt;{{$f.Coverage}}%&lt;/td&gt;&lt;/tr&gt;
                                                 {{range $j, $fn := .Functions}}
                                                 &lt;tr&gt;
-                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
+                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
                                                         &lt;td class="cov"&gt;{{$fn.Coverage}}%&lt;/td&gt;
                                                 &lt;/tr&gt;
                                                 {{end}}
@@ -745,8 +745,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                         return;
                                 }
                                 current.style.display = 'block';
-                                current.scrollLeft = 0;
-                                current.scrollTop = 0;
+                                scrollById('coverage');
                         }
                         function selectTree(n, indent) {
                                 if (currentTree) {
@@ -759,6 +758,11 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 }
                                 currentTree.classList.add('current');
                                 currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+                        }
+                        function scrollById(id) {
+                                const elm = document.getElementById(id);
+                                const rect = elm.getBoundingClientRect();
+                                document.documentElement.scrollTop = rect.top + window.pageYOffset;
                         }
                         function change(n, i) {
                                 select(n);

@@ -36,11 +36,12 @@
 				font-weight: bold;
 				background-color: #E1F5FF;
 			}
-			.content {
+			#coverage {
 				width: 70%;
 				margin-left: 16px;
 				margin-right: 32px;
 			}
+
 			.source {
 				white-space: nowrap;
 			}
@@ -140,288 +141,53 @@
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 38px;" id="tree2" onclick="change( 2 ,  1 );">
+				<div class="file clickable" style="padding-inline-start: 38px;" id="tree1" onclick="change( 1 ,  1 );">
 					cover.go (90.3%)
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 38px;" id="tree1" onclick="change( 1 ,  1 );">
+				<div class="file clickable" style="padding-inline-start: 38px;" id="tree2" onclick="change( 2 ,  1 );">
 					func.go (35.7%)
 				</div>
 				
 			
 			</div>
-
-			<div id="cov" class="content">
+			<div id="coverage">
 				
-				<div id="file2"  style="display: none">
+				<div id="file1"  style="display: none">
 					<table>
 						<tr><th colspan="2">Coverages</th></tr>
 						<tr><td class="total">Total</td><td class="cov">90.3%</td></tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-24';return false;">func ReadProfile(r io.Reader) (profile.Profiles, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-24');">func ReadProfile(r io.Reader) (profile.Profiles, error)</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-70';return false;">func toInt(s string) int</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-70');">func toInt(s string) int</span></td>
 							<td class="cov">75%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-78';return false;">func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-78');">func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error)</span></td>
 							<td class="cov">88.9%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-110';return false;">func filterBlocks(blocks []profile.Block) []profile.Block</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-110');">func filterBlocks(blocks []profile.Block) []profile.Block</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-138';return false;">func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-138');">func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error)</span></td>
 							<td class="cov">78.9%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file2-178';return false;">func execGoList(files map[string]*profile.Profile) ([]byte, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file1-178');">func execGoList(files map[string]*profile.Profile) ([]byte, error)</span></td>
 							<td class="cov">86.7%</td>
-						</tr>
-						
-					</table>
-
-					<div class="source">
-						<pre><ol><li id="file2-1">package cover
-</li><li id="file2-2">
-</li><li id="file2-3">import (
-</li><li id="file2-4">        	"bufio"
-</li><li id="file2-5">        	"bytes"
-</li><li id="file2-6">        	"encoding/json"
-</li><li id="file2-7">        	"fmt"
-</li><li id="file2-8">        	"io"
-</li><li id="file2-9">        	"os/exec"
-</li><li id="file2-10">        	"path"
-</li><li id="file2-11">        	"path/filepath"
-</li><li id="file2-12">        	"regexp"
-</li><li id="file2-13">        	"runtime"
-</li><li id="file2-14">        	"sort"
-</li><li id="file2-15">        	"strconv"
-</li><li id="file2-16">        	"strings"
-</li><li id="file2-17">
-</li><li id="file2-18">        	"github.com/masakurapa/go-cover/internal/profile"
-</li><li id="file2-19">)
-</li><li id="file2-20">
-</li><li id="file2-21">var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
-</li><li id="file2-22">
-</li><li id="file2-23">// ReadProfile is reads profiling data
-</li><li id="file2-24">func ReadProfile(r io.Reader) (profile.Profiles, error) <span class="cov1">{
-</span></li><li id="file2-25"><span class="cov1">        	files := make(map[string]*profile.Profile)
-</span></li><li id="file2-26"><span class="cov1">        	modeOk := false
-</span></li><li id="file2-27"><span class="cov1">        	id := 1
-</span></li><li id="file2-28"><span class="cov1">
-</span></li><li id="file2-29"><span class="cov1">        	s := bufio.NewScanner(r)
-</span></li><li id="file2-30"><span class="cov1">        	for s.Scan() </span><span class="cov1">{
-</span></li><li id="file2-31"><span class="cov1">        	        	line := s.Text()
-</span></li><li id="file2-32"><span class="cov1">
-</span></li><li id="file2-33"><span class="cov1">        	        	// first line must be "mode: xxx"
-</span></li><li id="file2-34"><span class="cov1">        	        	if !modeOk </span><span class="cov1">{
-</span></li><li id="file2-35"><span class="cov1">        	        	        	const p = "mode: "
-</span></li><li id="file2-36"><span class="cov1">        	        	        	if !strings.HasPrefix(line, p) || line == p </span><span class="cov1">{
-</span></li><li id="file2-37"><span class="cov1">        	        	        	        	return nil, fmt.Errorf("first line must be mode: %q", line)
-</span></li><li id="file2-38"><span class="cov1">        	        	        	}</span>
-</li><li id="file2-39">        	        	        	<span class="cov1">modeOk = true
-</span></li><li id="file2-40"><span class="cov1">        	        	        	continue</span>
-</li><li id="file2-41">        	        	}
-</li><li id="file2-42">
-</li><li id="file2-43">        	        	<span class="cov1">matches := reg.FindStringSubmatch(line)
-</span></li><li id="file2-44"><span class="cov1">        	        	if matches == nil </span><span class="cov1">{
-</span></li><li id="file2-45"><span class="cov1">        	        	        	return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
-</span></li><li id="file2-46"><span class="cov1">        	        	}</span>
-</li><li id="file2-47">
-</li><li id="file2-48">        	        	<span class="cov1">fileName := matches[1]
-</span></li><li id="file2-49"><span class="cov1">        	        	p := files[fileName]
-</span></li><li id="file2-50"><span class="cov1">
-</span></li><li id="file2-51"><span class="cov1">        	        	if p == nil </span><span class="cov1">{
-</span></li><li id="file2-52"><span class="cov1">        	        	        	p = &amp;&profile.Profile{ID: id, FileName: fileName}
-</span></li><li id="file2-53"><span class="cov1">        	        	        	files[fileName] = p
-</span></li><li id="file2-54"><span class="cov1">        	        	        	id++
-</span></li><li id="file2-55"><span class="cov1">        	        	}</span>
-</li><li id="file2-56">
-</li><li id="file2-57">        	        	<span class="cov1">p.Blocks = append(p.Blocks, profile.Block{
-</span></li><li id="file2-58"><span class="cov1">        	        	        	StartLine: toInt(matches[2]),
-</span></li><li id="file2-59"><span class="cov1">        	        	        	StartCol:  toInt(matches[3]),
-</span></li><li id="file2-60"><span class="cov1">        	        	        	EndLine:   toInt(matches[4]),
-</span></li><li id="file2-61"><span class="cov1">        	        	        	EndCol:    toInt(matches[5]),
-</span></li><li id="file2-62"><span class="cov1">        	        	        	NumState:  toInt(matches[6]),
-</span></li><li id="file2-63"><span class="cov1">        	        	        	Count:     toInt(matches[7]),
-</span></li><li id="file2-64"><span class="cov1">        	        	})</span>
-</li><li id="file2-65">        	}
-</li><li id="file2-66">
-</li><li id="file2-67">        	<span class="cov1">return toProfiles(files)</span>
-</li><li id="file2-68">}
-</li><li id="file2-69">
-</li><li id="file2-70">func toInt(s string) int <span class="cov1">{
-</span></li><li id="file2-71"><span class="cov1">        	i, err := strconv.Atoi(s)
-</span></li><li id="file2-72"><span class="cov1">        	if err != nil </span><span class="cov0">{
-</span></li><li id="file2-73"><span class="cov0">        	        	panic(err)</span>
-</li><li id="file2-74">        	}
-</li><li id="file2-75">        	<span class="cov1">return i</span>
-</li><li id="file2-76">}
-</li><li id="file2-77">
-</li><li id="file2-78">func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <span class="cov1">{
-</span></li><li id="file2-79"><span class="cov1">        	dirs, err := makeImportDirMap(files)
-</span></li><li id="file2-80"><span class="cov1">        	if err != nil </span><span class="cov0">{
-</span></li><li id="file2-81"><span class="cov0">        	        	return nil, err
-</span></li><li id="file2-82"><span class="cov0">        	}</span>
-</li><li id="file2-83">
-</li><li id="file2-84">        	<span class="cov1">profiles := make(profile.Profiles, 0, len(files))
-</span></li><li id="file2-85"><span class="cov1">        	for _, p := range files </span><span class="cov1">{
-</span></li><li id="file2-86"><span class="cov1">        	        	p.Blocks = filterBlocks(p.Blocks)
-</span></li><li id="file2-87"><span class="cov1">        	        	sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov1">{
-</span></li><li id="file2-88"><span class="cov1">        	        	        	bi, bj := p.Blocks[i], p.Blocks[j]
-</span></li><li id="file2-89"><span class="cov1">        	        	        	return bi.StartLine &lt;< bj.StartLine || bi.StartLine == bj.StartLine &amp;&&amp;& bi.StartCol &lt;< bj.StartCol
-</span></li><li id="file2-90"><span class="cov1">        	        	}</span>)
-</li><li id="file2-91">
-</li><li id="file2-92">        	        	<span class="cov1">p.Dir = dirs[path.Dir(p.FileName)]
-</span></li><li id="file2-93"><span class="cov1">
-</span></li><li id="file2-94"><span class="cov1">        	        	fn, err := makeFuncs(*p)
-</span></li><li id="file2-95"><span class="cov1">        	        	if err != nil </span><span class="cov0">{
-</span></li><li id="file2-96"><span class="cov0">        	        	        	return nil, err
-</span></li><li id="file2-97"><span class="cov0">        	        	}</span>
-</li><li id="file2-98">        	        	<span class="cov1">p.Functions = fn
-</span></li><li id="file2-99"><span class="cov1">
-</span></li><li id="file2-100"><span class="cov1">        	        	profiles = append(profiles, *p)</span>
-</li><li id="file2-101">        	}
-</li><li id="file2-102">
-</li><li id="file2-103">        	<span class="cov1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov1">{
-</span></li><li id="file2-104"><span class="cov1">        	        	return profiles[i].FileName &lt;< profiles[j].FileName
-</span></li><li id="file2-105"><span class="cov1">        	}</span>)
-</li><li id="file2-106">
-</li><li id="file2-107">        	<span class="cov1">return profiles, nil</span>
-</li><li id="file2-108">}
-</li><li id="file2-109">
-</li><li id="file2-110">func filterBlocks(blocks []profile.Block) []profile.Block <span class="cov1">{
-</span></li><li id="file2-111"><span class="cov1">        	index := func(bs []profile.Block, b *profile.Block) int </span><span class="cov1">{
-</span></li><li id="file2-112"><span class="cov1">        	        	for i, bb := range bs </span><span class="cov1">{
-</span></li><li id="file2-113"><span class="cov1">        	        	        	if bb.StartLine == b.StartLine &amp;&&amp;&
-</span></li><li id="file2-114"><span class="cov1">        	        	        	        	bb.StartCol == b.StartCol &amp;&&amp;&
-</span></li><li id="file2-115"><span class="cov1">        	        	        	        	bb.EndLine == b.EndLine &amp;&&amp;&
-</span></li><li id="file2-116"><span class="cov1">        	        	        	        	bb.EndCol == b.EndCol </span><span class="cov1">{
-</span></li><li id="file2-117"><span class="cov1">        	        	        	        	return i
-</span></li><li id="file2-118"><span class="cov1">        	        	        	}</span>
-</li><li id="file2-119">        	        	}
-</li><li id="file2-120">        	        	<span class="cov1">return -1</span>
-</li><li id="file2-121">        	}
-</li><li id="file2-122">
-</li><li id="file2-123">        	<span class="cov1">newBlocks := make([]profile.Block, 0, len(blocks))
-</span></li><li id="file2-124"><span class="cov1">        	for _, b := range blocks </span><span class="cov1">{
-</span></li><li id="file2-125"><span class="cov1">        	        	i := index(newBlocks, &amp;&b)
-</span></li><li id="file2-126"><span class="cov1">        	        	if i == -1 </span><span class="cov1">{
-</span></li><li id="file2-127"><span class="cov1">        	        	        	newBlocks = append(newBlocks, b)
-</span></li><li id="file2-128"><span class="cov1">        	        	        	continue</span>
-</li><li id="file2-129">        	        	}
-</li><li id="file2-130">        	        	<span class="cov1">if b.Count &gt;> 0 </span><span class="cov1">{
-</span></li><li id="file2-131"><span class="cov1">        	        	        	newBlocks[i] = b
-</span></li><li id="file2-132"><span class="cov1">        	        	}</span>
-</li><li id="file2-133">        	}
-</li><li id="file2-134">
-</li><li id="file2-135">        	<span class="cov1">return newBlocks</span>
-</li><li id="file2-136">}
-</li><li id="file2-137">
-</li><li id="file2-138">func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) <span class="cov1">{
-</span></li><li id="file2-139"><span class="cov1">        	stdout, err := execGoList(files)
-</span></li><li id="file2-140"><span class="cov1">        	if err != nil </span><span class="cov0">{
-</span></li><li id="file2-141"><span class="cov0">        	        	return nil, err
-</span></li><li id="file2-142"><span class="cov0">        	}</span>
-</li><li id="file2-143">
-</li><li id="file2-144">        	<span class="cov1">pkgs := make(map[string]string)
-</span></li><li id="file2-145"><span class="cov1">        	if len(stdout) == 0 </span><span class="cov0">{
-</span></li><li id="file2-146"><span class="cov0">        	        	return pkgs, nil
-</span></li><li id="file2-147"><span class="cov0">        	}</span>
-</li><li id="file2-148">
-</li><li id="file2-149">        	<span class="cov1">type pkg struct {
-</span></li><li id="file2-150"><span class="cov1">        	        	Dir        string
-</span></li><li id="file2-151"><span class="cov1">        	        	ImportPath string
-</span></li><li id="file2-152"><span class="cov1">        	        	Error      *struct {
-</span></li><li id="file2-153"><span class="cov1">        	        	        	Err string
-</span></li><li id="file2-154"><span class="cov1">        	        	}
-</span></li><li id="file2-155"><span class="cov1">        	}
-</span></li><li id="file2-156"><span class="cov1">
-</span></li><li id="file2-157"><span class="cov1">        	dec := json.NewDecoder(bytes.NewReader(stdout))
-</span></li><li id="file2-158"><span class="cov1">        	for </span><span class="cov1">{
-</span></li><li id="file2-159"><span class="cov1">        	        	var p pkg
-</span></li><li id="file2-160"><span class="cov1">        	        	err := dec.Decode(&amp;&p)
-</span></li><li id="file2-161"><span class="cov1">        	        	if err == io.EOF </span><span class="cov1">{
-</span></li><li id="file2-162"><span class="cov1">        	        	        	break</span>
-</li><li id="file2-163">        	        	}
-</li><li id="file2-164">        	        	<span class="cov1">if err != nil </span><span class="cov0">{
-</span></li><li id="file2-165"><span class="cov0">        	        	        	return nil, fmt.Errorf("decoding go list json: %v", err)
-</span></li><li id="file2-166"><span class="cov0">        	        	}</span>
-</li><li id="file2-167">        	        	<span class="cov1">if p.Error != nil </span><span class="cov0">{
-</span></li><li id="file2-168"><span class="cov0">        	        	        	return nil, fmt.Errorf(p.Error.Err)
-</span></li><li id="file2-169"><span class="cov0">        	        	}</span>
-</li><li id="file2-170">        	        	// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
-</li><li id="file2-171">        	        	<span class="cov1">pkgs[p.ImportPath] = p.Dir</span>
-</li><li id="file2-172">        	}
-</li><li id="file2-173">
-</li><li id="file2-174">        	<span class="cov1">return pkgs, nil</span>
-</li><li id="file2-175">}
-</li><li id="file2-176">
-</li><li id="file2-177">// execute "go list" command
-</li><li id="file2-178">func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="cov1">{
-</span></li><li id="file2-179"><span class="cov1">        	dirs := make([]string, 0, len(files))
-</span></li><li id="file2-180"><span class="cov1">        	m := make(map[string]struct{})
-</span></li><li id="file2-181"><span class="cov1">
-</span></li><li id="file2-182"><span class="cov1">        	for _, p := range files </span><span class="cov1">{
-</span></li><li id="file2-183"><span class="cov1">        	        	if p.IsRelativeOrAbsolute() </span><span class="cov0">{
-</span></li><li id="file2-184"><span class="cov0">        	        	        	continue</span>
-</li><li id="file2-185">        	        	}
-</li><li id="file2-186">        	        	<span class="cov1">dir := path.Dir(p.FileName)
-</span></li><li id="file2-187"><span class="cov1">        	        	if _, ok := m[dir]; !ok </span><span class="cov1">{
-</span></li><li id="file2-188"><span class="cov1">        	        	        	m[dir] = struct{}{}
-</span></li><li id="file2-189"><span class="cov1">        	        	        	dirs = append(dirs, dir)
-</span></li><li id="file2-190"><span class="cov1">        	        	}</span>
-</li><li id="file2-191">        	}
-</li><li id="file2-192">
-</li><li id="file2-193">        	<span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
-</span></li><li id="file2-194"><span class="cov0">        	        	return make([]byte, 0), nil
-</span></li><li id="file2-195"><span class="cov0">        	}</span>
-</li><li id="file2-196">
-</li><li id="file2-197">        	<span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
-</span></li><li id="file2-198"><span class="cov1">        	args := append([]string{"list", "-e", "-json"}, dirs...)
-</span></li><li id="file2-199"><span class="cov1">        	cmd := exec.Command(cmdName, args...)
-</span></li><li id="file2-200"><span class="cov1">
-</span></li><li id="file2-201"><span class="cov1">        	return cmd.Output()</span>
-</li><li id="file2-202">}
-</li></ol></pre>
-					</div>
-				</div>
-				
-				<div id="file1"  style="display: none">
-					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">35.7%</td></tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file1-28';return false;">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor</span></td>
-							<td class="cov">13.3%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file1-63';return false;">func makeFuncs(prof profile.Profile) (profile.Functions, error)</span></td>
-							<td class="cov">75%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file1-72';return false;">func findFuncs(name string) ([]*funcExtent, error)</span></td>
-							<td class="cov">85.7%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file1-87';return false;">func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions</span></td>
-							<td class="cov">25%</td>
 						</tr>
 						
 					</table>
@@ -430,122 +196,356 @@
 						<pre><ol><li id="file1-1">package cover
 </li><li id="file1-2">
 </li><li id="file1-3">import (
-</li><li id="file1-4">        	"bytes"
-</li><li id="file1-5">        	"go/ast"
-</li><li id="file1-6">        	"go/format"
-</li><li id="file1-7">        	"go/parser"
-</li><li id="file1-8">        	"go/token"
-</li><li id="file1-9">
-</li><li id="file1-10">        	"github.com/masakurapa/go-cover/internal/profile"
-</li><li id="file1-11">)
-</li><li id="file1-12">
-</li><li id="file1-13">type funcExtent struct {
-</li><li id="file1-14">        	name      string
-</li><li id="file1-15">        	startLine int
-</li><li id="file1-16">        	startCol  int
-</li><li id="file1-17">        	endLine   int
-</li><li id="file1-18">        	endCol    int
-</li><li id="file1-19">}
+</li><li id="file1-4">        	"bufio"
+</li><li id="file1-5">        	"bytes"
+</li><li id="file1-6">        	"encoding/json"
+</li><li id="file1-7">        	"fmt"
+</li><li id="file1-8">        	"io"
+</li><li id="file1-9">        	"os/exec"
+</li><li id="file1-10">        	"path"
+</li><li id="file1-11">        	"path/filepath"
+</li><li id="file1-12">        	"regexp"
+</li><li id="file1-13">        	"runtime"
+</li><li id="file1-14">        	"sort"
+</li><li id="file1-15">        	"strconv"
+</li><li id="file1-16">        	"strings"
+</li><li id="file1-17">
+</li><li id="file1-18">        	"github.com/masakurapa/go-cover/internal/profile"
+</li><li id="file1-19">)
 </li><li id="file1-20">
-</li><li id="file1-21">type funcVisitor struct {
-</li><li id="file1-22">        	fset    *token.FileSet
-</li><li id="file1-23">        	name    string
-</li><li id="file1-24">        	astFile *ast.File
-</li><li id="file1-25">        	funcs   []*funcExtent
-</li><li id="file1-26">}
-</li><li id="file1-27">
-</li><li id="file1-28">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor <span class="cov1">{
-</span></li><li id="file1-29"><span class="cov1">        	switch n := node.(type) </span>{
-</li><li id="file1-30">        	case *ast.FuncDecl:<span class="cov0">
-</span></li><li id="file1-31"><span class="cov0">        	        	if n.Body == nil </span><span class="cov0">{
-</span></li><li id="file1-32"><span class="cov0">        	        	        	break</span>
-</li><li id="file1-33">        	        	}
-</li><li id="file1-34">        	        	<span class="cov0">start := v.fset.Position(n.Pos())
-</span></li><li id="file1-35"><span class="cov0">        	        	end := v.fset.Position(n.End())
-</span></li><li id="file1-36"><span class="cov0">
-</span></li><li id="file1-37"><span class="cov0">        	        	var buf bytes.Buffer
-</span></li><li id="file1-38"><span class="cov0">        	        	err := format.Node(&amp;&buf, token.NewFileSet(), &amp;&ast.FuncDecl{
-</span></li><li id="file1-39"><span class="cov0">        	        	        	Name: n.Name,
-</span></li><li id="file1-40"><span class="cov0">        	        	        	Recv: n.Recv,
-</span></li><li id="file1-41"><span class="cov0">        	        	        	Type: n.Type,
-</span></li><li id="file1-42"><span class="cov0">        	        	})
-</span></li><li id="file1-43"><span class="cov0">        	        	if err != nil </span><span class="cov0">{
-</span></li><li id="file1-44"><span class="cov0">        	        	        	panic(err)</span>
-</li><li id="file1-45">        	        	}
-</li><li id="file1-46">        	        	<span class="cov0">src, err := format.Source(buf.Bytes())
-</span></li><li id="file1-47"><span class="cov0">        	        	if err != nil </span><span class="cov0">{
-</span></li><li id="file1-48"><span class="cov0">        	        	        	panic(err)</span>
-</li><li id="file1-49">        	        	}
-</li><li id="file1-50">
-</li><li id="file1-51">        	        	<span class="cov0">fe := &amp;&funcExtent{
-</span></li><li id="file1-52"><span class="cov0">        	        	        	name:      string(src),
-</span></li><li id="file1-53"><span class="cov0">        	        	        	startLine: start.Line,
-</span></li><li id="file1-54"><span class="cov0">        	        	        	startCol:  start.Column,
-</span></li><li id="file1-55"><span class="cov0">        	        	        	endLine:   end.Line,
-</span></li><li id="file1-56"><span class="cov0">        	        	        	endCol:    end.Column,
-</span></li><li id="file1-57"><span class="cov0">        	        	}
-</span></li><li id="file1-58"><span class="cov0">        	        	v.funcs = append(v.funcs, fe)</span>
-</li><li id="file1-59">        	}
-</li><li id="file1-60">        	<span class="cov1">return v</span>
-</li><li id="file1-61">}
-</li><li id="file1-62">
-</li><li id="file1-63">func makeFuncs(prof profile.Profile) (profile.Functions, error) <span class="cov1">{
-</span></li><li id="file1-64"><span class="cov1">        	exts, err := findFuncs(prof.FilePath())
-</span></li><li id="file1-65"><span class="cov1">        	if err != nil </span><span class="cov0">{
-</span></li><li id="file1-66"><span class="cov0">        	        	return nil, err
-</span></li><li id="file1-67"><span class="cov0">        	}</span>
-</li><li id="file1-68">
-</li><li id="file1-69">        	<span class="cov1">return toFunctions(prof, exts), nil</span>
-</li><li id="file1-70">}
-</li><li id="file1-71">
-</li><li id="file1-72">func findFuncs(name string) ([]*funcExtent, error) <span class="cov1">{
-</span></li><li id="file1-73"><span class="cov1">        	fset := token.NewFileSet()
-</span></li><li id="file1-74"><span class="cov1">        	parsedFile, err := parser.ParseFile(fset, name, nil, 0)
-</span></li><li id="file1-75"><span class="cov1">        	if err != nil </span><span class="cov0">{
-</span></li><li id="file1-76"><span class="cov0">        	        	return nil, err
-</span></li><li id="file1-77"><span class="cov0">        	}</span>
-</li><li id="file1-78">        	<span class="cov1">visitor := &amp;&funcVisitor{
-</span></li><li id="file1-79"><span class="cov1">        	        	fset:    fset,
-</span></li><li id="file1-80"><span class="cov1">        	        	name:    name,
-</span></li><li id="file1-81"><span class="cov1">        	        	astFile: parsedFile,
-</span></li><li id="file1-82"><span class="cov1">        	}
-</span></li><li id="file1-83"><span class="cov1">        	ast.Walk(visitor, visitor.astFile)
-</span></li><li id="file1-84"><span class="cov1">        	return visitor.funcs, nil</span>
-</li><li id="file1-85">}
-</li><li id="file1-86">
-</li><li id="file1-87">func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions <span class="cov1">{
-</span></li><li id="file1-88"><span class="cov1">        	fncs := make(profile.Functions, 0, len(exts))
-</span></li><li id="file1-89"><span class="cov1">
-</span></li><li id="file1-90"><span class="cov1">        	bi := 0
-</span></li><li id="file1-91"><span class="cov1">        	for _, e := range exts </span><span class="cov0">{
-</span></li><li id="file1-92"><span class="cov0">        	        	fnc := profile.Function{
-</span></li><li id="file1-93"><span class="cov0">        	        	        	Name:      e.name,
-</span></li><li id="file1-94"><span class="cov0">        	        	        	StartLine: e.startLine,
-</span></li><li id="file1-95"><span class="cov0">        	        	        	StartCol:  e.startCol,
-</span></li><li id="file1-96"><span class="cov0">        	        	}
-</span></li><li id="file1-97"><span class="cov0">
-</span></li><li id="file1-98"><span class="cov0">        	        	for bi &lt;< len(prof.Blocks) </span><span class="cov0">{
-</span></li><li id="file1-99"><span class="cov0">        	        	        	b := prof.Blocks[bi]
-</span></li><li id="file1-100"><span class="cov0">
-</span></li><li id="file1-101"><span class="cov0">        	        	        	if b.StartLine &lt;< e.startLine </span><span class="cov0">{
-</span></li><li id="file1-102"><span class="cov0">        	        	        	        	bi++
-</span></li><li id="file1-103"><span class="cov0">        	        	        	        	continue</span>
-</li><li id="file1-104">        	        	        	}
-</li><li id="file1-105">
-</li><li id="file1-106">        	        	        	<span class="cov0">if b.StartLine &gt;>= e.startLine &amp;&&amp;&
-</span></li><li id="file1-107"><span class="cov0">        	        	        	        	b.EndLine &lt;<= e.endLine </span><span class="cov0">{
-</span></li><li id="file1-108"><span class="cov0">        	        	        	        	fnc.Blocks = append(fnc.Blocks, b)
-</span></li><li id="file1-109"><span class="cov0">        	        	        	        	bi++
-</span></li><li id="file1-110"><span class="cov0">        	        	        	        	continue</span>
-</li><li id="file1-111">        	        	        	}
-</li><li id="file1-112">        	        	        	<span class="cov0">break</span>
-</li><li id="file1-113">        	        	}
-</li><li id="file1-114">
-</li><li id="file1-115">        	        	<span class="cov0">fncs = append(fncs, fnc)</span>
-</li><li id="file1-116">        	}
-</li><li id="file1-117">
-</li><li id="file1-118">        	<span class="cov1">return fncs</span>
-</li><li id="file1-119">}
+</li><li id="file1-21">var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
+</li><li id="file1-22">
+</li><li id="file1-23">// ReadProfile is reads profiling data
+</li><li id="file1-24">func ReadProfile(r io.Reader) (profile.Profiles, error) <span class="cov1">{
+</span></li><li id="file1-25"><span class="cov1">        	files := make(map[string]*profile.Profile)
+</span></li><li id="file1-26"><span class="cov1">        	modeOk := false
+</span></li><li id="file1-27"><span class="cov1">        	id := 1
+</span></li><li id="file1-28"><span class="cov1">
+</span></li><li id="file1-29"><span class="cov1">        	s := bufio.NewScanner(r)
+</span></li><li id="file1-30"><span class="cov1">        	for s.Scan() </span><span class="cov1">{
+</span></li><li id="file1-31"><span class="cov1">        	        	line := s.Text()
+</span></li><li id="file1-32"><span class="cov1">
+</span></li><li id="file1-33"><span class="cov1">        	        	// first line must be "mode: xxx"
+</span></li><li id="file1-34"><span class="cov1">        	        	if !modeOk </span><span class="cov1">{
+</span></li><li id="file1-35"><span class="cov1">        	        	        	const p = "mode: "
+</span></li><li id="file1-36"><span class="cov1">        	        	        	if !strings.HasPrefix(line, p) || line == p </span><span class="cov1">{
+</span></li><li id="file1-37"><span class="cov1">        	        	        	        	return nil, fmt.Errorf("first line must be mode: %q", line)
+</span></li><li id="file1-38"><span class="cov1">        	        	        	}</span>
+</li><li id="file1-39">        	        	        	<span class="cov1">modeOk = true
+</span></li><li id="file1-40"><span class="cov1">        	        	        	continue</span>
+</li><li id="file1-41">        	        	}
+</li><li id="file1-42">
+</li><li id="file1-43">        	        	<span class="cov1">matches := reg.FindStringSubmatch(line)
+</span></li><li id="file1-44"><span class="cov1">        	        	if matches == nil </span><span class="cov1">{
+</span></li><li id="file1-45"><span class="cov1">        	        	        	return nil, fmt.Errorf("%q does not match expected format: %v", line, reg)
+</span></li><li id="file1-46"><span class="cov1">        	        	}</span>
+</li><li id="file1-47">
+</li><li id="file1-48">        	        	<span class="cov1">fileName := matches[1]
+</span></li><li id="file1-49"><span class="cov1">        	        	p := files[fileName]
+</span></li><li id="file1-50"><span class="cov1">
+</span></li><li id="file1-51"><span class="cov1">        	        	if p == nil </span><span class="cov1">{
+</span></li><li id="file1-52"><span class="cov1">        	        	        	p = &amp;&profile.Profile{ID: id, FileName: fileName}
+</span></li><li id="file1-53"><span class="cov1">        	        	        	files[fileName] = p
+</span></li><li id="file1-54"><span class="cov1">        	        	        	id++
+</span></li><li id="file1-55"><span class="cov1">        	        	}</span>
+</li><li id="file1-56">
+</li><li id="file1-57">        	        	<span class="cov1">p.Blocks = append(p.Blocks, profile.Block{
+</span></li><li id="file1-58"><span class="cov1">        	        	        	StartLine: toInt(matches[2]),
+</span></li><li id="file1-59"><span class="cov1">        	        	        	StartCol:  toInt(matches[3]),
+</span></li><li id="file1-60"><span class="cov1">        	        	        	EndLine:   toInt(matches[4]),
+</span></li><li id="file1-61"><span class="cov1">        	        	        	EndCol:    toInt(matches[5]),
+</span></li><li id="file1-62"><span class="cov1">        	        	        	NumState:  toInt(matches[6]),
+</span></li><li id="file1-63"><span class="cov1">        	        	        	Count:     toInt(matches[7]),
+</span></li><li id="file1-64"><span class="cov1">        	        	})</span>
+</li><li id="file1-65">        	}
+</li><li id="file1-66">
+</li><li id="file1-67">        	<span class="cov1">return toProfiles(files)</span>
+</li><li id="file1-68">}
+</li><li id="file1-69">
+</li><li id="file1-70">func toInt(s string) int <span class="cov1">{
+</span></li><li id="file1-71"><span class="cov1">        	i, err := strconv.Atoi(s)
+</span></li><li id="file1-72"><span class="cov1">        	if err != nil </span><span class="cov0">{
+</span></li><li id="file1-73"><span class="cov0">        	        	panic(err)</span>
+</li><li id="file1-74">        	}
+</li><li id="file1-75">        	<span class="cov1">return i</span>
+</li><li id="file1-76">}
+</li><li id="file1-77">
+</li><li id="file1-78">func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <span class="cov1">{
+</span></li><li id="file1-79"><span class="cov1">        	dirs, err := makeImportDirMap(files)
+</span></li><li id="file1-80"><span class="cov1">        	if err != nil </span><span class="cov0">{
+</span></li><li id="file1-81"><span class="cov0">        	        	return nil, err
+</span></li><li id="file1-82"><span class="cov0">        	}</span>
+</li><li id="file1-83">
+</li><li id="file1-84">        	<span class="cov1">profiles := make(profile.Profiles, 0, len(files))
+</span></li><li id="file1-85"><span class="cov1">        	for _, p := range files </span><span class="cov1">{
+</span></li><li id="file1-86"><span class="cov1">        	        	p.Blocks = filterBlocks(p.Blocks)
+</span></li><li id="file1-87"><span class="cov1">        	        	sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov1">{
+</span></li><li id="file1-88"><span class="cov1">        	        	        	bi, bj := p.Blocks[i], p.Blocks[j]
+</span></li><li id="file1-89"><span class="cov1">        	        	        	return bi.StartLine &lt;< bj.StartLine || bi.StartLine == bj.StartLine &amp;&&amp;& bi.StartCol &lt;< bj.StartCol
+</span></li><li id="file1-90"><span class="cov1">        	        	}</span>)
+</li><li id="file1-91">
+</li><li id="file1-92">        	        	<span class="cov1">p.Dir = dirs[path.Dir(p.FileName)]
+</span></li><li id="file1-93"><span class="cov1">
+</span></li><li id="file1-94"><span class="cov1">        	        	fn, err := makeFuncs(*p)
+</span></li><li id="file1-95"><span class="cov1">        	        	if err != nil </span><span class="cov0">{
+</span></li><li id="file1-96"><span class="cov0">        	        	        	return nil, err
+</span></li><li id="file1-97"><span class="cov0">        	        	}</span>
+</li><li id="file1-98">        	        	<span class="cov1">p.Functions = fn
+</span></li><li id="file1-99"><span class="cov1">
+</span></li><li id="file1-100"><span class="cov1">        	        	profiles = append(profiles, *p)</span>
+</li><li id="file1-101">        	}
+</li><li id="file1-102">
+</li><li id="file1-103">        	<span class="cov1">sort.SliceStable(profiles, func(i, j int) bool </span><span class="cov1">{
+</span></li><li id="file1-104"><span class="cov1">        	        	return profiles[i].FileName &lt;< profiles[j].FileName
+</span></li><li id="file1-105"><span class="cov1">        	}</span>)
+</li><li id="file1-106">
+</li><li id="file1-107">        	<span class="cov1">return profiles, nil</span>
+</li><li id="file1-108">}
+</li><li id="file1-109">
+</li><li id="file1-110">func filterBlocks(blocks []profile.Block) []profile.Block <span class="cov1">{
+</span></li><li id="file1-111"><span class="cov1">        	index := func(bs []profile.Block, b *profile.Block) int </span><span class="cov1">{
+</span></li><li id="file1-112"><span class="cov1">        	        	for i, bb := range bs </span><span class="cov1">{
+</span></li><li id="file1-113"><span class="cov1">        	        	        	if bb.StartLine == b.StartLine &amp;&&amp;&
+</span></li><li id="file1-114"><span class="cov1">        	        	        	        	bb.StartCol == b.StartCol &amp;&&amp;&
+</span></li><li id="file1-115"><span class="cov1">        	        	        	        	bb.EndLine == b.EndLine &amp;&&amp;&
+</span></li><li id="file1-116"><span class="cov1">        	        	        	        	bb.EndCol == b.EndCol </span><span class="cov1">{
+</span></li><li id="file1-117"><span class="cov1">        	        	        	        	return i
+</span></li><li id="file1-118"><span class="cov1">        	        	        	}</span>
+</li><li id="file1-119">        	        	}
+</li><li id="file1-120">        	        	<span class="cov1">return -1</span>
+</li><li id="file1-121">        	}
+</li><li id="file1-122">
+</li><li id="file1-123">        	<span class="cov1">newBlocks := make([]profile.Block, 0, len(blocks))
+</span></li><li id="file1-124"><span class="cov1">        	for _, b := range blocks </span><span class="cov1">{
+</span></li><li id="file1-125"><span class="cov1">        	        	i := index(newBlocks, &amp;&b)
+</span></li><li id="file1-126"><span class="cov1">        	        	if i == -1 </span><span class="cov1">{
+</span></li><li id="file1-127"><span class="cov1">        	        	        	newBlocks = append(newBlocks, b)
+</span></li><li id="file1-128"><span class="cov1">        	        	        	continue</span>
+</li><li id="file1-129">        	        	}
+</li><li id="file1-130">        	        	<span class="cov1">if b.Count &gt;> 0 </span><span class="cov1">{
+</span></li><li id="file1-131"><span class="cov1">        	        	        	newBlocks[i] = b
+</span></li><li id="file1-132"><span class="cov1">        	        	}</span>
+</li><li id="file1-133">        	}
+</li><li id="file1-134">
+</li><li id="file1-135">        	<span class="cov1">return newBlocks</span>
+</li><li id="file1-136">}
+</li><li id="file1-137">
+</li><li id="file1-138">func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) <span class="cov1">{
+</span></li><li id="file1-139"><span class="cov1">        	stdout, err := execGoList(files)
+</span></li><li id="file1-140"><span class="cov1">        	if err != nil </span><span class="cov0">{
+</span></li><li id="file1-141"><span class="cov0">        	        	return nil, err
+</span></li><li id="file1-142"><span class="cov0">        	}</span>
+</li><li id="file1-143">
+</li><li id="file1-144">        	<span class="cov1">pkgs := make(map[string]string)
+</span></li><li id="file1-145"><span class="cov1">        	if len(stdout) == 0 </span><span class="cov0">{
+</span></li><li id="file1-146"><span class="cov0">        	        	return pkgs, nil
+</span></li><li id="file1-147"><span class="cov0">        	}</span>
+</li><li id="file1-148">
+</li><li id="file1-149">        	<span class="cov1">type pkg struct {
+</span></li><li id="file1-150"><span class="cov1">        	        	Dir        string
+</span></li><li id="file1-151"><span class="cov1">        	        	ImportPath string
+</span></li><li id="file1-152"><span class="cov1">        	        	Error      *struct {
+</span></li><li id="file1-153"><span class="cov1">        	        	        	Err string
+</span></li><li id="file1-154"><span class="cov1">        	        	}
+</span></li><li id="file1-155"><span class="cov1">        	}
+</span></li><li id="file1-156"><span class="cov1">
+</span></li><li id="file1-157"><span class="cov1">        	dec := json.NewDecoder(bytes.NewReader(stdout))
+</span></li><li id="file1-158"><span class="cov1">        	for </span><span class="cov1">{
+</span></li><li id="file1-159"><span class="cov1">        	        	var p pkg
+</span></li><li id="file1-160"><span class="cov1">        	        	err := dec.Decode(&amp;&p)
+</span></li><li id="file1-161"><span class="cov1">        	        	if err == io.EOF </span><span class="cov1">{
+</span></li><li id="file1-162"><span class="cov1">        	        	        	break</span>
+</li><li id="file1-163">        	        	}
+</li><li id="file1-164">        	        	<span class="cov1">if err != nil </span><span class="cov0">{
+</span></li><li id="file1-165"><span class="cov0">        	        	        	return nil, fmt.Errorf("decoding go list json: %v", err)
+</span></li><li id="file1-166"><span class="cov0">        	        	}</span>
+</li><li id="file1-167">        	        	<span class="cov1">if p.Error != nil </span><span class="cov0">{
+</span></li><li id="file1-168"><span class="cov0">        	        	        	return nil, fmt.Errorf(p.Error.Err)
+</span></li><li id="file1-169"><span class="cov0">        	        	}</span>
+</li><li id="file1-170">        	        	// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
+</li><li id="file1-171">        	        	<span class="cov1">pkgs[p.ImportPath] = p.Dir</span>
+</li><li id="file1-172">        	}
+</li><li id="file1-173">
+</li><li id="file1-174">        	<span class="cov1">return pkgs, nil</span>
+</li><li id="file1-175">}
+</li><li id="file1-176">
+</li><li id="file1-177">// execute "go list" command
+</li><li id="file1-178">func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="cov1">{
+</span></li><li id="file1-179"><span class="cov1">        	dirs := make([]string, 0, len(files))
+</span></li><li id="file1-180"><span class="cov1">        	m := make(map[string]struct{})
+</span></li><li id="file1-181"><span class="cov1">
+</span></li><li id="file1-182"><span class="cov1">        	for _, p := range files </span><span class="cov1">{
+</span></li><li id="file1-183"><span class="cov1">        	        	if p.IsRelativeOrAbsolute() </span><span class="cov0">{
+</span></li><li id="file1-184"><span class="cov0">        	        	        	continue</span>
+</li><li id="file1-185">        	        	}
+</li><li id="file1-186">        	        	<span class="cov1">dir := path.Dir(p.FileName)
+</span></li><li id="file1-187"><span class="cov1">        	        	if _, ok := m[dir]; !ok </span><span class="cov1">{
+</span></li><li id="file1-188"><span class="cov1">        	        	        	m[dir] = struct{}{}
+</span></li><li id="file1-189"><span class="cov1">        	        	        	dirs = append(dirs, dir)
+</span></li><li id="file1-190"><span class="cov1">        	        	}</span>
+</li><li id="file1-191">        	}
+</li><li id="file1-192">
+</li><li id="file1-193">        	<span class="cov1">if len(dirs) == 0 </span><span class="cov0">{
+</span></li><li id="file1-194"><span class="cov0">        	        	return make([]byte, 0), nil
+</span></li><li id="file1-195"><span class="cov0">        	}</span>
+</li><li id="file1-196">
+</li><li id="file1-197">        	<span class="cov1">cmdName := filepath.Join(runtime.GOROOT(), "bin/go")
+</span></li><li id="file1-198"><span class="cov1">        	args := append([]string{"list", "-e", "-json"}, dirs...)
+</span></li><li id="file1-199"><span class="cov1">        	cmd := exec.Command(cmdName, args...)
+</span></li><li id="file1-200"><span class="cov1">
+</span></li><li id="file1-201"><span class="cov1">        	return cmd.Output()</span>
+</li><li id="file1-202">}
+</li></ol></pre>
+					</div>
+				</div>
+				
+				<div id="file2"  style="display: none">
+					<table>
+						<tr><th colspan="2">Coverages</th></tr>
+						<tr><td class="total">Total</td><td class="cov">35.7%</td></tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file2-28');">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor</span></td>
+							<td class="cov">13.3%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file2-63');">func makeFuncs(prof profile.Profile) (profile.Functions, error)</span></td>
+							<td class="cov">75%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file2-72');">func findFuncs(name string) ([]*funcExtent, error)</span></td>
+							<td class="cov">85.7%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file2-87');">func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions</span></td>
+							<td class="cov">25%</td>
+						</tr>
+						
+					</table>
+
+					<div class="source">
+						<pre><ol><li id="file2-1">package cover
+</li><li id="file2-2">
+</li><li id="file2-3">import (
+</li><li id="file2-4">        	"bytes"
+</li><li id="file2-5">        	"go/ast"
+</li><li id="file2-6">        	"go/format"
+</li><li id="file2-7">        	"go/parser"
+</li><li id="file2-8">        	"go/token"
+</li><li id="file2-9">
+</li><li id="file2-10">        	"github.com/masakurapa/go-cover/internal/profile"
+</li><li id="file2-11">)
+</li><li id="file2-12">
+</li><li id="file2-13">type funcExtent struct {
+</li><li id="file2-14">        	name      string
+</li><li id="file2-15">        	startLine int
+</li><li id="file2-16">        	startCol  int
+</li><li id="file2-17">        	endLine   int
+</li><li id="file2-18">        	endCol    int
+</li><li id="file2-19">}
+</li><li id="file2-20">
+</li><li id="file2-21">type funcVisitor struct {
+</li><li id="file2-22">        	fset    *token.FileSet
+</li><li id="file2-23">        	name    string
+</li><li id="file2-24">        	astFile *ast.File
+</li><li id="file2-25">        	funcs   []*funcExtent
+</li><li id="file2-26">}
+</li><li id="file2-27">
+</li><li id="file2-28">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor <span class="cov1">{
+</span></li><li id="file2-29"><span class="cov1">        	switch n := node.(type) </span>{
+</li><li id="file2-30">        	case *ast.FuncDecl:<span class="cov0">
+</span></li><li id="file2-31"><span class="cov0">        	        	if n.Body == nil </span><span class="cov0">{
+</span></li><li id="file2-32"><span class="cov0">        	        	        	break</span>
+</li><li id="file2-33">        	        	}
+</li><li id="file2-34">        	        	<span class="cov0">start := v.fset.Position(n.Pos())
+</span></li><li id="file2-35"><span class="cov0">        	        	end := v.fset.Position(n.End())
+</span></li><li id="file2-36"><span class="cov0">
+</span></li><li id="file2-37"><span class="cov0">        	        	var buf bytes.Buffer
+</span></li><li id="file2-38"><span class="cov0">        	        	err := format.Node(&amp;&buf, token.NewFileSet(), &amp;&ast.FuncDecl{
+</span></li><li id="file2-39"><span class="cov0">        	        	        	Name: n.Name,
+</span></li><li id="file2-40"><span class="cov0">        	        	        	Recv: n.Recv,
+</span></li><li id="file2-41"><span class="cov0">        	        	        	Type: n.Type,
+</span></li><li id="file2-42"><span class="cov0">        	        	})
+</span></li><li id="file2-43"><span class="cov0">        	        	if err != nil </span><span class="cov0">{
+</span></li><li id="file2-44"><span class="cov0">        	        	        	panic(err)</span>
+</li><li id="file2-45">        	        	}
+</li><li id="file2-46">        	        	<span class="cov0">src, err := format.Source(buf.Bytes())
+</span></li><li id="file2-47"><span class="cov0">        	        	if err != nil </span><span class="cov0">{
+</span></li><li id="file2-48"><span class="cov0">        	        	        	panic(err)</span>
+</li><li id="file2-49">        	        	}
+</li><li id="file2-50">
+</li><li id="file2-51">        	        	<span class="cov0">fe := &amp;&funcExtent{
+</span></li><li id="file2-52"><span class="cov0">        	        	        	name:      string(src),
+</span></li><li id="file2-53"><span class="cov0">        	        	        	startLine: start.Line,
+</span></li><li id="file2-54"><span class="cov0">        	        	        	startCol:  start.Column,
+</span></li><li id="file2-55"><span class="cov0">        	        	        	endLine:   end.Line,
+</span></li><li id="file2-56"><span class="cov0">        	        	        	endCol:    end.Column,
+</span></li><li id="file2-57"><span class="cov0">        	        	}
+</span></li><li id="file2-58"><span class="cov0">        	        	v.funcs = append(v.funcs, fe)</span>
+</li><li id="file2-59">        	}
+</li><li id="file2-60">        	<span class="cov1">return v</span>
+</li><li id="file2-61">}
+</li><li id="file2-62">
+</li><li id="file2-63">func makeFuncs(prof profile.Profile) (profile.Functions, error) <span class="cov1">{
+</span></li><li id="file2-64"><span class="cov1">        	exts, err := findFuncs(prof.FilePath())
+</span></li><li id="file2-65"><span class="cov1">        	if err != nil </span><span class="cov0">{
+</span></li><li id="file2-66"><span class="cov0">        	        	return nil, err
+</span></li><li id="file2-67"><span class="cov0">        	}</span>
+</li><li id="file2-68">
+</li><li id="file2-69">        	<span class="cov1">return toFunctions(prof, exts), nil</span>
+</li><li id="file2-70">}
+</li><li id="file2-71">
+</li><li id="file2-72">func findFuncs(name string) ([]*funcExtent, error) <span class="cov1">{
+</span></li><li id="file2-73"><span class="cov1">        	fset := token.NewFileSet()
+</span></li><li id="file2-74"><span class="cov1">        	parsedFile, err := parser.ParseFile(fset, name, nil, 0)
+</span></li><li id="file2-75"><span class="cov1">        	if err != nil </span><span class="cov0">{
+</span></li><li id="file2-76"><span class="cov0">        	        	return nil, err
+</span></li><li id="file2-77"><span class="cov0">        	}</span>
+</li><li id="file2-78">        	<span class="cov1">visitor := &amp;&funcVisitor{
+</span></li><li id="file2-79"><span class="cov1">        	        	fset:    fset,
+</span></li><li id="file2-80"><span class="cov1">        	        	name:    name,
+</span></li><li id="file2-81"><span class="cov1">        	        	astFile: parsedFile,
+</span></li><li id="file2-82"><span class="cov1">        	}
+</span></li><li id="file2-83"><span class="cov1">        	ast.Walk(visitor, visitor.astFile)
+</span></li><li id="file2-84"><span class="cov1">        	return visitor.funcs, nil</span>
+</li><li id="file2-85">}
+</li><li id="file2-86">
+</li><li id="file2-87">func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions <span class="cov1">{
+</span></li><li id="file2-88"><span class="cov1">        	fncs := make(profile.Functions, 0, len(exts))
+</span></li><li id="file2-89"><span class="cov1">
+</span></li><li id="file2-90"><span class="cov1">        	bi := 0
+</span></li><li id="file2-91"><span class="cov1">        	for _, e := range exts </span><span class="cov0">{
+</span></li><li id="file2-92"><span class="cov0">        	        	fnc := profile.Function{
+</span></li><li id="file2-93"><span class="cov0">        	        	        	Name:      e.name,
+</span></li><li id="file2-94"><span class="cov0">        	        	        	StartLine: e.startLine,
+</span></li><li id="file2-95"><span class="cov0">        	        	        	StartCol:  e.startCol,
+</span></li><li id="file2-96"><span class="cov0">        	        	}
+</span></li><li id="file2-97"><span class="cov0">
+</span></li><li id="file2-98"><span class="cov0">        	        	for bi &lt;< len(prof.Blocks) </span><span class="cov0">{
+</span></li><li id="file2-99"><span class="cov0">        	        	        	b := prof.Blocks[bi]
+</span></li><li id="file2-100"><span class="cov0">
+</span></li><li id="file2-101"><span class="cov0">        	        	        	if b.StartLine &lt;< e.startLine </span><span class="cov0">{
+</span></li><li id="file2-102"><span class="cov0">        	        	        	        	bi++
+</span></li><li id="file2-103"><span class="cov0">        	        	        	        	continue</span>
+</li><li id="file2-104">        	        	        	}
+</li><li id="file2-105">
+</li><li id="file2-106">        	        	        	<span class="cov0">if b.StartLine &gt;>= e.startLine &amp;&&amp;&
+</span></li><li id="file2-107"><span class="cov0">        	        	        	        	b.EndLine &lt;<= e.endLine </span><span class="cov0">{
+</span></li><li id="file2-108"><span class="cov0">        	        	        	        	fnc.Blocks = append(fnc.Blocks, b)
+</span></li><li id="file2-109"><span class="cov0">        	        	        	        	bi++
+</span></li><li id="file2-110"><span class="cov0">        	        	        	        	continue</span>
+</li><li id="file2-111">        	        	        	}
+</li><li id="file2-112">        	        	        	<span class="cov0">break</span>
+</li><li id="file2-113">        	        	}
+</li><li id="file2-114">
+</li><li id="file2-115">        	        	<span class="cov0">fncs = append(fncs, fnc)</span>
+</li><li id="file2-116">        	}
+</li><li id="file2-117">
+</li><li id="file2-118">        	<span class="cov1">return fncs</span>
+</li><li id="file2-119">}
 </li></ol></pre>
 					</div>
 				</div>
@@ -556,22 +556,22 @@
 						<tr><td class="total">Total</td><td class="cov">95.2%</td></tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file3-52';return false;">func WriteTreeView(out io.Writer, profiles profile.Profiles) error</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-52');">func WriteTreeView(out io.Writer, profiles profile.Profiles) error</span></td>
 							<td class="cov">87.5%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file3-93';return false;">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-93');">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file3-114';return false;">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-114');">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
 							<td class="cov">97.4%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file3-174';return false;">func writeChar(buf *bytes.Buffer, b byte)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-174');">func writeChar(buf *bytes.Buffer, b byte)</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
@@ -818,80 +818,80 @@
 </li><li id="file4-47">        	        	        	        	font-weight: bold;
 </li><li id="file4-48">        	        	        	        	background-color: #E1F5FF;
 </li><li id="file4-49">        	        	        	}
-</li><li id="file4-50">        	        	        	.content {
+</li><li id="file4-50">        	        	        	#coverage {
 </li><li id="file4-51">        	        	        	        	width: 70%;
 </li><li id="file4-52">        	        	        	        	margin-left: 16px;
 </li><li id="file4-53">        	        	        	        	margin-right: 32px;
 </li><li id="file4-54">        	        	        	}
-</li><li id="file4-55">        	        	        	.source {
-</li><li id="file4-56">        	        	        	        	white-space: nowrap;
-</li><li id="file4-57">        	        	        	}
-</li><li id="file4-58">        	        	        	pre {
-</li><li id="file4-59">        	        	        	        	counter-reset: line;
-</li><li id="file4-60">        	        	        	        	font-family: Menlo, monospace;
-</li><li id="file4-61">        	        	        	        	font-weight: bold;
-</li><li id="file4-62">        	        	        	        	color: rgb(80, 80, 80);
-</li><li id="file4-63">        	        	        	}
-</li><li id="file4-64">        	        	        	ol {
-</li><li id="file4-65">        	        	        	        	list-style: none;
-</li><li id="file4-66">        	        	        	        	counter-reset: number;
-</li><li id="file4-67">        	        	        	        	margin: 0;
-</li><li id="file4-68">        	        	        	        	padding: 0;
-</li><li id="file4-69">        	        	        	}
-</li><li id="file4-70">        	        	        	li:before {
-</li><li id="file4-71">        	        	        	        	counter-increment: number;
-</li><li id="file4-72">        	        	        	        	content: counter(number);
-</li><li id="file4-73">        	        	        	        	margin-right: 24px;
-</li><li id="file4-74">        	        	        	        	display: inline-block;
-</li><li id="file4-75">        	        	        	        	width: 50px;
-</li><li id="file4-76">        	        	        	        	text-align: right;
-</li><li id="file4-77">        	        	        	        	color: rgb(200, 200, 200);
-</li><li id="file4-78">        	        	        	}
-</li><li id="file4-79">        	        	        	.cov0 {
-</li><li id="file4-80">        	        	        	        	color: rgb(192, 0, 0);
-</li><li id="file4-81">        	        	        	}
-</li><li id="file4-82">        	        	        	.cov1 {
-</li><li id="file4-83">        	        	        	        	color: rgb(44, 212, 149);
-</li><li id="file4-84">        	        	        	}
-</li><li id="file4-85">        	        	        	table, tr, td, th {
-</li><li id="file4-86">        	        	        	        	border-collapse: collapse;
-</li><li id="file4-87">        	        	        	        	border:1px solid #BBBBBB;
-</li><li id="file4-88">        	        	        	}
-</li><li id="file4-89">        	        	        	table {
-</li><li id="file4-90">        	        	        	        	margin: 16px 0 32px 74px;
-</li><li id="file4-91">        	        	        	}
-</li><li id="file4-92">        	        	        	table .total {
-</li><li id="file4-93">        	        	        	        	min-width: 300px;
-</li><li id="file4-94">        	        	        	        	text-align: left;
-</li><li id="file4-95">        	        	        	        	padding-left: 8px;
-</li><li id="file4-96">        	        	        	}
-</li><li id="file4-97">        	        	        	table .fnc {
-</li><li id="file4-98">        	        	        	        	min-width: 300px;
-</li><li id="file4-99">        	        	        	        	text-align: left;
-</li><li id="file4-100">        	        	        	        	padding: 0 20px 0 20px;
-</li><li id="file4-101">        	        	        	}
-</li><li id="file4-102">        	        	        	table .cov {
-</li><li id="file4-103">        	        	        	        	width: 70px;
-</li><li id="file4-104">        	        	        	        	text-align: right;
-</li><li id="file4-105">        	        	        	        	padding-right: 8px;
-</li><li id="file4-106">        	        	        	}
-</li><li id="file4-107">        	        	&lt;</style&gt;>
-</li><li id="file4-108">        	&lt;</head&gt;>
-</li><li id="file4-109">        	&lt;<body&gt;>
-</li><li id="file4-110">        	        	&lt;<div class="main"&gt;>
-</li><li id="file4-111">        	        	        	&lt;<div id="tree"&gt;>
-</li><li id="file4-112">        	        	        	{{range $i, $t := .Tree}}
-</li><li id="file4-113">        	        	        	        	{{if $t.IsFile}}
-</li><li id="file4-114">        	        	        	        	&lt;<div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;>
-</li><li id="file4-115">        	        	        	        	        	{{$t.Name}} ({{$t.Coverage}}%)
-</li><li id="file4-116">        	        	        	        	&lt;</div&gt;>
-</li><li id="file4-117">        	        	        	        	{{else}}
-</li><li id="file4-118">        	        	        	        	&lt;<div style="padding-inline-start: {{indent $t.Indent}}px"&gt;>{{$t.Name}}/&lt;</div&gt;>
-</li><li id="file4-119">        	        	        	        	{{end}}
-</li><li id="file4-120">        	        	        	{{end}}
-</li><li id="file4-121">        	        	        	&lt;</div&gt;>
-</li><li id="file4-122">
-</li><li id="file4-123">        	        	        	&lt;<div id="cov" class="content"&gt;>
+</li><li id="file4-55">
+</li><li id="file4-56">        	        	        	.source {
+</li><li id="file4-57">        	        	        	        	white-space: nowrap;
+</li><li id="file4-58">        	        	        	}
+</li><li id="file4-59">        	        	        	pre {
+</li><li id="file4-60">        	        	        	        	counter-reset: line;
+</li><li id="file4-61">        	        	        	        	font-family: Menlo, monospace;
+</li><li id="file4-62">        	        	        	        	font-weight: bold;
+</li><li id="file4-63">        	        	        	        	color: rgb(80, 80, 80);
+</li><li id="file4-64">        	        	        	}
+</li><li id="file4-65">        	        	        	ol {
+</li><li id="file4-66">        	        	        	        	list-style: none;
+</li><li id="file4-67">        	        	        	        	counter-reset: number;
+</li><li id="file4-68">        	        	        	        	margin: 0;
+</li><li id="file4-69">        	        	        	        	padding: 0;
+</li><li id="file4-70">        	        	        	}
+</li><li id="file4-71">        	        	        	li:before {
+</li><li id="file4-72">        	        	        	        	counter-increment: number;
+</li><li id="file4-73">        	        	        	        	content: counter(number);
+</li><li id="file4-74">        	        	        	        	margin-right: 24px;
+</li><li id="file4-75">        	        	        	        	display: inline-block;
+</li><li id="file4-76">        	        	        	        	width: 50px;
+</li><li id="file4-77">        	        	        	        	text-align: right;
+</li><li id="file4-78">        	        	        	        	color: rgb(200, 200, 200);
+</li><li id="file4-79">        	        	        	}
+</li><li id="file4-80">        	        	        	.cov0 {
+</li><li id="file4-81">        	        	        	        	color: rgb(192, 0, 0);
+</li><li id="file4-82">        	        	        	}
+</li><li id="file4-83">        	        	        	.cov1 {
+</li><li id="file4-84">        	        	        	        	color: rgb(44, 212, 149);
+</li><li id="file4-85">        	        	        	}
+</li><li id="file4-86">        	        	        	table, tr, td, th {
+</li><li id="file4-87">        	        	        	        	border-collapse: collapse;
+</li><li id="file4-88">        	        	        	        	border:1px solid #BBBBBB;
+</li><li id="file4-89">        	        	        	}
+</li><li id="file4-90">        	        	        	table {
+</li><li id="file4-91">        	        	        	        	margin: 16px 0 32px 74px;
+</li><li id="file4-92">        	        	        	}
+</li><li id="file4-93">        	        	        	table .total {
+</li><li id="file4-94">        	        	        	        	min-width: 300px;
+</li><li id="file4-95">        	        	        	        	text-align: left;
+</li><li id="file4-96">        	        	        	        	padding-left: 8px;
+</li><li id="file4-97">        	        	        	}
+</li><li id="file4-98">        	        	        	table .fnc {
+</li><li id="file4-99">        	        	        	        	min-width: 300px;
+</li><li id="file4-100">        	        	        	        	text-align: left;
+</li><li id="file4-101">        	        	        	        	padding: 0 20px 0 20px;
+</li><li id="file4-102">        	        	        	}
+</li><li id="file4-103">        	        	        	table .cov {
+</li><li id="file4-104">        	        	        	        	width: 70px;
+</li><li id="file4-105">        	        	        	        	text-align: right;
+</li><li id="file4-106">        	        	        	        	padding-right: 8px;
+</li><li id="file4-107">        	        	        	}
+</li><li id="file4-108">        	        	&lt;</style&gt;>
+</li><li id="file4-109">        	&lt;</head&gt;>
+</li><li id="file4-110">        	&lt;<body&gt;>
+</li><li id="file4-111">        	        	&lt;<div class="main"&gt;>
+</li><li id="file4-112">        	        	        	&lt;<div id="tree"&gt;>
+</li><li id="file4-113">        	        	        	{{range $i, $t := .Tree}}
+</li><li id="file4-114">        	        	        	        	{{if $t.IsFile}}
+</li><li id="file4-115">        	        	        	        	&lt;<div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;>
+</li><li id="file4-116">        	        	        	        	        	{{$t.Name}} ({{$t.Coverage}}%)
+</li><li id="file4-117">        	        	        	        	&lt;</div&gt;>
+</li><li id="file4-118">        	        	        	        	{{else}}
+</li><li id="file4-119">        	        	        	        	&lt;<div style="padding-inline-start: {{indent $t.Indent}}px"&gt;>{{$t.Name}}/&lt;</div&gt;>
+</li><li id="file4-120">        	        	        	        	{{end}}
+</li><li id="file4-121">        	        	        	{{end}}
+</li><li id="file4-122">        	        	        	&lt;</div&gt;>
+</li><li id="file4-123">        	        	        	&lt;<div id="coverage"&gt;>
 </li><li id="file4-124">        	        	        	        	{{range $i, $f := .Files}}
 </li><li id="file4-125">        	        	        	        	&lt;<div id="file{{$f.ID}}"  style="display: none"&gt;>
 </li><li id="file4-126">        	        	        	        	        	&lt;<table&gt;>
@@ -899,7 +899,7 @@
 </li><li id="file4-128">        	        	        	        	        	        	&lt;<tr&gt;>&lt;<td class="total"&gt;>Total&lt;</td&gt;>&lt;<td class="cov"&gt;>{{$f.Coverage}}%&lt;</td&gt;>&lt;</tr&gt;>
 </li><li id="file4-129">        	        	        	        	        	        	{{range $j, $fn := .Functions}}
 </li><li id="file4-130">        	        	        	        	        	        	&lt;<tr&gt;>
-</li><li id="file4-131">        	        	        	        	        	        	        	&lt;<td class="fnc"&gt;>&lt;<span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;"&gt;>{{$fn.Name}}&lt;</span&gt;>&lt;</td&gt;>
+</li><li id="file4-131">        	        	        	        	        	        	        	&lt;<td class="fnc"&gt;>&lt;<span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');"&gt;>{{$fn.Name}}&lt;</span&gt;>&lt;</td&gt;>
 </li><li id="file4-132">        	        	        	        	        	        	        	&lt;<td class="cov"&gt;>{{$fn.Coverage}}%&lt;</td&gt;>
 </li><li id="file4-133">        	        	        	        	        	        	&lt;</tr&gt;>
 </li><li id="file4-134">        	        	        	        	        	        	{{end}}
@@ -930,29 +930,33 @@
 </li><li id="file4-159">        	        	        	        	        	return;
 </li><li id="file4-160">        	        	        	        	}
 </li><li id="file4-161">        	        	        	        	current.style.display = 'block';
-</li><li id="file4-162">        	        	        	        	current.scrollLeft = 0;
-</li><li id="file4-163">        	        	        	        	current.scrollTop = 0;
-</li><li id="file4-164">        	        	        	}
-</li><li id="file4-165">        	        	        	function selectTree(n, indent) {
-</li><li id="file4-166">        	        	        	        	if (currentTree) {
-</li><li id="file4-167">        	        	        	        	        	currentTree.classList.remove('current');
-</li><li id="file4-168">        	        	        	        	}
-</li><li id="file4-169">
-</li><li id="file4-170">        	        	        	        	currentTree = document.getElementById('tree' + n);
-</li><li id="file4-171">        	        	        	        	if (!current) {
-</li><li id="file4-172">        	        	        	        	        	return;
-</li><li id="file4-173">        	        	        	        	}
-</li><li id="file4-174">        	        	        	        	currentTree.classList.add('current');
-</li><li id="file4-175">        	        	        	        	currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
-</li><li id="file4-176">        	        	        	}
-</li><li id="file4-177">        	        	        	function change(n, i) {
-</li><li id="file4-178">        	        	        	        	select(n);
-</li><li id="file4-179">        	        	        	        	selectTree(n, i);
+</li><li id="file4-162">        	        	        	        	scrollById('coverage');
+</li><li id="file4-163">        	        	        	}
+</li><li id="file4-164">        	        	        	function selectTree(n, indent) {
+</li><li id="file4-165">        	        	        	        	if (currentTree) {
+</li><li id="file4-166">        	        	        	        	        	currentTree.classList.remove('current');
+</li><li id="file4-167">        	        	        	        	}
+</li><li id="file4-168">
+</li><li id="file4-169">        	        	        	        	currentTree = document.getElementById('tree' + n);
+</li><li id="file4-170">        	        	        	        	if (!current) {
+</li><li id="file4-171">        	        	        	        	        	return;
+</li><li id="file4-172">        	        	        	        	}
+</li><li id="file4-173">        	        	        	        	currentTree.classList.add('current');
+</li><li id="file4-174">        	        	        	        	currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+</li><li id="file4-175">        	        	        	}
+</li><li id="file4-176">        	        	        	function scrollById(id) {
+</li><li id="file4-177">        	        	        	        	const elm = document.getElementById(id);
+</li><li id="file4-178">        	        	        	        	const rect = elm.getBoundingClientRect();
+</li><li id="file4-179">        	        	        	        	document.documentElement.scrollTop = rect.top + window.pageYOffset;
 </li><li id="file4-180">        	        	        	}
-</li><li id="file4-181">        	        	&lt;</script&gt;>
-</li><li id="file4-182">        	&lt;</body&gt;>
-</li><li id="file4-183">&lt;</html&gt;>
-</li><li id="file4-184">`
+</li><li id="file4-181">        	        	        	function change(n, i) {
+</li><li id="file4-182">        	        	        	        	select(n);
+</li><li id="file4-183">        	        	        	        	selectTree(n, i);
+</li><li id="file4-184">        	        	        	}
+</li><li id="file4-185">        	        	&lt;</script&gt;>
+</li><li id="file4-186">        	&lt;</body&gt;>
+</li><li id="file4-187">&lt;</html&gt;>
+</li><li id="file4-188">`
 </li></ol></pre>
 					</div>
 				</div>
@@ -963,22 +967,22 @@
 						<tr><td class="total">Total</td><td class="cov">100%</td></tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file5-18';return false;">func Create(profiles profile.Profiles) []Node</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-18');">func Create(profiles profile.Profiles) []Node</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file5-27';return false;">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-27');">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file5-46';return false;">func index(nodes []Node, name string) int</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-46');">func index(nodes []Node, name string) int</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file5-66';return false;">func mergeSingreDir(nodes []Node) []Node</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-66');">func mergeSingreDir(nodes []Node) []Node</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
@@ -1078,17 +1082,17 @@
 						<tr><td class="total">Total</td><td class="cov">100%</td></tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file6-47';return false;">func (prof *Profile) IsRelativeOrAbsolute() bool</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file6-47');">func (prof *Profile) IsRelativeOrAbsolute() bool</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file6-52';return false;">func (prof *Profile) FilePath() string</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file6-52');">func (prof *Profile) FilePath() string</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file6-60';return false;">func (blocks *Blocks) Coverage() float64</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file6-60');">func (blocks *Blocks) Coverage() float64</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
@@ -1193,8 +1197,7 @@
 					return;
 				}
 				current.style.display = 'block';
-				current.scrollLeft = 0;
-				current.scrollTop = 0;
+				scrollById('coverage');
 			}
 			function selectTree(n, indent) {
 				if (currentTree) {
@@ -1207,6 +1210,11 @@
 				}
 				currentTree.classList.add('current');
 				currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+			}
+			function scrollById(id) {
+				const elm = document.getElementById(id);
+				const rect = elm.getBoundingClientRect();
+				document.documentElement.scrollTop = rect.top + window.pageYOffset;
 			}
 			function change(n, i) {
 				select(n);

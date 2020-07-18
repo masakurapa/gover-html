@@ -58,7 +58,7 @@
 				
 				<option value="file1">github.com/masakurapa/go-cover/internal/func.go (35.7%)</option>
 				
-				<option value="file2">github.com/masakurapa/go-cover/internal/html/html.go (95.2%)</option>
+				<option value="file2">github.com/masakurapa/go-cover/internal/html/html.go (95.3%)</option>
 				
 				<option value="file3">github.com/masakurapa/go-cover/internal/html/template.go (100.0%)</option>
 				
@@ -579,6 +579,7 @@ func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span cla
 func writeChar(buf *bytes.Buffer, b byte) <span class="cov8" title="1">{
         if s, ok := escapeChar[b]; ok </span><span class="cov8" title="1">{
                 buf.WriteString(s)
+                return
         }</span>
         <span class="cov8" title="1">buf.WriteByte(b)</span>
 }

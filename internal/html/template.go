@@ -47,11 +47,12 @@ const treeTemplate = `<!DOCTYPE html>
 				font-weight: bold;
 				background-color: #E1F5FF;
 			}
-			.content {
+			#coverage {
 				width: 70%;
 				margin-left: 16px;
 				margin-right: 32px;
 			}
+
 			.source {
 				white-space: nowrap;
 			}
@@ -119,8 +120,7 @@ const treeTemplate = `<!DOCTYPE html>
 				{{end}}
 			{{end}}
 			</div>
-
-			<div id="cov" class="content">
+			<div id="coverage">
 				{{range $i, $f := .Files}}
 				<div id="file{{$f.ID}}"  style="display: none">
 					<table>
@@ -128,7 +128,7 @@ const treeTemplate = `<!DOCTYPE html>
 						<tr><td class="total">Total</td><td class="cov">{{$f.Coverage}}%</td></tr>
 						{{range $j, $fn := .Functions}}
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="window.location.hash='';window.location.hash='file{{$f.ID}}-{{$fn.Line}}';return false;">{{$fn.Name}}</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');">{{$fn.Name}}</span></td>
 							<td class="cov">{{$fn.Coverage}}%</td>
 						</tr>
 						{{end}}
@@ -159,8 +159,7 @@ const treeTemplate = `<!DOCTYPE html>
 					return;
 				}
 				current.style.display = 'block';
-				current.scrollLeft = 0;
-				current.scrollTop = 0;
+				scrollById('coverage');
 			}
 			function selectTree(n, indent) {
 				if (currentTree) {
@@ -173,6 +172,11 @@ const treeTemplate = `<!DOCTYPE html>
 				}
 				currentTree.classList.add('current');
 				currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+			}
+			function scrollById(id) {
+				const elm = document.getElementById(id);
+				const rect = elm.getBoundingClientRect();
+				document.documentElement.scrollTop = rect.top + window.pageYOffset;
 			}
 			function change(n, i) {
 				select(n);

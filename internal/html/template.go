@@ -116,7 +116,7 @@ const treeTemplate = `<!DOCTYPE html>
 					{{$t.Name}} ({{$t.Coverage}}%)
 				</div>
 				{{else}}
-				<div style="padding-inline-start: {{indent $t.Indent}}px">{{$t.Name}}/</div>
+				<div style="padding-inline-start: {{indent $t.Indent}}px">{{$t.Name}}/ ({{$t.Coverage}}%)</div>
 				{{end}}
 			{{end}}
 			</div>

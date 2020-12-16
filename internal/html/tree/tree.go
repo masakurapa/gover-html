@@ -14,6 +14,18 @@ type Node struct {
 	Dirs  []Node
 }
 
+// ChildBlocks returns all child Blocks for Node
+func (n *Node) ChildBlocks() profile.Blocks {
+	blocks := make(profile.Blocks, 0)
+	for _, f := range n.Files {
+		blocks = append(blocks, f.Blocks...)
+	}
+	for _, ch := range n.Dirs {
+		blocks = append(blocks, ch.ChildBlocks()...)
+	}
+	return blocks
+}
+
 // Create returns directory tree
 func Create(profiles profile.Profiles) []Node {
 	nodes := make([]Node, 0)

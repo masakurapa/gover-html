@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/masakurapa/gover-html/internal/func.go (35.7%)</option>
 				
-				<option value="file2">github.com/masakurapa/gover-html/internal/html/html.go (95.3%)</option>
+				<option value="file2">github.com/masakurapa/gover-html/internal/html/html.go (95.4%)</option>
 				
 				<option value="file3">github.com/masakurapa/gover-html/internal/html/template.go (100.0%)</option>
 				
@@ -498,9 +498,11 @@ func WriteTreeView(out io.Writer, profiles profile.Profiles) error <span class="
 
 func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) <span class="cov8" title="1">{
         for _, node := range nodes </span><span class="cov8" title="1">{
+                childBlocks := node.ChildBlocks()
                 *tree = append(*tree, templateTree{
-                        Name:   node.Name,
-                        Indent: indent,
+                        Name:     node.Name,
+                        Indent:   indent,
+                        Coverage: childBlocks.Coverage(),
                 })
 
                 makeTemplateTree(tree, node.Dirs, indent+1)
@@ -704,7 +706,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                         {{$t.Name}} ({{$t.Coverage}}%)
                                 &lt;/div&gt;
                                 {{else}}
-                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/&lt;/div&gt;
+                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/ ({{$t.Coverage}}%)&lt;/div&gt;
                                 {{end}}
                         {{end}}
                         &lt;/div&gt;
@@ -790,6 +792,18 @@ type Node struct {
         Name  string
         Files profile.Profiles
         Dirs  []Node
+}
+
+// ChildBlocks returns all child Blocks for Node
+func (n *Node) ChildBlocks() profile.Blocks <span class="cov8" title="1">{
+        blocks := make(profile.Blocks, 0)
+        for _, f := range n.Files </span><span class="cov8" title="1">{
+                blocks = append(blocks, f.Blocks...)
+        }</span>
+        <span class="cov8" title="1">for _, ch := range n.Dirs </span><span class="cov8" title="1">{
+                blocks = append(blocks, ch.ChildBlocks()...)
+        }</span>
+        <span class="cov8" title="1">return blocks</span>
 }
 
 // Create returns directory tree

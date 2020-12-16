@@ -92,9 +92,11 @@ func WriteTreeView(out io.Writer, profiles profile.Profiles) error {
 
 func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) {
 	for _, node := range nodes {
+		childBlocks := node.ChildBlocks()
 		*tree = append(*tree, templateTree{
-			Name:   node.Name,
-			Indent: indent,
+			Name:     node.Name,
+			Indent:   indent,
+			Coverage: childBlocks.Coverage(),
 		})
 
 		makeTemplateTree(tree, node.Dirs, indent+1)

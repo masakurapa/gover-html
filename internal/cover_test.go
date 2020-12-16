@@ -115,16 +115,6 @@ github.com/masakurapa/gover-html/testdata/dir1/file0.go,2.12,22.32 42 52
 			want:    nil,
 			wantErr: true,
 		},
-		{
-			name: "2行目以降のフォーマットが不正な場合はエラーが返却される!",
-			args: args{
-				r: strings.NewReader(`mode: set
-github.com/masakurapa/gover-html/testdata/dir1/file0.go:2,12,22,32 42 0
-`),
-			},
-			want:    nil,
-			wantErr: true,
-		},
 	}
 
 	for _, tt := range tests {

@@ -8,6 +8,55 @@ import (
 	"github.com/masakurapa/gover-html/internal/profile"
 )
 
+func TestNode_ChildBlocks(t *testing.T) {
+	node := tree.Node{
+		Files: profile.Profiles{
+			{Blocks: profile.Blocks{
+				{StartLine: 1, StartCol: 2, EndLine: 3, EndCol: 4},
+				{StartLine: 11, StartCol: 12, EndLine: 13, EndCol: 14},
+			}},
+		},
+		Dirs: []tree.Node{
+			{
+				Files: profile.Profiles{
+					{Blocks: profile.Blocks{
+						{StartLine: 21, StartCol: 22, EndLine: 23, EndCol: 24},
+						{StartLine: 31, StartCol: 32, EndLine: 33, EndCol: 34},
+					}},
+				},
+				Dirs: []tree.Node{},
+			},
+			{
+				Files: profile.Profiles{},
+				Dirs: []tree.Node{
+					{
+						Files: profile.Profiles{
+							{Blocks: profile.Blocks{
+								{StartLine: 41, StartCol: 42, EndLine: 43, EndCol: 44},
+								{StartLine: 51, StartCol: 52, EndLine: 53, EndCol: 54},
+							}},
+						},
+						Dirs: []tree.Node{},
+					},
+				},
+			},
+		},
+	}
+
+	want := profile.Blocks{
+		{StartLine: 1, StartCol: 2, EndLine: 3, EndCol: 4},
+		{StartLine: 11, StartCol: 12, EndLine: 13, EndCol: 14},
+		{StartLine: 21, StartCol: 22, EndLine: 23, EndCol: 24},
+		{StartLine: 31, StartCol: 32, EndLine: 33, EndCol: 34},
+		{StartLine: 41, StartCol: 42, EndLine: 43, EndCol: 44},
+		{StartLine: 51, StartCol: 52, EndLine: 53, EndCol: 54},
+	}
+
+	if got := node.ChildBlocks(); !reflect.DeepEqual(got, want) {
+		t.Errorf("ChildBlocks() = %v, want %v", got, want)
+	}
+}
+
 func TestCreate(t *testing.T) {
 	type args struct {
 		profiles profile.Profiles

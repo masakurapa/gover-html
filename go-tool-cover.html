@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>internal: Go Coverage Report</title>
+		<title>cover: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/gover-html/internal/cover.go (90.3%)</option>
+				<option value="file0">github.com/masakurapa/gover-html/internal/cover/cover.go (92.0%)</option>
 				
-				<option value="file1">github.com/masakurapa/gover-html/internal/func.go (35.7%)</option>
+				<option value="file1">github.com/masakurapa/gover-html/internal/cover/func.go (35.7%)</option>
 				
 				<option value="file2">github.com/masakurapa/gover-html/internal/html/html.go (95.4%)</option>
 				
@@ -101,8 +101,13 @@ import (
 
 var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 
+type importDir struct {
+        relative string
+        dir      string
+}
+
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader) (profile.Profiles, error) <span class="cov8" title="1">{
+func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) <span class="cov8" title="1">{
         files := make(map[string]*profile.Profile)
         modeOk := false
         id := 1
@@ -145,7 +150,7 @@ func ReadProfile(r io.Reader) (profile.Profiles, error) <span class="cov8" title
                 })</span>
         }
 
-        <span class="cov8" title="1">return toProfiles(files)</span>
+        <span class="cov8" title="1">return toProfiles(files, filterDirs)</span>
 }
 
 func toInt(s string) int <span class="cov8" title="1">{
@@ -156,13 +161,15 @@ func toInt(s string) int <span class="cov8" title="1">{
         <span class="cov8" title="1">return i</span>
 }
 
-func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <span class="cov8" title="1">{
+func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile.Profiles, error) <span class="cov8" title="1">{
         dirs, err := makeImportDirMap(files)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">profiles := make(profile.Profiles, 0, len(files))
+        <span class="cov8" title="1">filters := convertFilterForChecking(filterDirs)
+
+        profiles := make(profile.Profiles, 0, len(files))
         for _, p := range files </span><span class="cov8" title="1">{
                 p.Blocks = filterBlocks(p.Blocks)
                 sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov8" title="1">{
@@ -170,7 +177,12 @@ func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) <sp
                         return bi.StartLine &lt; bj.StartLine || bi.StartLine == bj.StartLine &amp;&amp; bi.StartCol &lt; bj.StartCol
                 }</span>)
 
-                <span class="cov8" title="1">p.Dir = dirs[path.Dir(p.FileName)]
+                <span class="cov8" title="1">d := dirs[path.Dir(p.FileName)]
+                if !isOutputTarget(d.relative, filters) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">p.Dir = d.dir
 
                 fn, err := makeFuncs(*p)
                 if err != nil </span><span class="cov0" title="0">{
@@ -216,19 +228,20 @@ func filterBlocks(blocks []profile.Block) []profile.Block <span class="cov8" tit
         <span class="cov8" title="1">return newBlocks</span>
 }
 
-func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) <span class="cov8" title="1">{
+func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, error) <span class="cov8" title="1">{
         stdout, err := execGoList(files)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">pkgs := make(map[string]string)
+        <span class="cov8" title="1">pkgs := make(map[string]importDir)
         if len(stdout) == 0 </span><span class="cov0" title="0">{
                 return pkgs, nil
         }</span>
 
         <span class="cov8" title="1">type pkg struct {
                 Dir        string
+                Root       string
                 ImportPath string
                 Error      *struct {
                         Err string
@@ -249,7 +262,10 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, err
                         return nil, fmt.Errorf(p.Error.Err)
                 }</span>
                 // should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
-                <span class="cov8" title="1">pkgs[p.ImportPath] = p.Dir</span>
+                <span class="cov8" title="1">pkgs[p.ImportPath] = importDir{
+                        relative: strings.TrimPrefix(p.Dir, p.Root),
+                        dir:      p.Dir,
+                }</span>
         }
 
         <span class="cov8" title="1">return pkgs, nil</span>
@@ -280,6 +296,34 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="
         cmd := exec.Command(cmdName, args...)
 
         return cmd.Output()</span>
+}
+
+func convertFilterForChecking(filterDirs []string) []string <span class="cov8" title="1">{
+        newFilter := make([]string, 0, len(filterDirs))
+        for _, f := range filterDirs </span><span class="cov8" title="1">{
+                s := strings.TrimSpace(f)
+                s = strings.TrimPrefix(s, "./")
+                s = strings.TrimSuffix(s, "/")
+
+                if !strings.HasPrefix(s, "/") </span><span class="cov8" title="1">{
+                        s = "/" + s
+                }</span>
+                <span class="cov8" title="1">newFilter = append(newFilter, s)</span>
+        }
+        <span class="cov8" title="1">return newFilter</span>
+}
+
+func isOutputTarget(path string, filter []string) bool <span class="cov8" title="1">{
+        if len(filter) == 0 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+
+        <span class="cov8" title="1">for _, f := range filter </span><span class="cov8" title="1">{
+                if path == f || strings.HasPrefix(path, f+"/") </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
 }
 </pre>
 		

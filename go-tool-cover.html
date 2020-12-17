@@ -472,6 +472,7 @@ var (
 )
 
 type templateData struct {
+        Theme string
         Tree  []templateTree
         Files []templateFile
 }
@@ -499,12 +500,13 @@ type templateFunc struct {
 }
 
 // WriteTreeView outputs coverage as a tree view HTML file
-func WriteTreeView(out io.Writer, profiles profile.Profiles) error <span class="cov8" title="1">{
+func WriteTreeView(out io.Writer, theme string, profiles profile.Profiles) error <span class="cov8" title="1">{
         nodes := tree.Create(profiles)
         tree := make([]templateTree, 0)
         makeTemplateTree(&amp;tree, nodes, 0)
 
         data := templateData{
+                Theme: theme,
                 Tree:  tree,
                 Files: make([]templateFile, 0, len(profiles)),
         }
@@ -656,6 +658,15 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 width: 100%;
                                 display: flex;
                         }
+                        .light {
+                                background: #FFFFFF;
+                                color: rgb(80, 80, 80);
+                        }
+                        .dark {
+                                background: #000000;
+                                color: rgb(160, 160, 160);
+                        }
+
                         #tree {
                                 width: 25%;
                                 height: 100vh;
@@ -666,21 +677,27 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 position: -webkit-sticky;
                                 top: 0;
                                 left: 0;
-                                background: #FFFFFF;
-                                border-right: 1px solid #000000;
+                                border-right: 1px solid rgb(160, 160, 160);
                         }
                         #tree div {
                                 padding: 4px 0;
                         }
                         .clickable {
                                 cursor: pointer;
-                                color: #0000ff;
+                                color: #3EA6FF;
                                 text-decoration: underline;
                         }
+
                         .current {
                                 font-weight: bold;
-                                background-color: #E1F5FF;
                         }
+                        .light .current {
+                                background-color: #E6F0FF;
+                        }
+                        .dark .current {
+                                background-color: #555555;
+                        }
+
                         #coverage {
                                 width: 70%;
                                 margin-left: 16px;
@@ -694,7 +711,6 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 counter-reset: line;
                                 font-family: Menlo, monospace;
                                 font-weight: bold;
-                                color: rgb(80, 80, 80);
                         }
                         ol {
                                 list-style: none;
@@ -709,8 +725,14 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                                 display: inline-block;
                                 width: 50px;
                                 text-align: right;
+                        }
+                        .light li:before {
                                 color: rgb(200, 200, 200);
                         }
+                        .dark li:before {
+                                color: rgb(80, 80, 80);
+                        }
+
                         .cov0 {
                                 color: rgb(192, 0, 0);
                         }
@@ -742,7 +764,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                 &lt;/style&gt;
         &lt;/head&gt;
         &lt;body&gt;
-                &lt;div class="main"&gt;
+                &lt;div class="main {{.Theme}}"&gt;
                         &lt;div id="tree"&gt;
                         {{range $i, $t := .Tree}}
                                 {{if $t.IsFile}}

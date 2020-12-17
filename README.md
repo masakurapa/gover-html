@@ -70,7 +70,7 @@ You can filter the output packages by specifying values as follows
 $ gover-html -filter 'internal/cover'
 
 # Output only `internal/cover` and `internal/html/tree` package!!
-$ gover-html -filter 'internal/cover,internal/html/tree'
+$ gover-html -filter './internal/cover,internal/html/tree/'
 
 # This is no good :-C
 $ gover-html -filter 'cover'

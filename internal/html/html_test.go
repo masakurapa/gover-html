@@ -33,7 +33,7 @@ func TestWriteTreeView(t *testing.T) {
 		},
 	}
 
-	err = html.WriteTreeView(&writer, profiles)
+	err = html.WriteTreeView(&writer, "dark", profiles)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func BenchmarkWriteTreeView(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		html.WriteTreeView(&writer, profiles)
+		html.WriteTreeView(&writer, "dark", profiles)
 		writer.Reset()
 	}
 }

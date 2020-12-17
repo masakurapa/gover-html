@@ -20,8 +20,13 @@ import (
 
 var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 
+type importDir struct {
+	relative string
+	dir      string
+}
+
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader) (profile.Profiles, error) {
+func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) {
 	files := make(map[string]*profile.Profile)
 	modeOk := false
 	id := 1
@@ -64,7 +69,7 @@ func ReadProfile(r io.Reader) (profile.Profiles, error) {
 		})
 	}
 
-	return toProfiles(files)
+	return toProfiles(files, filterDirs)
 }
 
 func toInt(s string) int {
@@ -75,11 +80,13 @@ func toInt(s string) int {
 	return i
 }
 
-func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) {
+func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile.Profiles, error) {
 	dirs, err := makeImportDirMap(files)
 	if err != nil {
 		return nil, err
 	}
+
+	filters := convertFilterForChecking(filterDirs)
 
 	profiles := make(profile.Profiles, 0, len(files))
 	for _, p := range files {
@@ -89,7 +96,12 @@ func toProfiles(files map[string]*profile.Profile) (profile.Profiles, error) {
 			return bi.StartLine < bj.StartLine || bi.StartLine == bj.StartLine && bi.StartCol < bj.StartCol
 		})
 
-		p.Dir = dirs[path.Dir(p.FileName)]
+		d := dirs[path.Dir(p.FileName)]
+		if !isOutputTarget(d.relative, filters) {
+			continue
+		}
+
+		p.Dir = d.dir
 
 		fn, err := makeFuncs(*p)
 		if err != nil {
@@ -135,19 +147,20 @@ func filterBlocks(blocks []profile.Block) []profile.Block {
 	return newBlocks
 }
 
-func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, error) {
+func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, error) {
 	stdout, err := execGoList(files)
 	if err != nil {
 		return nil, err
 	}
 
-	pkgs := make(map[string]string)
+	pkgs := make(map[string]importDir)
 	if len(stdout) == 0 {
 		return pkgs, nil
 	}
 
 	type pkg struct {
 		Dir        string
+		Root       string
 		ImportPath string
 		Error      *struct {
 			Err string
@@ -168,7 +181,10 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]string, err
 			return nil, fmt.Errorf(p.Error.Err)
 		}
 		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
-		pkgs[p.ImportPath] = p.Dir
+		pkgs[p.ImportPath] = importDir{
+			relative: strings.TrimPrefix(p.Dir, p.Root),
+			dir:      p.Dir,
+		}
 	}
 
 	return pkgs, nil
@@ -199,4 +215,32 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) {
 	cmd := exec.Command(cmdName, args...)
 
 	return cmd.Output()
+}
+
+func convertFilterForChecking(filterDirs []string) []string {
+	newFilter := make([]string, 0, len(filterDirs))
+	for _, f := range filterDirs {
+		s := strings.TrimSpace(f)
+		s = strings.TrimPrefix(s, "./")
+		s = strings.TrimSuffix(s, "/")
+
+		if !strings.HasPrefix(s, "/") {
+			s = "/" + s
+		}
+		newFilter = append(newFilter, s)
+	}
+	return newFilter
+}
+
+func isOutputTarget(path string, filter []string) bool {
+	if len(filter) == 0 {
+		return true
+	}
+
+	for _, f := range filter {
+		if path == f || strings.HasPrefix(path, f+"/") {
+			return true
+		}
+	}
+	return false
 }

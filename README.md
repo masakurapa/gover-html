@@ -14,7 +14,8 @@ This is a tool for outputting Golang coverage in HTML format.
 | line number | no | yes |
 
 ## Example
-- [masakurapa/gover-html](https://masakurapa.github.io/gover-html/gover-html.html)
+- [masakurapa/gover-html (dark theme)](https://masakurapa.github.io/gover-html/gover-html_dark.html)
+- [masakurapa/gover-html (light theme)](https://masakurapa.github.io/gover-html/gover-html_light.html)
 - [go tool cover](https://masakurapa.github.io/gover-html/go-tool-cover.html)
 
 ## Installing
@@ -76,3 +77,8 @@ $ gover-html -filter './internal/cover,internal/html/tree/'
 $ gover-html -filter 'cover'
 $ gover-html -filter 'html/tree'
 ```
+
+### -theme
+HTML color theme to output (`dark` or `light`)
+
+if the value is invalid, it will be `dark`.

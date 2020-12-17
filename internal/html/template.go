@@ -22,6 +22,15 @@ const treeTemplate = `<!DOCTYPE html>
 				width: 100%;
 				display: flex;
 			}
+			.light {
+				background: #FFFFFF;
+				color: rgb(80, 80, 80);
+			}
+			.dark {
+				background: #000000;
+				color: rgb(160, 160, 160);
+			}
+
 			#tree {
 				width: 25%;
 				height: 100vh;
@@ -32,21 +41,27 @@ const treeTemplate = `<!DOCTYPE html>
 				position: -webkit-sticky;
 				top: 0;
 				left: 0;
-				background: #FFFFFF;
-				border-right: 1px solid #000000;
+				border-right: 1px solid rgb(160, 160, 160);
 			}
 			#tree div {
 				padding: 4px 0;
 			}
 			.clickable {
 				cursor: pointer;
-				color: #0000ff;
+				color: #3EA6FF;
 				text-decoration: underline;
 			}
+
 			.current {
 				font-weight: bold;
-				background-color: #E1F5FF;
 			}
+			.light .current {
+				background-color: #E6F0FF;
+			}
+			.dark .current {
+				background-color: #555555;
+			}
+
 			#coverage {
 				width: 70%;
 				margin-left: 16px;
@@ -60,7 +75,6 @@ const treeTemplate = `<!DOCTYPE html>
 				counter-reset: line;
 				font-family: Menlo, monospace;
 				font-weight: bold;
-				color: rgb(80, 80, 80);
 			}
 			ol {
 				list-style: none;
@@ -75,8 +89,14 @@ const treeTemplate = `<!DOCTYPE html>
 				display: inline-block;
 				width: 50px;
 				text-align: right;
+			}
+			.light li:before {
 				color: rgb(200, 200, 200);
 			}
+			.dark li:before {
+				color: rgb(80, 80, 80);
+			}
+
 			.cov0 {
 				color: rgb(192, 0, 0);
 			}
@@ -108,7 +128,7 @@ const treeTemplate = `<!DOCTYPE html>
 		</style>
 	</head>
 	<body>
-		<div class="main">
+		<div class="main {{.Theme}}">
 			<div id="tree">
 			{{range $i, $t := .Tree}}
 				{{if $t.IsFile}}

@@ -13,6 +13,9 @@ import (
 var (
 	input  = flag.String("i", "coverage.out", "coverage profile for input")
 	output = flag.String("o", "coverage.html", "file for output")
+	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
+if the value is invalid, it will be 'dark'.
+`)
 	filter = flag.String("filter", "", `output only the specified directories.
 multiple directories can be specified separated by commas.`)
 )
@@ -37,7 +40,7 @@ func main() {
 	}
 	defer out.Close()
 
-	if err = html.WriteTreeView(out, profiles); err != nil {
+	if err = html.WriteTreeView(out, getTheme(), profiles); err != nil {
 		panic(err)
 	}
 }
@@ -76,4 +79,14 @@ func getFilters() []string {
 		return []string{}
 	}
 	return strings.Split(*filter, ",")
+}
+
+func getTheme() string {
+	if theme == nil || *theme == "" {
+		return "dark"
+	}
+	if *theme != "dark" && *theme != "light" {
+		return "dark"
+	}
+	return *theme
 }

@@ -14,8 +14,7 @@ var (
 	input  = flag.String("i", "coverage.out", "coverage profile for input")
 	output = flag.String("o", "coverage.html", "file for output")
 	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
-if the value is invalid, it will be 'dark'.
-`)
+if the value is invalid, it will be 'dark'.`)
 	include = flag.String("include", "", `output only the specified directories.
 multiple directories can be specified separated by commas.`)
 )

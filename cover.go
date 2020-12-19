@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/masakurapa/gover-html/internal/cover"
+	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/html"
 )
 
@@ -29,7 +29,7 @@ func main() {
 	}
 	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, getIncludes())
+	profiles, err := cover.ReadProfile(f, filter.New(include))
 	if err != nil {
 		panic(err)
 	}
@@ -72,13 +72,6 @@ func parseFlags() {
 	if output == nil || *output == "" {
 		flag.Usage()
 	}
-}
-
-func getIncludes() []string {
-	if include == nil || *include == "" {
-		return []string{}
-	}
-	return strings.Split(*include, ",")
 }
 
 func getTheme() string {

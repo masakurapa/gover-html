@@ -16,7 +16,7 @@ var (
 	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
 if the value is invalid, it will be 'dark'.
 `)
-	filter = flag.String("filter", "", `output only the specified directories.
+	include = flag.String("include", "", `output only the specified directories.
 multiple directories can be specified separated by commas.`)
 )
 
@@ -29,7 +29,7 @@ func main() {
 	}
 	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, getFilters())
+	profiles, err := cover.ReadProfile(f, getIncludes())
 	if err != nil {
 		panic(err)
 	}
@@ -74,11 +74,11 @@ func parseFlags() {
 	}
 }
 
-func getFilters() []string {
-	if filter == nil || *filter == "" {
+func getIncludes() []string {
+	if include == nil || *include == "" {
 		return []string{}
 	}
-	return strings.Split(*filter, ",")
+	return strings.Split(*include, ",")
 }
 
 func getTheme() string {

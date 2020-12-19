@@ -26,7 +26,7 @@ type importDir struct {
 }
 
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) {
+func ReadProfile(r io.Reader, includeDirs []string) (profile.Profiles, error) {
 	files := make(map[string]*profile.Profile)
 	modeOk := false
 	id := 1
@@ -69,7 +69,7 @@ func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) {
 		})
 	}
 
-	return toProfiles(files, filterDirs)
+	return toProfiles(files, includeDirs)
 }
 
 func toInt(s string) int {
@@ -80,13 +80,13 @@ func toInt(s string) int {
 	return i
 }
 
-func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile.Profiles, error) {
+func toProfiles(files map[string]*profile.Profile, includeDirs []string) (profile.Profiles, error) {
 	dirs, err := makeImportDirMap(files)
 	if err != nil {
 		return nil, err
 	}
 
-	filters := convertFilterForChecking(filterDirs)
+	filters := convertFilterForChecking(includeDirs)
 
 	profiles := make(profile.Profiles, 0, len(files))
 	for _, p := range files {

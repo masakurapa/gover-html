@@ -55,17 +55,19 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/masakurapa/gover-html/internal/cover/cover.go (92.0%)</option>
+				<option value="file0">github.com/masakurapa/gover-html/internal/cover/cover.go (90.6%)</option>
 				
-				<option value="file1">github.com/masakurapa/gover-html/internal/cover/func.go (35.7%)</option>
+				<option value="file1">github.com/masakurapa/gover-html/internal/cover/filter/filter.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/gover-html/internal/html/html.go (95.4%)</option>
+				<option value="file2">github.com/masakurapa/gover-html/internal/cover/func.go (35.7%)</option>
 				
-				<option value="file3">github.com/masakurapa/gover-html/internal/html/template.go (100.0%)</option>
+				<option value="file3">github.com/masakurapa/gover-html/internal/html/html.go (95.4%)</option>
 				
-				<option value="file4">github.com/masakurapa/gover-html/internal/html/tree/tree.go (100.0%)</option>
+				<option value="file4">github.com/masakurapa/gover-html/internal/html/template.go (100.0%)</option>
 				
-				<option value="file5">github.com/masakurapa/gover-html/internal/profile/profile.go (100.0%)</option>
+				<option value="file5">github.com/masakurapa/gover-html/internal/html/tree/tree.go (100.0%)</option>
+				
+				<option value="file6">github.com/masakurapa/gover-html/internal/profile/profile.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -96,6 +98,7 @@ import (
         "strconv"
         "strings"
 
+        "github.com/masakurapa/gover-html/internal/cover/filter"
         "github.com/masakurapa/gover-html/internal/profile"
 )
 
@@ -107,7 +110,7 @@ type importDir struct {
 }
 
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) <span class="cov8" title="1">{
+func ReadProfile(r io.Reader, f filter.Filter) (profile.Profiles, error) <span class="cov8" title="1">{
         files := make(map[string]*profile.Profile)
         modeOk := false
         id := 1
@@ -150,7 +153,7 @@ func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) <sp
                 })</span>
         }
 
-        <span class="cov8" title="1">return toProfiles(files, filterDirs)</span>
+        <span class="cov8" title="1">return toProfiles(files, f)</span>
 }
 
 func toInt(s string) int <span class="cov8" title="1">{
@@ -161,15 +164,13 @@ func toInt(s string) int <span class="cov8" title="1">{
         <span class="cov8" title="1">return i</span>
 }
 
-func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile.Profiles, error) <span class="cov8" title="1">{
+func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Profiles, error) <span class="cov8" title="1">{
         dirs, err := makeImportDirMap(files)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">filters := convertFilterForChecking(filterDirs)
-
-        profiles := make(profile.Profiles, 0, len(files))
+        <span class="cov8" title="1">profiles := make(profile.Profiles, 0, len(files))
         for _, p := range files </span><span class="cov8" title="1">{
                 p.Blocks = filterBlocks(p.Blocks)
                 sort.SliceStable(p.Blocks, func(i, j int) bool </span><span class="cov8" title="1">{
@@ -178,7 +179,7 @@ func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile
                 }</span>)
 
                 <span class="cov8" title="1">d := dirs[path.Dir(p.FileName)]
-                if !isOutputTarget(d.relative, filters) </span><span class="cov8" title="1">{
+                if !f.IsOutputTarget(d.relative) </span><span class="cov8" title="1">{
                         continue</span>
                 }
 
@@ -263,7 +264,7 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
                 }</span>
                 // should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
                 <span class="cov8" title="1">pkgs[p.ImportPath] = importDir{
-                        relative: strings.TrimPrefix(p.Dir, p.Root),
+                        relative: strings.TrimPrefix(p.Dir, p.Root+"/"),
                         dir:      p.Dir,
                 }</span>
         }
@@ -297,37 +298,91 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="
 
         return cmd.Output()</span>
 }
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package filter
 
-func convertFilterForChecking(filterDirs []string) []string <span class="cov8" title="1">{
-        newFilter := make([]string, 0, len(filterDirs))
-        for _, f := range filterDirs </span><span class="cov8" title="1">{
+import "strings"
+
+const filterSeparator = ","
+
+// Filter is filter the output directory
+type Filter interface {
+        IsOutputTarget(string) bool
+}
+
+type filter struct {
+        include []string
+        exclude []string
+}
+
+// New is initialize the filter
+func New(include *string, exclude *string) Filter <span class="cov8" title="1">{
+        return &amp;filter{
+                include: parse(include),
+                exclude: parse(exclude),
+        }
+}</span>
+
+func parse(value *string) []string <span class="cov8" title="1">{
+        if value == nil || *value == "" </span><span class="cov8" title="1">{
+                return []string{}
+        }</span>
+        <span class="cov8" title="1">return convert(strings.Split(*value, filterSeparator))</span>
+}
+
+func convert(values []string) []string <span class="cov8" title="1">{
+        newFilter := make([]string, 0, len(values))
+        for _, f := range values </span><span class="cov8" title="1">{
                 s := strings.TrimSpace(f)
                 s = strings.TrimPrefix(s, "./")
-                s = strings.TrimSuffix(s, "/")
 
-                if !strings.HasPrefix(s, "/") </span><span class="cov8" title="1">{
-                        s = "/" + s
+                if !strings.HasSuffix(s, "/") </span><span class="cov8" title="1">{
+                        s += "/"
                 }</span>
                 <span class="cov8" title="1">newFilter = append(newFilter, s)</span>
         }
         <span class="cov8" title="1">return newFilter</span>
 }
 
-func isOutputTarget(path string, filter []string) bool <span class="cov8" title="1">{
-        if len(filter) == 0 </span><span class="cov8" title="1">{
+// IsOutputTarget returns true if output target
+// The "relativePath" must be relative to the base path
+func (f *filter) IsOutputTarget(relativePath string) bool <span class="cov8" title="1">{
+        // absolute path is always NG
+        if strings.HasPrefix(relativePath, "/") </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        <span class="cov8" title="1">path := f.convertPathForValidate(relativePath)
+
+        for _, f := range f.exclude </span><span class="cov8" title="1">{
+                if strings.HasPrefix(path, f) </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if len(f.include) == 0 </span><span class="cov8" title="1">{
                 return true
         }</span>
 
-        <span class="cov8" title="1">for _, f := range filter </span><span class="cov8" title="1">{
-                if path == f || strings.HasPrefix(path, f+"/") </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">for _, f := range f.include </span><span class="cov8" title="1">{
+                if strings.HasPrefix(path, f) </span><span class="cov8" title="1">{
                         return true
                 }</span>
         }
         <span class="cov8" title="1">return false</span>
 }
+
+func (f *filter) convertPathForValidate(relativePath string) string <span class="cov8" title="1">{
+        path := strings.TrimPrefix(relativePath, "./")
+        if !strings.HasSuffix(path, "/") </span><span class="cov8" title="1">{
+                path += "/"
+        }</span>
+        <span class="cov8" title="1">return path</span>
+}
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package cover
+		<pre class="file" id="file2" style="display: none">package cover
 
 import (
         "bytes"
@@ -448,7 +503,7 @@ func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions <sp
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package html
+		<pre class="file" id="file3" style="display: none">package html
 
 import (
         "bytes"
@@ -634,7 +689,7 @@ func writeChar(buf *bytes.Buffer, b byte) <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package html
+		<pre class="file" id="file4" style="display: none">package html
 
 import "html/template"
 
@@ -844,7 +899,7 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
 `
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package tree
+		<pre class="file" id="file5" style="display: none">package tree
 
 import (
         "path/filepath"
@@ -941,7 +996,7 @@ func mergeSingreDir(nodes []Node) []Node <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file5" style="display: none">package profile
+		<pre class="file" id="file6" style="display: none">package profile
 
 import (
         "math"

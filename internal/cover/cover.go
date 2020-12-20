@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/profile"
 )
 
@@ -26,7 +27,7 @@ type importDir struct {
 }
 
 // ReadProfile is reads profiling data
-func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) {
+func ReadProfile(r io.Reader, f filter.Filter) (profile.Profiles, error) {
 	files := make(map[string]*profile.Profile)
 	modeOk := false
 	id := 1
@@ -69,7 +70,7 @@ func ReadProfile(r io.Reader, filterDirs []string) (profile.Profiles, error) {
 		})
 	}
 
-	return toProfiles(files, filterDirs)
+	return toProfiles(files, f)
 }
 
 func toInt(s string) int {
@@ -80,13 +81,11 @@ func toInt(s string) int {
 	return i
 }
 
-func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile.Profiles, error) {
+func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Profiles, error) {
 	dirs, err := makeImportDirMap(files)
 	if err != nil {
 		return nil, err
 	}
-
-	filters := convertFilterForChecking(filterDirs)
 
 	profiles := make(profile.Profiles, 0, len(files))
 	for _, p := range files {
@@ -97,7 +96,7 @@ func toProfiles(files map[string]*profile.Profile, filterDirs []string) (profile
 		})
 
 		d := dirs[path.Dir(p.FileName)]
-		if !isOutputTarget(d.relative, filters) {
+		if !f.IsOutputTarget(d.relative) {
 			continue
 		}
 
@@ -182,7 +181,7 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 		}
 		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
 		pkgs[p.ImportPath] = importDir{
-			relative: strings.TrimPrefix(p.Dir, p.Root),
+			relative: strings.TrimPrefix(p.Dir, p.Root+"/"),
 			dir:      p.Dir,
 		}
 	}
@@ -215,32 +214,4 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) {
 	cmd := exec.Command(cmdName, args...)
 
 	return cmd.Output()
-}
-
-func convertFilterForChecking(filterDirs []string) []string {
-	newFilter := make([]string, 0, len(filterDirs))
-	for _, f := range filterDirs {
-		s := strings.TrimSpace(f)
-		s = strings.TrimPrefix(s, "./")
-		s = strings.TrimSuffix(s, "/")
-
-		if !strings.HasPrefix(s, "/") {
-			s = "/" + s
-		}
-		newFilter = append(newFilter, s)
-	}
-	return newFilter
-}
-
-func isOutputTarget(path string, filter []string) bool {
-	if len(filter) == 0 {
-		return true
-	}
-
-	for _, f := range filter {
-		if path == f || strings.HasPrefix(path, f+"/") {
-			return true
-		}
-	}
-	return false
 }

@@ -39,10 +39,12 @@ coverage profile for input. default is `coverage.out`.
 ### -o
 file for output. default is `coverage.html`.
 
-### -filter
+### -include
 output only the specified directories.
 
 multiple directories can be specified separated by commas.
+
+**if "exclude" is also specified, "exclude" option takes precedence.**
 
 **Must specify a relative path from the package root directory!!**
 
@@ -64,18 +66,72 @@ github.com/masakurapa/gover-html
         └── profile.go
 ```
 
-You can filter the output packages by specifying values as follows
+You can filter the output directories by specifying values as follows
 
 ```sh
-# Output only `internal/cover` package!!
-$ gover-html -filter 'internal/cover'
+# Output only `internal/cover`!!
+$ gover-html -include 'internal/cover'
 
-# Output only `internal/cover` and `internal/html/tree` package!!
-$ gover-html -filter './internal/cover,internal/html/tree/'
+# Output only `internal/cover` and `internal/html/tree`!!
+$ gover-html -include './internal/cover,internal/html/tree/'
 
 # This is no good :-C
-$ gover-html -filter 'cover'
-$ gover-html -filter 'html/tree'
+$ gover-html -include '/internal/cover'
+$ gover-html -include 'cover'
+$ gover-html -include 'html/tree'
+```
+
+### -exclude
+output expect the specified directories.
+
+multiple directories can be specified separated by commas.
+
+**if "include" is also specified, this option takes precedence.**
+
+**Must specify a relative path from the package root directory!!**
+
+#### example
+In the case of the following directory tree
+
+```
+github.com/masakurapa/gover-html
+└── internal
+    ├── cover
+    │   ├── cover.go
+    │   └── func.go
+    ├── html
+    │   ├── html.go
+    │   ├── template.go
+    │   └── tree
+    │       └── tree.go
+    └── profile
+        └── profile.go
+```
+
+You can filter the output directories by specifying values as follows
+
+```sh
+# Output excluding `internal/cover`!!
+$ gover-html -exclude 'internal/cover'
+
+# Output excluding `internal/cover` and `internal/html/tree`!!
+$ gover-html -exclude './internal/cover,internal/html/tree/'
+
+# This is no good :-C
+$ gover-html -exclude '/internal/cover'
+$ gover-html -exclude 'cover'
+$ gover-html -exclude 'html/tree'
+```
+
+If you specify `include` and `exclude` at the same time, the output directory looks like this.
+
+```sh
+$ gover-html -include 'internal/html' -exclude 'internal/html/tree/'
+github.com/masakurapa/gover-html
+└── internal
+    └── html
+        ├── html.go
+        └── template.go
 ```
 
 ### -theme

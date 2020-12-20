@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/masakurapa/gover-html/internal/cover"
+	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/html"
 )
 
@@ -14,10 +14,15 @@ var (
 	input  = flag.String("i", "coverage.out", "coverage profile for input")
 	output = flag.String("o", "coverage.html", "file for output")
 	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
-if the value is invalid, it will be 'dark'.
-`)
-	filter = flag.String("filter", "", `output only the specified directories.
-multiple directories can be specified separated by commas.`)
+if the value is invalid, it will be 'dark'.`)
+	include = flag.String("include", "", `output only the specified directories.
+multiple directories can be specified separated by commas.
+
+if "exclude" is also specified, "exclude" option takes precedence.`)
+	exclude = flag.String("exclude", "", `output expect the specified directories.
+multiple directories can be specified separated by commas.
+
+if "include" is also specified, this option takes precedence.`)
 )
 
 func main() {
@@ -29,7 +34,7 @@ func main() {
 	}
 	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, getFilters())
+	profiles, err := cover.ReadProfile(f, filter.New(include, exclude))
 	if err != nil {
 		panic(err)
 	}
@@ -72,13 +77,6 @@ func parseFlags() {
 	if output == nil || *output == "" {
 		flag.Usage()
 	}
-}
-
-func getFilters() []string {
-	if filter == nil || *filter == "" {
-		return []string{}
-	}
-	return strings.Split(*filter, ",")
 }
 
 func getTheme() string {

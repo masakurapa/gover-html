@@ -11,12 +11,14 @@ type Filter interface {
 
 type filter struct {
 	include []string
+	exclude []string
 }
 
 // New is initialize the filter
-func New(include *string) Filter {
+func New(include *string, exclude *string) Filter {
 	return &filter{
 		include: parse(include),
+		exclude: parse(exclude),
 	}
 }
 
@@ -48,11 +50,19 @@ func (f *filter) IsOutputTarget(relativePath string) bool {
 	if strings.HasPrefix(relativePath, "/") {
 		return false
 	}
+
+	path := f.convertPathForValidate(relativePath)
+
+	for _, f := range f.exclude {
+		if strings.HasPrefix(path, f) {
+			return false
+		}
+	}
+
 	if len(f.include) == 0 {
 		return true
 	}
 
-	path := f.convertPathForValidate(relativePath)
 	for _, f := range f.include {
 		if strings.HasPrefix(path, f) {
 			return true

@@ -16,7 +16,13 @@ var (
 	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
 if the value is invalid, it will be 'dark'.`)
 	include = flag.String("include", "", `output only the specified directories.
-multiple directories can be specified separated by commas.`)
+multiple directories can be specified separated by commas.
+
+if "exclude" is also specified, "exclude" option takes precedence.`)
+	exclude = flag.String("exclude", "", `output expect the specified directories.
+multiple directories can be specified separated by commas.
+
+if "include" is also specified, this option takes precedence.`)
 )
 
 func main() {
@@ -28,7 +34,7 @@ func main() {
 	}
 	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, filter.New(include))
+	profiles, err := cover.ReadProfile(f, filter.New(include, exclude))
 	if err != nil {
 		panic(err)
 	}

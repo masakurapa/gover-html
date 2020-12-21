@@ -65,9 +65,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 			},
 			want: profile.Profiles{
 				{
-					ID:       2,
-					Dir:      absDir1,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir1/file0.go",
+					ID:         2,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir1,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir1/file0.go",
 					Blocks: []profile.Block{
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
@@ -75,27 +76,30 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Functions: profile.Functions{},
 				},
 				{
-					ID:       3,
-					Dir:      absDir1,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir1/file1.go",
+					ID:         3,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir1,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir1/file1.go",
 					Blocks: []profile.Block{
 						{StartLine: 4, StartCol: 14, EndLine: 24, EndCol: 34, NumState: 44, Count: 54},
 					},
 					Functions: profile.Functions{},
 				},
 				{
-					ID:       4,
-					Dir:      absDir3,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go",
+					ID:         4,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir3,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go",
 					Blocks: []profile.Block{
 						{StartLine: 5, StartCol: 15, EndLine: 25, EndCol: 35, NumState: 45, Count: 55},
 					},
 					Functions: profile.Functions{},
 				},
 				{
-					ID:       1,
-					Dir:      absDir2,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir2/file1.go",
+					ID:         1,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir2,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir2/file1.go",
 					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
@@ -116,9 +120,10 @@ github.com/masakurapa/gover-html/testdata/dir1/file0.go:3.13,23.33 43 53
 			},
 			want: profile.Profiles{
 				{
-					ID:       1,
-					Dir:      absDir1,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir1/file0.go",
+					ID:         1,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir1,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir1/file0.go",
 					Blocks: []profile.Block{
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
@@ -153,18 +158,20 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 			},
 			want: profile.Profiles{
 				{
-					ID:       4,
-					Dir:      absDir3,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go",
+					ID:         4,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir3,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go",
 					Blocks: []profile.Block{
 						{StartLine: 5, StartCol: 15, EndLine: 25, EndCol: 35, NumState: 45, Count: 55},
 					},
 					Functions: profile.Functions{},
 				},
 				{
-					ID:       1,
-					Dir:      absDir2,
-					FileName: "github.com/masakurapa/gover-html/testdata/dir2/file1.go",
+					ID:         1,
+					ModulePath: "github.com/masakurapa/gover-html",
+					Dir:        absDir2,
+					FileName:   "github.com/masakurapa/gover-html/testdata/dir2/file1.go",
 					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},

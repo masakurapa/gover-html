@@ -70,25 +70,84 @@ func TestCreate(t *testing.T) {
 			name: "ファイルが無いディレクトリはマージされ、ディレクトリごとに階層化されたスライスが返却される",
 			args: args{
 				profiles: profile.Profiles{
-					{FileName: "path/to/dir1/file0.go"},
-					{FileName: "path/to/dir1/file1.go"},
-					{FileName: "path/to/dir2/file1.go"},
-					{FileName: "path/to/dir3/sub/file1.go"},
+					{
+						ModulePath: "github.com/masakurapa/gover-html",
+						FileName:   "github.com/masakurapa/gover-html/path/to/dir1/file0.go",
+					},
+					{
+						ModulePath: "github.com/masakurapa/gover-html",
+						FileName:   "github.com/masakurapa/gover-html/path/to/dir1/file1.go",
+					},
+					{
+						ModulePath: "github.com/masakurapa/gover-html",
+						FileName:   "github.com/masakurapa/gover-html/path/to/dir2/file1.go",
+					},
+					{
+						ModulePath: "github.com/masakurapa/gover-html",
+						FileName:   "github.com/masakurapa/gover-html/path/to/dir3/sub/file1.go",
+					},
+					{
+						ModulePath: "github.com/masakurapa/gover-html2",
+						FileName:   "github.com/masakurapa/gover-html2/path/to/dir1/file1.go",
+					},
 				},
 			},
 			want: []tree.Node{
-				{Name: "path/to", Dirs: []tree.Node{
-					{Name: "dir1", Files: profile.Profiles{
-						{FileName: "path/to/dir1/file0.go"},
-						{FileName: "path/to/dir1/file1.go"},
-					}},
-					{Name: "dir2", Files: profile.Profiles{
-						{FileName: "path/to/dir2/file1.go"},
-					}},
-					{Name: "dir3/sub", Files: profile.Profiles{
-						{FileName: "path/to/dir3/sub/file1.go"},
-					}},
-				}},
+				{
+					Name: "github.com/masakurapa/gover-html",
+					Dirs: []tree.Node{
+						{
+							Name: "path/to",
+							Dirs: []tree.Node{
+								{
+									Name: "dir1",
+									Files: profile.Profiles{
+										{
+											ModulePath: "github.com/masakurapa/gover-html",
+											FileName:   "github.com/masakurapa/gover-html/path/to/dir1/file0.go",
+										},
+										{
+											ModulePath: "github.com/masakurapa/gover-html",
+											FileName:   "github.com/masakurapa/gover-html/path/to/dir1/file1.go",
+										},
+									},
+								},
+								{
+									Name: "dir2",
+									Files: profile.Profiles{
+										{
+											ModulePath: "github.com/masakurapa/gover-html",
+											FileName:   "github.com/masakurapa/gover-html/path/to/dir2/file1.go",
+										},
+									},
+								},
+								{
+									Name: "dir3/sub",
+									Files: profile.Profiles{
+										{
+											ModulePath: "github.com/masakurapa/gover-html",
+											FileName:   "github.com/masakurapa/gover-html/path/to/dir3/sub/file1.go",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Name: "github.com/masakurapa/gover-html2",
+					Dirs: []tree.Node{
+						{
+							Name: "path/to/dir1",
+							Files: profile.Profiles{
+								{
+									ModulePath: "github.com/masakurapa/gover-html2",
+									FileName:   "github.com/masakurapa/gover-html2/path/to/dir1/file1.go",
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 	}

@@ -30,10 +30,19 @@ func (n *Node) ChildBlocks() profile.Blocks {
 func Create(profiles profile.Profiles) []Node {
 	nodes := make([]Node, 0)
 	for _, p := range profiles {
-		addNode(&nodes, strings.Split(p.FileName, "/"), &p)
+		idx := index(nodes, p.ModulePath)
+		if idx == -1 {
+			nodes = append(nodes, Node{Name: p.ModulePath})
+			idx = len(nodes) - 1
+		}
+
+		addNode(&nodes[idx].Dirs, strings.Split(p.RemoveModulePathFromFileName(), "/"), &p)
 	}
 
-	return mergeSingreDir(nodes)
+	for i, node := range nodes {
+		nodes[i].Dirs = mergeSingreDir(node.Dirs)
+	}
+	return nodes
 }
 
 func addNode(nodes *[]Node, paths []string, p *profile.Profile) {

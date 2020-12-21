@@ -12,11 +12,12 @@ type Profiles []Profile
 
 // Profile is profiling data for each file
 type Profile struct {
-	ID        int
-	Dir       string
-	FileName  string
-	Blocks    Blocks
-	Functions Functions
+	ID         int
+	ModulePath string
+	Dir        string
+	FileName   string
+	Blocks     Blocks
+	Functions  Functions
 }
 
 // Functions is a type that represents a slice of Function
@@ -46,6 +47,11 @@ type Block struct {
 // IsRelativeOrAbsolute returns true if FileName is relative path or absolute path
 func (prof *Profile) IsRelativeOrAbsolute() bool {
 	return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+}
+
+// RemoveModulePathFromFileName returns FileName with ModulePath removed
+func (prof *Profile) RemoveModulePathFromFileName() string {
+	return strings.TrimPrefix(prof.FileName, prof.ModulePath)
 }
 
 // FilePath returns readable file path

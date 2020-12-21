@@ -22,8 +22,9 @@ import (
 var reg = regexp.MustCompile(`^(.+):([0-9]+)\.([0-9]+),([0-9]+)\.([0-9]+) ([0-9]+) ([0-9]+)$`)
 
 type importDir struct {
-	relative string
-	dir      string
+	modulePath string
+	relative   string
+	dir        string
 }
 
 // ReadProfile is reads profiling data
@@ -101,6 +102,7 @@ func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Pro
 		}
 
 		p.Dir = d.dir
+		p.ModulePath = d.modulePath
 
 		fn, err := makeFuncs(*p)
 		if err != nil {
@@ -160,7 +162,8 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 	type pkg struct {
 		Dir    string
 		Module *struct {
-			Dir string
+			Path string
+			Dir  string
 		}
 		ImportPath string
 		Error      *struct {
@@ -183,8 +186,9 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 		}
 		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
 		pkgs[p.ImportPath] = importDir{
-			relative: strings.TrimPrefix(p.Dir, p.Module.Dir+"/"),
-			dir:      p.Dir,
+			modulePath: p.Module.Path,
+			relative:   strings.TrimPrefix(p.Dir, p.Module.Dir+"/"),
+			dir:        p.Dir,
 		}
 	}
 

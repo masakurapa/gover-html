@@ -158,8 +158,10 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 	}
 
 	type pkg struct {
-		Dir        string
-		Root       string
+		Dir    string
+		Module *struct {
+			Dir string
+		}
 		ImportPath string
 		Error      *struct {
 			Err string
@@ -181,7 +183,7 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 		}
 		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
 		pkgs[p.ImportPath] = importDir{
-			relative: strings.TrimPrefix(p.Dir, p.Root+"/"),
+			relative: strings.TrimPrefix(p.Dir, p.Module.Dir+"/"),
 			dir:      p.Dir,
 		}
 	}

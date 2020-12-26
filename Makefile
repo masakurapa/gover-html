@@ -1,5 +1,5 @@
 build:
-	go build -o gover-html cover.go
+	go build -o gover-html gover.go
 
 gotest:
 	go test -count=1 ./internal/...

@@ -3,14 +3,23 @@ package filter_test
 import (
 	"testing"
 
+	"github.com/masakurapa/gover-html/test/helper"
+
 	"github.com/masakurapa/gover-html/internal/cover/filter"
+	"github.com/masakurapa/gover-html/internal/option"
 )
 
 func TestFilter_IsOutputTarget(t *testing.T) {
 	type args struct {
-		include *string
-		exclude *string
+		option option.Option
 	}
+	type testCase struct {
+		name string
+		args args
+		path string
+		want bool
+	}
+
 	tests := []struct {
 		name string
 		args args
@@ -18,28 +27,17 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "include, excludeがnilの場合はtrueが返る",
+			name: "include, excludeの指定なし、pathが/で始まらない場合はtrueが返る",
 			args: args{
-				include: nil,
-				exclude: nil,
+				option: helper.GetOptionForDefault(t),
 			},
 			path: "path/to/dir1",
 			want: true,
 		},
 		{
-			name: "include, excludeが空文字の場合はtrueが返る",
+			name: "include, excludeの指定なし、pathが/で始まる場合はtrueが返る",
 			args: args{
-				include: stringP(""),
-				exclude: stringP(""),
-			},
-			path: "path/to/dir1",
-			want: true,
-		},
-		{
-			name: "pathが絶対パス指定の場合はfalseが返る",
-			args: args{
-				include: stringP(""),
-				exclude: stringP(""),
+				option: helper.GetOptionForDefault(t),
 			},
 			path: "/path/to/dir1",
 			want: false,
@@ -49,7 +47,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include = path の場合はtrueが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: true,
@@ -57,7 +55,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include != path の場合はfalseが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
 			path: "path/to/dir2",
 			want: false,
@@ -65,7 +63,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "includeの接頭語(./)を除いた値 = path の場合はtrueが返る",
 			args: args{
-				include: stringP("./path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"./path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: true,
@@ -73,7 +71,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "includeの接頭語(./)を除いた値 != path の場合はfalseが返る",
 			args: args{
-				include: stringP("./path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"./path/to/dir1"}),
 			},
 			path: "path/to/dir2",
 			want: false,
@@ -81,7 +79,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "includeの接尾語(/)を除いた値 = path の場合はtrueが返る",
 			args: args{
-				include: stringP("path/to/dir1/"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1/"}),
 			},
 			path: "path/to/dir1",
 			want: true,
@@ -89,7 +87,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "includeの接尾語(/)を除いた値 != path の場合はfalseが返る",
 			args: args{
-				include: stringP("path/to/dir1/"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1/"}),
 			},
 			path: "path/to/dir2",
 			want: false,
@@ -97,7 +95,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include = pathの接頭語(./)を除いた値 の場合はtrueが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
 			path: "./path/to/dir1",
 			want: true,
@@ -105,7 +103,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include != pathの接頭語(./)を除いた値 の場合はfalseが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
 			path: "./path/to/dir2",
 			want: false,
@@ -113,23 +111,23 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include = pathの接尾語(/)を除いた値 の場合はtrueが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
-			path: "./path/to/dir1/",
+			path: "path/to/dir1/",
 			want: true,
 		},
 		{
 			name: "include != pathの接尾語(/)を除いた値 の場合はfalseが返る",
 			args: args{
-				include: stringP("path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir1"}),
 			},
-			path: "./path/to/dir2/",
+			path: "path/to/dir2/",
 			want: false,
 		},
 		{
 			name: "include = pathの接頭語 の場合はtrueが返る",
 			args: args{
-				include: stringP("path/to"),
+				option: helper.GetOptionForInclude(t, []string{"path/to"}),
 			},
 			path: "path/to/dir1",
 			want: true,
@@ -137,23 +135,23 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "include != pathの接頭語 の場合はfalseが返る",
 			args: args{
-				include: stringP("path/to"),
+				option: helper.GetOptionForInclude(t, []string{"path/to"}),
 			},
 			path: "path/tooo/dir1",
 			want: false,
 		},
 		{
-			name: "includeがカンマ区切りで複数あり、いずれかと同じパスの場合はtrueが返る",
+			name: "includeが複数あり、いずれかと同じパスの場合はtrueが返る",
 			args: args{
-				include: stringP("path/to/dir2, path/to/dir3,path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir2", "path/to/dir3", "path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: true,
 		},
 		{
-			name: "includeがカンマ区切りで複数あり、いずれかと同じパスにもマッチしない場合はfalseが返る",
+			name: "includeが複数あり、いずれかと同じパスにもマッチしない場合はfalseが返る",
 			args: args{
-				include: stringP("path/to/dir2, path/to/dir3,path/to/dir1"),
+				option: helper.GetOptionForInclude(t, []string{"path/to/dir2", "path/to/dir3", "path/to/dir1"}),
 			},
 			path: "path/to/dir4",
 			want: false,
@@ -163,7 +161,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude = path の場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: false,
@@ -171,7 +169,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude != path の場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
 			path: "path/to/dir2",
 			want: true,
@@ -179,7 +177,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeの接頭語(./)を除いた値 = path の場合はfalseが返る",
 			args: args{
-				exclude: stringP("./path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"./path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: false,
@@ -187,7 +185,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeの接頭語(./)を除いた値 != path の場合はtrueが返る",
 			args: args{
-				exclude: stringP("./path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"./path/to/dir1"}),
 			},
 			path: "path/to/dir2",
 			want: true,
@@ -195,7 +193,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeの接尾語(/)を除いた値 = path の場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to/dir1/"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1/"}),
 			},
 			path: "path/to/dir1",
 			want: false,
@@ -203,7 +201,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeの接尾語(/)を除いた値 != path の場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to/dir1/"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1/"}),
 			},
 			path: "path/to/dir2",
 			want: true,
@@ -211,7 +209,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude = pathの接頭語(./)を除いた値 の場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
 			path: "./path/to/dir1",
 			want: false,
@@ -219,7 +217,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude != pathの接頭語(./)を除いた値 の場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
 			path: "./path/to/dir2",
 			want: true,
@@ -227,23 +225,23 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude = pathの接尾語(/)を除いた値 の場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
-			path: "./path/to/dir1/",
+			path: "path/to/dir1/",
 			want: false,
 		},
 		{
 			name: "exclude != pathの接尾語(/)を除いた値 の場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir1"}),
 			},
-			path: "./path/to/dir2/",
+			path: "path/to/dir2/",
 			want: true,
 		},
 		{
 			name: "exclude = pathの接頭語 の場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to"),
+				option: helper.GetOptionForExclude(t, []string{"path/to"}),
 			},
 			path: "path/to/dir1",
 			want: false,
@@ -251,7 +249,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "exclude != pathの接頭語 の場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to"),
+				option: helper.GetOptionForExclude(t, []string{"path/to"}),
 			},
 			path: "path/tooo/dir1",
 			want: true,
@@ -259,7 +257,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeがカンマ区切りで複数あり、いずれかと同じパスの場合はfalseが返る",
 			args: args{
-				exclude: stringP("path/to/dir2, path/to/dir3,path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir2", "path/to/dir3", "path/to/dir1"}),
 			},
 			path: "path/to/dir1",
 			want: false,
@@ -267,7 +265,7 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		{
 			name: "excludeがカンマ区切りで複数あり、いずれかと同じパスにもマッチしない場合はtrueが返る",
 			args: args{
-				exclude: stringP("path/to/dir2, path/to/dir3,path/to/dir1"),
+				option: helper.GetOptionForExclude(t, []string{"path/to/dir2", "path/to/dir3", "path/to/dir1"}),
 			},
 			path: "path/to/dir4",
 			want: true,
@@ -276,14 +274,10 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := filter.New(tt.args.include, tt.args.exclude)
+			f := filter.New(tt.args.option)
 			if got := f.IsOutputTarget(tt.path); got != tt.want {
 				t.Errorf("filter.IsOutputTarget() = %v, want %v", got, tt.want)
 			}
 		})
 	}
-}
-
-func stringP(s string) *string {
-	return &s
 }

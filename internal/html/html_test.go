@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/masakurapa/gover-html/internal/html"
+	"github.com/masakurapa/gover-html/internal/option"
 	"github.com/masakurapa/gover-html/internal/profile"
 )
 
@@ -33,7 +34,7 @@ func TestWriteTreeView(t *testing.T) {
 		},
 	}
 
-	err = html.WriteTreeView(&writer, "dark", profiles)
+	err = html.WriteTreeView(&writer, profiles, option.Option{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +71,7 @@ func BenchmarkWriteTreeView(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		html.WriteTreeView(&writer, "dark", profiles)
+		html.WriteTreeView(&writer, profiles, option.Option{})
 		writer.Reset()
 	}
 }

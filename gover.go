@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/masakurapa/gover-html/internal/cover"
 	"github.com/masakurapa/gover-html/internal/cover/filter"
+
+	"github.com/masakurapa/gover-html/internal/option"
+
+	"github.com/masakurapa/gover-html/internal/cover"
 	"github.com/masakurapa/gover-html/internal/html"
 )
 
@@ -26,27 +29,27 @@ if "include" is also specified, this option takes precedence.`)
 )
 
 func main() {
-	parseFlags()
+	opt := getOption()
 
-	f, err := os.Open(*input)
+	f, err := os.Open(opt.Input)
 	if err != nil {
-		panic(err)
+		exitError(err)
 	}
 	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, filter.New(include, exclude))
+	profiles, err := cover.ReadProfile(f, filter.New(opt))
 	if err != nil {
-		panic(err)
+		exitError(err)
 	}
 
-	out, err := os.Create(*output)
+	out, err := os.Create(opt.Output)
 	if err != nil {
-		panic(err)
+		exitError(err)
 	}
 	defer out.Close()
 
-	if err = html.WriteTreeView(out, getTheme(), profiles); err != nil {
-		panic(err)
+	if err = html.WriteTreeView(out, profiles, opt); err != nil {
+		exitError(err)
 	}
 }
 
@@ -70,21 +73,39 @@ func usage() {
 func parseFlags() {
 	flag.Usage = usage
 	flag.Parse()
-
-	if input == nil || *input == "" {
-		flag.Usage()
-	}
-	if output == nil || *output == "" {
-		flag.Usage()
-	}
 }
 
-func getTheme() string {
-	if theme == nil || *theme == "" {
-		return "dark"
+func getOption() option.Option {
+	parseFlags()
+
+	// make options with command line arguments
+	cliOption, err := option.New(*input, *output, *theme, *include, *exclude)
+	if err != nil {
+		exitError(err)
 	}
-	if *theme != "dark" && *theme != "light" {
-		return "dark"
+
+	// return cliOption if option file is not exists
+	if _, err := os.Stat(option.FileName); err != nil {
+		return *cliOption
 	}
-	return *theme
+
+	r, err := os.Open(option.FileName)
+	if err != nil {
+		exitError(err)
+	}
+
+	// read option file
+	fileOption, err := option.Read(r)
+
+	// merge cliOption to fileOption if command line argments is exists
+	if input != nil {
+		fileOption.Input = cliOption.Input
+	}
+
+	return *fileOption
+}
+
+func exitError(err error) {
+	fmt.Println(err)
+	os.Exit(1)
 }

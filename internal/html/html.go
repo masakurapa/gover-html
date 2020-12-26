@@ -9,6 +9,7 @@ import (
 	"path"
 
 	"github.com/masakurapa/gover-html/internal/html/tree"
+	"github.com/masakurapa/gover-html/internal/option"
 	"github.com/masakurapa/gover-html/internal/profile"
 )
 
@@ -50,13 +51,13 @@ type templateFunc struct {
 }
 
 // WriteTreeView outputs coverage as a tree view HTML file
-func WriteTreeView(out io.Writer, theme string, profiles profile.Profiles) error {
+func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error {
 	nodes := tree.Create(profiles)
 	tree := make([]templateTree, 0)
 	makeTemplateTree(&tree, nodes, 0)
 
 	data := templateData{
-		Theme: theme,
+		Theme: opt.Theme,
 		Tree:  tree,
 		Files: make([]templateFile, 0, len(profiles)),
 	}

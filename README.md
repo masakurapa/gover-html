@@ -40,9 +40,9 @@ coverage profile for input. default is `coverage.out`.
 file for output. default is `coverage.html`.
 
 ### -include
-output only the specified directories.
+output only the specified file or directory.
 
-multiple directories can be specified separated by commas.
+you can specify multiple items separated by commas.
 
 **if "exclude" is also specified, "exclude" option takes precedence.**
 
@@ -66,7 +66,7 @@ github.com/masakurapa/gover-html
         └── profile.go
 ```
 
-You can filter the output directories by specifying values as follows
+You can filter the output by specifying values as follows.
 
 ```sh
 # Output only `internal/cover`!!
@@ -82,9 +82,9 @@ $ gover-html -include 'html/tree'
 ```
 
 ### -exclude
-output expect the specified directories.
+output expect the specified file or directory.
 
-multiple directories can be specified separated by commas.
+You can specify multiple items separated by commas.
 
 **if "include" is also specified, this option takes precedence.**
 
@@ -108,7 +108,7 @@ github.com/masakurapa/gover-html
         └── profile.go
 ```
 
-You can filter the output directories by specifying values as follows
+You can filter the output by specifying values as follows.
 
 ```sh
 # Output excluding `internal/cover`!!
@@ -123,7 +123,7 @@ $ gover-html -exclude 'cover'
 $ gover-html -exclude 'html/tree'
 ```
 
-If you specify `include` and `exclude` at the same time, the output directory looks like this.
+If you specify `include` and `exclude` at the same time, the output looks like this.
 
 ```sh
 $ gover-html -include 'internal/html' -exclude 'internal/html/tree/'

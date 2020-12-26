@@ -231,7 +231,8 @@ func TestNew(t *testing.T) {
 					mockExists: func(string) bool { return false },
 				}
 
-				got, err := option.New(readerMock).Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
+				got, err := option.New(readerMock).
+					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return
@@ -527,7 +528,8 @@ exclude:
 					},
 				}
 
-				got, err := option.New(readerMock).Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
+				got, err := option.New(readerMock).
+					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return

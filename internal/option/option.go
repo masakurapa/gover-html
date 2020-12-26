@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/masakurapa/gover-html/internal/reader"
+
 	"gopkg.in/yaml.v2"
 )
 

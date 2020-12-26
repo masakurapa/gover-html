@@ -4,9 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/masakurapa/gover-html/internal/reader"
-
 	"github.com/masakurapa/gover-html/internal/option"
+	"github.com/masakurapa/gover-html/internal/reader"
 )
 
 type mockReader struct {

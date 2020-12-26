@@ -6,8 +6,6 @@ import (
 	"github.com/masakurapa/gover-html/internal/option"
 )
 
-const filterSeparator = ","
-
 // Filter is filter the output directory
 type Filter interface {
 	IsOutputTarget(string) bool

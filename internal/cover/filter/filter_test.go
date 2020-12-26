@@ -3,10 +3,9 @@ package filter_test
 import (
 	"testing"
 
-	"github.com/masakurapa/gover-html/test/helper"
-
 	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/option"
+	"github.com/masakurapa/gover-html/test/helper"
 )
 
 func TestFilter_IsOutputTarget(t *testing.T) {

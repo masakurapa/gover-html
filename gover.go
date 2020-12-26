@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/masakurapa/gover-html/internal/cover/filter"
-
-	"github.com/masakurapa/gover-html/internal/option"
-
 	"github.com/masakurapa/gover-html/internal/cover"
+	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/html"
+	"github.com/masakurapa/gover-html/internal/option"
+	"github.com/masakurapa/gover-html/internal/reader"
 )
 
 var (
@@ -79,30 +78,12 @@ func getOption() option.Option {
 	parseFlags()
 
 	// make options with command line arguments
-	cliOption, err := option.New(*input, *output, *theme, *include, *exclude)
+	opt, err := option.New(reader.New()).Generate(input, output, theme, include, exclude)
 	if err != nil {
 		exitError(err)
 	}
 
-	// return cliOption if option file is not exists
-	if _, err := os.Stat(option.FileName); err != nil {
-		return *cliOption
-	}
-
-	r, err := os.Open(option.FileName)
-	if err != nil {
-		exitError(err)
-	}
-
-	// read option file
-	fileOption, err := option.Read(r)
-
-	// merge cliOption to fileOption if command line argments is exists
-	if input != nil {
-		fileOption.Input = cliOption.Input
-	}
-
-	return *fileOption
+	return *opt
 }
 
 func exitError(err error) {

@@ -14,11 +14,11 @@ import (
 
 type mockFilter struct {
 	filter.Filter
-	mockIsOutputTarget func(string) bool
+	mockIsOutputTarget func(string, string) bool
 }
 
-func (f *mockFilter) IsOutputTarget(path string) bool {
-	return f.mockIsOutputTarget(path)
+func (f *mockFilter) IsOutputTarget(path, fileName string) bool {
+	return f.mockIsOutputTarget(path, fileName)
 }
 
 func TestReadProfile(t *testing.T) {
@@ -36,7 +36,7 @@ func TestReadProfile(t *testing.T) {
 	}
 
 	defaultFilter := &mockFilter{
-		mockIsOutputTarget: func(string) bool {
+		mockIsOutputTarget: func(string, string) bool {
 			return true
 		},
 	}
@@ -144,7 +144,7 @@ github.com/masakurapa/gover-html/testdata/dir1/file1.go:4.14,24.34 44 54
 github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 `),
 				f: &mockFilter{
-					mockIsOutputTarget: func(path string) bool {
+					mockIsOutputTarget: func(path, _ string) bool {
 						t.Log(path)
 						if path == "testdata/dir2" {
 							return true
@@ -229,7 +229,7 @@ github.com/masakurapa/gover-html/testdata/dir1/file1.go:4.14,24.34 44 54
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		cover.ReadProfile(r, &mockFilter{
-			mockIsOutputTarget: func(string) bool {
+			mockIsOutputTarget: func(string, string) bool {
 				return true
 			},
 		})

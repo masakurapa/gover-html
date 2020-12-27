@@ -8,7 +8,7 @@ import (
 
 // Filter is filter the output directory
 type Filter interface {
-	IsOutputTarget(string) bool
+	IsOutputTarget(string, string) bool
 }
 
 type filter struct {
@@ -26,7 +26,7 @@ func New(opt option.Option) Filter {
 
 // IsOutputTarget returns true if output target
 // The "relativePath" must be relative to the base path
-func (f *filter) IsOutputTarget(relativePath string) bool {
+func (f *filter) IsOutputTarget(relativePath, fileName string) bool {
 	// absolute path is always NG
 	if strings.HasPrefix(relativePath, "/") {
 		return false
@@ -35,7 +35,7 @@ func (f *filter) IsOutputTarget(relativePath string) bool {
 	path := f.convertPathForValidate(relativePath)
 
 	for _, s := range f.exclude {
-		if f.hasPrefix(path, s) {
+		if f.hasPrefix(path, fileName, s) {
 			return false
 		}
 	}
@@ -45,15 +45,18 @@ func (f *filter) IsOutputTarget(relativePath string) bool {
 	}
 
 	for _, s := range f.include {
-		if f.hasPrefix(path, s) {
+		if f.hasPrefix(path, fileName, s) {
 			return true
 		}
 	}
 	return false
 }
 
-func (f *filter) hasPrefix(path, prefix string) bool {
-	return path == prefix || strings.HasPrefix(path, prefix+"/")
+func (f *filter) hasPrefix(path, fileName, prefix string) bool {
+	if path == prefix || strings.HasPrefix(path, prefix+"/") {
+		return true
+	}
+	return path+"/"+fileName == prefix
 }
 
 func (f *filter) convertPathForValidate(relativePath string) string {

@@ -97,7 +97,7 @@ func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Pro
 		})
 
 		d := dirs[path.Dir(p.FileName)]
-		if !f.IsOutputTarget(d.relative) {
+		if !f.IsOutputTarget(d.relative, filepath.Base(p.FileName)) {
 			continue
 		}
 

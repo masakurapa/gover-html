@@ -144,14 +144,21 @@ github.com/masakurapa/gover-html/testdata/dir1/file1.go:4.14,24.34 44 54
 github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 `),
 				f: &mockFilter{
-					mockIsOutputTarget: func(path, _ string) bool {
-						t.Log(path)
-						if path == "testdata/dir2" {
+					mockIsOutputTarget: func(path, fileName string) bool {
+						if path == "testdata/dir1" && fileName == "file0.go" {
+							return false
+						}
+						if path == "testdata/dir1" && fileName == "file1.go" {
+							return false
+						}
+						if path == "testdata/dir2" && fileName == "file1.go" {
 							return true
 						}
-						if path == "testdata/dir2/dir3" {
+						if path == "testdata/dir2/dir3" && fileName == "file3.go" {
 							return true
 						}
+
+						t.Errorf("Unexpected parameters. path: %q, fileName: %q", path, fileName)
 						return false
 					},
 				},

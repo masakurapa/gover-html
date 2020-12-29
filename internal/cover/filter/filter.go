@@ -1,12 +1,14 @@
 package filter
 
-import "strings"
+import (
+	"strings"
 
-const filterSeparator = ","
+	"github.com/masakurapa/gover-html/internal/option"
+)
 
 // Filter is filter the output directory
 type Filter interface {
-	IsOutputTarget(string) bool
+	IsOutputTarget(string, string) bool
 }
 
 type filter struct {
@@ -15,37 +17,16 @@ type filter struct {
 }
 
 // New is initialize the filter
-func New(include *string, exclude *string) Filter {
+func New(opt option.Option) Filter {
 	return &filter{
-		include: parse(include),
-		exclude: parse(exclude),
+		include: opt.Include,
+		exclude: opt.Exclude,
 	}
-}
-
-func parse(value *string) []string {
-	if value == nil || *value == "" {
-		return []string{}
-	}
-	return convert(strings.Split(*value, filterSeparator))
-}
-
-func convert(values []string) []string {
-	newFilter := make([]string, 0, len(values))
-	for _, f := range values {
-		s := strings.TrimSpace(f)
-		s = strings.TrimPrefix(s, "./")
-
-		if !strings.HasSuffix(s, "/") {
-			s += "/"
-		}
-		newFilter = append(newFilter, s)
-	}
-	return newFilter
 }
 
 // IsOutputTarget returns true if output target
 // The "relativePath" must be relative to the base path
-func (f *filter) IsOutputTarget(relativePath string) bool {
+func (f *filter) IsOutputTarget(relativePath, fileName string) bool {
 	// absolute path is always NG
 	if strings.HasPrefix(relativePath, "/") {
 		return false
@@ -53,8 +34,8 @@ func (f *filter) IsOutputTarget(relativePath string) bool {
 
 	path := f.convertPathForValidate(relativePath)
 
-	for _, f := range f.exclude {
-		if strings.HasPrefix(path, f) {
+	for _, s := range f.exclude {
+		if f.hasPrefix(path, fileName, s) {
 			return false
 		}
 	}
@@ -63,18 +44,22 @@ func (f *filter) IsOutputTarget(relativePath string) bool {
 		return true
 	}
 
-	for _, f := range f.include {
-		if strings.HasPrefix(path, f) {
+	for _, s := range f.include {
+		if f.hasPrefix(path, fileName, s) {
 			return true
 		}
 	}
 	return false
 }
 
+func (f *filter) hasPrefix(path, fileName, prefix string) bool {
+	if path == prefix || strings.HasPrefix(path, prefix+"/") {
+		return true
+	}
+	return path+"/"+fileName == prefix
+}
+
 func (f *filter) convertPathForValidate(relativePath string) string {
 	path := strings.TrimPrefix(relativePath, "./")
-	if !strings.HasSuffix(path, "/") {
-		path += "/"
-	}
-	return path
+	return strings.TrimSuffix(path, "/")
 }

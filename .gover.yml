@@ -1,0 +1,21 @@
+# coverage profile for input. default is `coverage.out`.
+# input: coverage.out
+
+# file for output. default is `coverage.html`.
+# output: coverage.html
+
+# HTML color theme to output (`dark` or `light`). default is `dark`
+# theme: dark
+
+# output only the specified file or directory.
+# include:
+  # - internal
+  # - ./internal/cover
+  # - ./internal/html/tree/html.go
+
+# output expect the specified file or directory.
+# exclude:
+  # - internal
+  # - ./internal/cover
+  # - ./internal/html/tree/
+  # - ./internal/html/tree/html.go

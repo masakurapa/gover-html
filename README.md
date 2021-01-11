@@ -138,3 +138,11 @@ github.com/masakurapa/gover-html
 HTML color theme to output (`dark` or `light`)
 
 if the value is invalid, it will be `dark`.
+
+## Config file
+`gover-html` looks for config files in the following paths from the current working directory.
+
+- `.gover.yml`
+
+See [.gover.yml](https://github.com/masakurapa/gover-html/blob/master/.gover.yml) for a example configuration file.
+

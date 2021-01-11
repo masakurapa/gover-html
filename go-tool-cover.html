@@ -67,7 +67,11 @@
 				
 				<option value="file5">github.com/masakurapa/gover-html/internal/html/tree/tree.go (100.0%)</option>
 				
-				<option value="file6">github.com/masakurapa/gover-html/internal/profile/profile.go (92.3%)</option>
+				<option value="file6">github.com/masakurapa/gover-html/internal/option/error.go (0.0%)</option>
+				
+				<option value="file7">github.com/masakurapa/gover-html/internal/option/option.go (94.1%)</option>
+				
+				<option value="file8">github.com/masakurapa/gover-html/internal/profile/profile.go (92.3%)</option>
 				
 				</select>
 			</div>
@@ -180,7 +184,7 @@ func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Pro
                 }</span>)
 
                 <span class="cov8" title="1">d := dirs[path.Dir(p.FileName)]
-                if !f.IsOutputTarget(d.relative) </span><span class="cov8" title="1">{
+                if !f.IsOutputTarget(d.relative, filepath.Base(p.FileName)) </span><span class="cov8" title="1">{
                         continue</span>
                 }
 
@@ -308,13 +312,15 @@ func execGoList(files map[string]*profile.Profile) ([]byte, error) <span class="
 		
 		<pre class="file" id="file1" style="display: none">package filter
 
-import "strings"
+import (
+        "strings"
 
-const filterSeparator = ","
+        "github.com/masakurapa/gover-html/internal/option"
+)
 
 // Filter is filter the output directory
 type Filter interface {
-        IsOutputTarget(string) bool
+        IsOutputTarget(string, string) bool
 }
 
 type filter struct {
@@ -323,37 +329,16 @@ type filter struct {
 }
 
 // New is initialize the filter
-func New(include *string, exclude *string) Filter <span class="cov8" title="1">{
+func New(opt option.Option) Filter <span class="cov8" title="1">{
         return &amp;filter{
-                include: parse(include),
-                exclude: parse(exclude),
+                include: opt.Include,
+                exclude: opt.Exclude,
         }
 }</span>
 
-func parse(value *string) []string <span class="cov8" title="1">{
-        if value == nil || *value == "" </span><span class="cov8" title="1">{
-                return []string{}
-        }</span>
-        <span class="cov8" title="1">return convert(strings.Split(*value, filterSeparator))</span>
-}
-
-func convert(values []string) []string <span class="cov8" title="1">{
-        newFilter := make([]string, 0, len(values))
-        for _, f := range values </span><span class="cov8" title="1">{
-                s := strings.TrimSpace(f)
-                s = strings.TrimPrefix(s, "./")
-
-                if !strings.HasSuffix(s, "/") </span><span class="cov8" title="1">{
-                        s += "/"
-                }</span>
-                <span class="cov8" title="1">newFilter = append(newFilter, s)</span>
-        }
-        <span class="cov8" title="1">return newFilter</span>
-}
-
 // IsOutputTarget returns true if output target
 // The "relativePath" must be relative to the base path
-func (f *filter) IsOutputTarget(relativePath string) bool <span class="cov8" title="1">{
+func (f *filter) IsOutputTarget(relativePath, fileName string) bool <span class="cov8" title="1">{
         // absolute path is always NG
         if strings.HasPrefix(relativePath, "/") </span><span class="cov8" title="1">{
                 return false
@@ -361,8 +346,8 @@ func (f *filter) IsOutputTarget(relativePath string) bool <span class="cov8" tit
 
         <span class="cov8" title="1">path := f.convertPathForValidate(relativePath)
 
-        for _, f := range f.exclude </span><span class="cov8" title="1">{
-                if strings.HasPrefix(path, f) </span><span class="cov8" title="1">{
+        for _, s := range f.exclude </span><span class="cov8" title="1">{
+                if f.hasPrefix(path, fileName, s) </span><span class="cov8" title="1">{
                         return false
                 }</span>
         }
@@ -371,21 +356,25 @@ func (f *filter) IsOutputTarget(relativePath string) bool <span class="cov8" tit
                 return true
         }</span>
 
-        <span class="cov8" title="1">for _, f := range f.include </span><span class="cov8" title="1">{
-                if strings.HasPrefix(path, f) </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">for _, s := range f.include </span><span class="cov8" title="1">{
+                if f.hasPrefix(path, fileName, s) </span><span class="cov8" title="1">{
                         return true
                 }</span>
         }
         <span class="cov8" title="1">return false</span>
 }
 
+func (f *filter) hasPrefix(path, fileName, prefix string) bool <span class="cov8" title="1">{
+        if path == prefix || strings.HasPrefix(path, prefix+"/") </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return path+"/"+fileName == prefix</span>
+}
+
 func (f *filter) convertPathForValidate(relativePath string) string <span class="cov8" title="1">{
         path := strings.TrimPrefix(relativePath, "./")
-        if !strings.HasSuffix(path, "/") </span><span class="cov8" title="1">{
-                path += "/"
-        }</span>
-        <span class="cov8" title="1">return path</span>
-}
+        return strings.TrimSuffix(path, "/")
+}</span>
 </pre>
 		
 		<pre class="file" id="file2" style="display: none">package cover
@@ -520,6 +509,7 @@ import (
         "path"
 
         "github.com/masakurapa/gover-html/internal/html/tree"
+        "github.com/masakurapa/gover-html/internal/option"
         "github.com/masakurapa/gover-html/internal/profile"
 )
 
@@ -561,13 +551,13 @@ type templateFunc struct {
 }
 
 // WriteTreeView outputs coverage as a tree view HTML file
-func WriteTreeView(out io.Writer, theme string, profiles profile.Profiles) error <span class="cov8" title="1">{
+func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error <span class="cov8" title="1">{
         nodes := tree.Create(profiles)
         tree := make([]templateTree, 0)
         makeTemplateTree(&amp;tree, nodes, 0)
 
         data := templateData{
-                Theme: theme,
+                Theme: opt.Theme,
                 Tree:  tree,
                 Files: make([]templateFile, 0, len(profiles)),
         }
@@ -1011,7 +1001,201 @@ func mergeSingreDir(nodes []Node) []Node <span class="cov8" title="1">{
 }
 </pre>
 		
-		<pre class="file" id="file6" style="display: none">package profile
+		<pre class="file" id="file6" style="display: none">package option
+
+import "strings"
+
+type optionErrors []error
+
+func (e *optionErrors) Error() string <span class="cov0" title="0">{
+        messages := make([]string, 0, len(*e))
+        for _, err := range *e </span><span class="cov0" title="0">{
+                messages = append(messages, err.Error())
+        }</span>
+        <span class="cov0" title="0">return strings.Join(messages, "\n")</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package option
+
+import (
+        "fmt"
+        "io/ioutil"
+        "strings"
+
+        "github.com/masakurapa/gover-html/internal/reader"
+
+        "gopkg.in/yaml.v2"
+)
+
+const (
+        fileName = ".gover.yml"
+
+        optionSeparator = ","
+
+        inputDefault  = "coverage.out"
+        outputDefault = "coverage.html"
+
+        themeDark    = "dark"
+        themeLight   = "light"
+        themeDefault = themeDark
+)
+
+// Option is option data
+type Option struct {
+        Input   string
+        Output  string
+        Theme   string
+        Include []string
+        Exclude []string
+}
+
+// Generator is generates option
+type Generator struct {
+        r reader.Reader
+}
+
+// New is initialize the option generator
+func New(r reader.Reader) *Generator <span class="cov8" title="1">{
+        return &amp;Generator{r: r}
+}</span>
+
+// Generate returns option
+func (g *Generator) Generate(
+        input *string,
+        output *string,
+        theme *string,
+        include *string,
+        exclude *string,
+) (*Option, error) <span class="cov8" title="1">{
+        opt := Option{}
+        if g.r.Exists(fileName) </span><span class="cov8" title="1">{
+                fileOpt, err := g.readOptionFile()
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">opt = *fileOpt</span>
+        }
+
+        <span class="cov8" title="1">opt.Input = g.stringValue(input, opt.Input)
+        opt.Output = g.stringValue(output, opt.Output)
+        opt.Theme = g.stringValue(theme, opt.Theme)
+        opt.Include = g.stringsValue(include, opt.Include)
+        opt.Exclude = g.stringsValue(exclude, opt.Exclude)
+        return g.getValidatedOption(opt)</span>
+}
+
+func (g *Generator) readOptionFile() (*Option, error) <span class="cov8" title="1">{
+        r, err := g.r.Read(fileName)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">b, err := ioutil.ReadAll(r)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">opt := Option{}
+        if err := yaml.Unmarshal(b, &amp;opt); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;opt, nil</span>
+}
+
+func (g *Generator) stringValue(arg *string, opt string) string <span class="cov8" title="1">{
+        if arg == nil </span><span class="cov8" title="1">{
+                return opt
+        }</span>
+        <span class="cov8" title="1">return *arg</span>
+}
+
+func (g *Generator) stringsValue(arg *string, opt []string) []string <span class="cov8" title="1">{
+        if arg == nil </span><span class="cov8" title="1">{
+                return opt
+        }</span>
+        <span class="cov8" title="1">return strings.Split(*arg, optionSeparator)</span>
+}
+
+func (g *Generator) getValidatedOption(opt Option) (*Option, error) <span class="cov8" title="1">{
+        if err := g.validate(opt); err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return g.getOptionWithDefaultValue(opt), nil</span>
+}
+
+func (g *Generator) validate(opt Option) error <span class="cov8" title="1">{
+        errs := make(optionErrors, 0)
+
+        if !g.isEmpty(opt.Theme) &amp;&amp; opt.Theme != themeDark &amp;&amp; opt.Theme != themeLight </span><span class="cov8" title="1">{
+                errs = append(errs, fmt.Errorf("theme must be %q or %q", themeDark, themeLight))
+        }</span>
+
+        <span class="cov8" title="1">if es := g.validateFilter("include", opt.Include); len(es) &gt; 0 </span><span class="cov8" title="1">{
+                errs = append(errs, es...)
+        }</span>
+        <span class="cov8" title="1">if es := g.validateFilter("exclude", opt.Exclude); len(es) &gt; 0 </span><span class="cov8" title="1">{
+                errs = append(errs, es...)
+        }</span>
+
+        <span class="cov8" title="1">if len(errs) &gt; 0 </span><span class="cov8" title="1">{
+                return &amp;errs
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (g *Generator) validateFilter(f string, values []string) optionErrors <span class="cov8" title="1">{
+        errs := make(optionErrors, 0)
+        for _, v := range values </span><span class="cov8" title="1">{
+                if g.isEmpty(v) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">if strings.HasPrefix(v, "/") </span><span class="cov8" title="1">{
+                        errs = append(errs, fmt.Errorf("%s value (%q) must not be an absolute path", f, v))
+                }</span>
+        }
+        <span class="cov8" title="1">return errs</span>
+}
+
+func (g *Generator) getOptionWithDefaultValue(opt Option) *Option <span class="cov8" title="1">{
+        if g.isEmpty(opt.Input) </span><span class="cov8" title="1">{
+                opt.Input = inputDefault
+        }</span>
+        <span class="cov8" title="1">if g.isEmpty(opt.Output) </span><span class="cov8" title="1">{
+                opt.Output = outputDefault
+        }</span>
+        <span class="cov8" title="1">if g.isEmpty(opt.Theme) </span><span class="cov8" title="1">{
+                opt.Theme = themeDefault
+        }</span>
+
+        <span class="cov8" title="1">opt.Include = g.convertFilterValue(opt.Include)
+        opt.Exclude = g.convertFilterValue(opt.Exclude)
+        return &amp;opt</span>
+}
+
+func (g *Generator) isEmpty(s string) bool <span class="cov8" title="1">{
+        return s == ""
+}</span>
+
+func (g *Generator) convertFilterValue(values []string) []string <span class="cov8" title="1">{
+        ret := make([]string, 0, len(values))
+        for _, v := range values </span><span class="cov8" title="1">{
+                s := strings.TrimSpace(v)
+                if g.isEmpty(s) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">s = strings.TrimPrefix(s, "./")
+                s = strings.TrimSuffix(s, "/")
+                ret = append(ret, s)</span>
+        }
+        <span class="cov8" title="1">return ret</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package profile
 
 import (
         "math"

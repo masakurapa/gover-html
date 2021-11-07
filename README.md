@@ -21,7 +21,7 @@ This is a tool for outputting Golang coverage in HTML format.
 ## Installing
 
 ```sh
-$ go get -u github.com/masakurapa/gover-html
+$ go install github.com/masakurapa/gover-html
 ```
 
 ## Usage
@@ -145,4 +145,3 @@ if the value is invalid, it will be `dark`.
 - `.gover.yml`
 
 See [.gover.yml](https://github.com/masakurapa/gover-html/blob/master/.gover.yml) for a example configuration file.
-

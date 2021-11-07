@@ -3,8 +3,6 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/masakurapa/gover-html
-  golint:
-    min-confidence: 0.8
   govet:
     check-shadowing: true
     settings:
@@ -21,11 +19,9 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - golint
     - govet
     - ineffassign
     - lll
-    - misspell
 
 issues:
   exclude-use-default: false
@@ -33,7 +29,6 @@ issues:
     - path: template.go
       linters:
         - lll
-
 
 run:
   skip-dirs:

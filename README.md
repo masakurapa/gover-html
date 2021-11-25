@@ -21,7 +21,7 @@ This is a tool for outputting Golang coverage in HTML format.
 ## Installing
 
 ```sh
-$ go install github.com/masakurapa/gover-html
+$ go install github.com/masakurapa/gover-html@latest
 ```
 
 ## Usage

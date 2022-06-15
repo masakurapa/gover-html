@@ -1,7 +1,7 @@
 build:
 	go build -o gover-html gover.go
 
-gotest:
+test:
 	go test -count=1 ./internal/...
 
 cover:
@@ -22,3 +22,5 @@ make_covers: build
 	./gover-html -o covers/exclude_1.html -exclude "internal/cover"
 	./gover-html -o covers/exclude_2.html -exclude "internal/cover,./internal/html/tree/"
 	./gover-html -o covers/exclude_3.html -exclude "internal/cover/cover.go"
+
+.PHONY: test

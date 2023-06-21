@@ -169,6 +169,19 @@ const treeTemplate = `<!DOCTYPE html>
 			let current;
 			let currentTree;
 
+			window.addEventListener('popstate', function(e) {
+				updateByQuery();
+			})
+
+			function updateByQuery() {
+				const searchParams = new URLSearchParams(window.location.search)
+				const n = searchParams.get('n')
+				const i = searchParams.get('i')
+				if (n && i) {
+					change(n, i) 
+				} 
+			}
+
 			function select(n) {
 				if (current) {
 					current.style.display = 'none';
@@ -201,6 +214,21 @@ const treeTemplate = `<!DOCTYPE html>
 			function change(n, i) {
 				select(n);
 				selectTree(n, i);
+				updateUrl(n, i)
+			}
+			function updateUrl(n, i) {
+				const url = new URL(window.location.href);
+				if( !url.searchParams.get('n') ) {
+					url.searchParams.append('n',n);
+					url.searchParams.append('i',i);
+					location.href = url;
+				} else {
+					if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
+						url.searchParams.set('n',n);
+						url.searchParams.set('i',i);
+						history.pushState("", "", url)
+					}
+				}
 			}
 		</script>
 	</body>

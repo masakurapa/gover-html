@@ -168,17 +168,18 @@ const treeTemplate = `<!DOCTYPE html>
 
 			let current;
 			let currentTree;
+			updateByQuery();
 
 			window.addEventListener('popstate', function(e) {
 				updateByQuery();
 			})
 
 			function updateByQuery() {
-				const searchParams = new URLSearchParams(window.location.search)
-				const n = searchParams.get('n')
-				const i = searchParams.get('i')
+				const searchParams = new URLSearchParams(window.location.search);
+				const n = searchParams.get('n');
+				const i = searchParams.get('i');
 				if (n && i) {
-					change(n, i) 
+					change(n, i);
 				} 
 			}
 
@@ -226,7 +227,7 @@ const treeTemplate = `<!DOCTYPE html>
 					if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
 						url.searchParams.set('n',n);
 						url.searchParams.set('i',i);
-						history.pushState("", "", url)
+						history.pushState("", "", url);
 					}
 				}
 			}

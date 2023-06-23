@@ -81,9 +81,8 @@ func index(nodes []Node, name string) int {
 //
 // to
 //
-// path/to/
-//
-//	file.go
+//	path/to/
+//		file.go
 func mergeSingreDir(nodes []Node) []Node {
 	for i, n := range nodes {
 		if len(n.Dirs) == 0 {

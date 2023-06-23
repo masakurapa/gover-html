@@ -855,6 +855,20 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
 
                         let current;
                         let currentTree;
+                        updateByQuery();
+
+                        window.addEventListener('popstate', function(e) {
+                                updateByQuery();
+                        })
+
+                        function updateByQuery() {
+                                const searchParams = new URLSearchParams(window.location.search);
+                                const n = searchParams.get('n');
+                                const i = searchParams.get('i');
+                                if (n &amp;&amp; i) {
+                                        change(n, i);
+                                } 
+                        }
 
                         function select(n) {
                                 if (current) {
@@ -888,6 +902,21 @@ const treeTemplate = `&lt;!DOCTYPE html&gt;
                         function change(n, i) {
                                 select(n);
                                 selectTree(n, i);
+                                updateUrl(n, i)
+                        }
+                        function updateUrl(n, i) {
+                                const url = new URL(window.location.href);
+                                if( !url.searchParams.get('n') ) {
+                                        url.searchParams.append('n',n);
+                                        url.searchParams.append('i',i);
+                                        location.href = url;
+                                } else {
+                                        if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
+                                                url.searchParams.set('n',n);
+                                                url.searchParams.set('i',i);
+                                                history.pushState("", "", url);
+                                        }
+                                }
                         }
                 &lt;/script&gt;
         &lt;/body&gt;
@@ -972,15 +1001,14 @@ func index(nodes []Node, name string) int <span class="cov8" title="1">{
 
 // merge directories with no files and only one child directory
 //
-// path/
-//   to/
-//     file.go
+//        path/
+//                to/
+//                file.go
 //
 // to
 //
-// path/to/
-//   file.go
-//
+//        path/to/
+//                file.go
 func mergeSingreDir(nodes []Node) []Node <span class="cov8" title="1">{
         for i, n := range nodes </span><span class="cov8" title="1">{
                 if len(n.Dirs) == 0 </span><span class="cov8" title="1">{

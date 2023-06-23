@@ -7,25 +7,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
+      - name: Set up Go 1.20.5
+        uses: actions/setup-go@v3
         with:
-          version: v1.46.2
+          go-version: 1.20.5
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.53.3
+          args: --config=.golangci.yml
 
   test:
     runs-on: ubuntu-latest
     needs:
       - lint
     steps:
-      - name: Set up Go 1.18.3
-        uses: actions/setup-go@v2
+      - name: Set up Go 1.20.5
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18.3
+          go-version: 1.20.5
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Test
@@ -41,12 +46,12 @@ jobs:
     needs:
       - test
     steps:
-      - name: Set up Go 1.18.3
-        uses: actions/setup-go@v2
+      - name: Set up Go 1.20.5
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18.3
+          go-version: 1.20.5
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Download math result for test
@@ -75,12 +80,12 @@ jobs:
     needs:
       - coverage
     steps:
-      - name: Set up Go 1.18.3
-        uses: actions/setup-go@v2
+      - name: Set up Go 1.20.5
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18.3
+          go-version: 1.20.5
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Download math result for test

@@ -75,15 +75,15 @@ func index(nodes []Node, name string) int {
 
 // merge directories with no files and only one child directory
 //
-// path/
-//   to/
-//     file.go
+//	path/
+//		to/
+//		file.go
 //
 // to
 //
 // path/to/
-//   file.go
 //
+//	file.go
 func mergeSingreDir(nodes []Node) []Node {
 	for i, n := range nodes {
 		if len(n.Dirs) == 0 {

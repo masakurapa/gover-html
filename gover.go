@@ -25,6 +25,9 @@ if "exclude" is also specified, "exclude" option takes precedence.`)
 multiple directories can be specified separated by commas.
 
 if "include" is also specified, this option takes precedence.`)
+
+	// FIXME: add usage
+	excludeFunc = flag.String("exclude-func", "", "")
 )
 
 func main() {
@@ -78,7 +81,7 @@ func getOption() option.Option {
 	parseFlags()
 
 	// make options with command line arguments
-	opt, err := option.New(reader.New()).Generate(input, output, theme, include, exclude)
+	opt, err := option.New(reader.New()).Generate(input, output, theme, include, exclude, excludeFunc)
 	if err != nil {
 		exitError(err)
 	}

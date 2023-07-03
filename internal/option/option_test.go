@@ -2,10 +2,10 @@ package option_test
 
 import (
 	"io"
-	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/masakurapa/gover-html/internal/option"
 	"github.com/masakurapa/gover-html/internal/reader"
 	"github.com/masakurapa/gover-html/test/helper"
@@ -27,11 +27,12 @@ func (m *mockReader) Exists(s string) bool {
 
 func TestNew(t *testing.T) {
 	type args struct {
-		input   *string
-		output  *string
-		theme   *string
-		include *string
-		exclude *string
+		input       *string
+		output      *string
+		theme       *string
+		include     *string
+		exclude     *string
+		excludeFunc *string
 	}
 	type testCase []struct {
 		name     string
@@ -46,11 +47,12 @@ func TestNew(t *testing.T) {
 			{
 				name: "全項目に設定値が存在(theme=dark)",
 				args: args{
-					input:   helper.StringP("example.out"),
-					output:  helper.StringP("example.html"),
-					theme:   helper.StringP("dark"),
-					include: helper.StringP("path/to/dir1,path/to/dir2"),
-					exclude: helper.StringP("path/to/dir3,path/to/dir4"),
+					input:       helper.StringP("example.out"),
+					output:      helper.StringP("example.html"),
+					theme:       helper.StringP("dark"),
+					include:     helper.StringP("path/to/dir1,path/to/dir2"),
+					exclude:     helper.StringP("path/to/dir3,path/to/dir4"),
+					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
 					Input:   "example.out",
@@ -58,17 +60,22 @@ func TestNew(t *testing.T) {
 					Theme:   "dark",
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+					},
 				},
 				wantErr: false,
 			},
 			{
 				name: "全項目に設定値が存在(theme=light)",
 				args: args{
-					input:   helper.StringP("example.out"),
-					output:  helper.StringP("example.html"),
-					theme:   helper.StringP("light"),
-					include: helper.StringP("path/to/dir1,path/to/dir2"),
-					exclude: helper.StringP("path/to/dir3,path/to/dir4"),
+					input:       helper.StringP("example.out"),
+					output:      helper.StringP("example.html"),
+					theme:       helper.StringP("light"),
+					include:     helper.StringP("path/to/dir1,path/to/dir2"),
+					exclude:     helper.StringP("path/to/dir3,path/to/dir4"),
+					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
 					Input:   "example.out",
@@ -76,42 +83,50 @@ func TestNew(t *testing.T) {
 					Theme:   "light",
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+					},
 				},
 				wantErr: false,
 			},
 			{
 				name: "全項目に空文字を指定",
 				args: args{
-					input:   helper.StringP(""),
-					output:  helper.StringP(""),
-					theme:   helper.StringP(""),
-					include: helper.StringP(""),
-					exclude: helper.StringP(""),
+					input:       helper.StringP(""),
+					output:      helper.StringP(""),
+					theme:       helper.StringP(""),
+					include:     helper.StringP(""),
+					exclude:     helper.StringP(""),
+					excludeFunc: helper.StringP(""),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
 			{
 				name: "全項目にnilを指定",
 				args: args{
-					input:   nil,
-					output:  nil,
-					theme:   nil,
-					include: nil,
-					exclude: nil,
+					input:       nil,
+					output:      nil,
+					theme:       nil,
+					include:     nil,
+					exclude:     nil,
+					excludeFunc: nil,
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -121,11 +136,12 @@ func TestNew(t *testing.T) {
 					include: helper.StringP("path/to/dir1,,path/to/dir2,,"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -135,11 +151,12 @@ func TestNew(t *testing.T) {
 					include: helper.StringP("./path/to/dir1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -149,11 +166,12 @@ func TestNew(t *testing.T) {
 					include: helper.StringP("path/to/dir1/"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -171,11 +189,12 @@ func TestNew(t *testing.T) {
 					exclude: helper.StringP("path/to/dir3,,path/to/dir4,,"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -185,11 +204,12 @@ func TestNew(t *testing.T) {
 					exclude: helper.StringP("./path/to/dir3"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -199,11 +219,12 @@ func TestNew(t *testing.T) {
 					exclude: helper.StringP("path/to/dir3/"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -211,6 +232,83 @@ func TestNew(t *testing.T) {
 				name: "excludeに/で始まるパスを指定",
 				args: args{
 					exclude: helper.StringP("/path/to/dir3"),
+				},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに空の値を持つ",
+				args: args{
+					excludeFunc: helper.StringP("(path/to/dir3).Func1,,(path/to/dir4.Struct1).Func2,,"),
+				},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcに./で始まるパスを指定",
+				args: args{
+					excludeFunc: helper.StringP("(./path/to/dir3).Func1"),
+				},
+				// TODO: ./で始まるパスを許可する
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに/で終わるパスを指定",
+				args: args{
+					excludeFunc: helper.StringP("(path/to/dir3/).Func1"),
+				},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcにワイルドカードを指定",
+				args: args{
+					excludeFunc: helper.StringP("(**).Func1"),
+				},
+				// TODO: パスに**を指定することで全ファイルを対象にできるようにする
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに/で始まるパスを指定",
+				args: args{
+					excludeFunc: helper.StringP("(/path/to/dir3).Func1"),
+				},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに関数名を指定しない",
+				args: args{
+					excludeFunc: helper.StringP("(/path/to/dir3)"),
+				},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに関数名のみを指定",
+				args: args{
+					excludeFunc: helper.StringP("Func1"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -232,13 +330,13 @@ func TestNew(t *testing.T) {
 				}
 
 				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
+					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("New() = %#v, want %#v", got, tt.want)
+				if d := cmp.Diff(got, tt.want); d != "" {
+					t.Errorf(d)
 				}
 			})
 		}
@@ -261,11 +359,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:       "example.out",
+					Output:      "example.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -284,11 +383,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "light",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:       "example.out",
+					Output:      "example.html",
+					Theme:       "light",
+					Include:     []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -313,11 +413,12 @@ exclude:
 					exclude: helper.StringP("path/to/dir6"),
 				},
 				want: &option.Option{
-					Input:   "example2.out",
-					Output:  "example2.html",
-					Theme:   "light",
-					Include: []string{"path/to/dir5"},
-					Exclude: []string{"path/to/dir6"},
+					Input:       "example2.out",
+					Output:      "example2.html",
+					Theme:       "light",
+					Include:     []string{"path/to/dir5"},
+					Exclude:     []string{"path/to/dir6"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -342,11 +443,12 @@ exclude:
 					exclude: helper.StringP(""),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -362,11 +464,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -377,11 +480,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -397,11 +501,12 @@ include:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -413,11 +518,12 @@ include:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -429,11 +535,12 @@ include:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1"},
-					Exclude: []string{},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{"path/to/dir1"},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -459,11 +566,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -475,11 +583,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -491,11 +600,12 @@ exclude:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{"path/to/dir3"},
+					Input:       "coverage.out",
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{"path/to/dir3"},
+					ExcludeFunc: []option.ExcludeFuncOption{},
 				},
 				wantErr: false,
 			},
@@ -511,9 +621,10 @@ exclude:
 			},
 			{
 				name: "themeに期待値以外を設定",
-				args: args{
-					theme: helper.StringP("unknown"),
-				},
+				settings: `
+theme: unknown
+`,
+				args:    args{},
 				want:    nil,
 				wantErr: true,
 			},
@@ -529,13 +640,14 @@ exclude:
 				}
 
 				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude)
+					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("New() = %#v, want %#v", got, tt.want)
+
+				if d := cmp.Diff(got, tt.want); d != "" {
+					t.Errorf(d)
 				}
 			})
 		}

@@ -55,13 +55,13 @@ In the case of the following directory tree
 github.com/masakurapa/gover-html
 └── internal
     ├── cover
-    │   ├── cover.go
-    │   └── func.go
+    │     ├── cover.go
+    │     └── func.go
     ├── html
-    │   ├── html.go
-    │   ├── template.go
-    │   └── tree
-    │       └── tree.go
+    │     ├── html.go
+    │     ├── template.go
+    │     └── tree
+    │         └── tree.go
     └── profile
         └── profile.go
 ```
@@ -97,13 +97,13 @@ In the case of the following directory tree
 github.com/masakurapa/gover-html
 └── internal
     ├── cover
-    │   ├── cover.go
-    │   └── func.go
+    │     ├── cover.go
+    │     └── func.go
     ├── html
-    │   ├── html.go
-    │   ├── template.go
-    │   └── tree
-    │       └── tree.go
+    │     ├── html.go
+    │     ├── template.go
+    │     └── tree
+    │         └── tree.go
     └── profile
         └── profile.go
 ```
@@ -132,6 +132,23 @@ github.com/masakurapa/gover-html
     └── html
         ├── html.go
         └── template.go
+```
+
+### -exclude-func
+
+TODO: add Readme text
+
+#### example
+
+```sh
+# Output excluding the `Example` function in `internal/cover`!!
+$ gover-html -exclude-func '(internal/cover).Example'
+
+# Output of struct `Sample` in `internal/cover` without the `Example` function!!
+$ gover-html -exclude-func '(internal/cover.Sample).Example'
+
+# When specifying more than one
+$ gover-html -exclude '(internal/cover).Example,(internal/cover.Sample).Example'
 ```
 
 ### -theme

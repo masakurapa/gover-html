@@ -104,13 +104,11 @@ func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Pro
 		p.Dir = d.dir
 		p.ModulePath = d.modulePath
 
-		fn, err := makeFuncs(*p)
+		pp, err := makeNewProfile(p, f)
 		if err != nil {
 			return nil, err
 		}
-		p.Functions = fn
-
-		profiles = append(profiles, *p)
+		profiles = append(profiles, *pp)
 	}
 
 	sort.SliceStable(profiles, func(i, j int) bool {

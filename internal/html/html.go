@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
+	"os"
 	"path"
 
 	"github.com/masakurapa/gover-html/internal/html/tree"
@@ -53,18 +53,18 @@ type templateFunc struct {
 // WriteTreeView outputs coverage as a tree view HTML file
 func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error {
 	nodes := tree.Create(profiles)
-	tree := make([]templateTree, 0)
-	makeTemplateTree(&tree, nodes, 0)
+	tmpTree := make([]templateTree, 0)
+	makeTemplateTree(&tmpTree, nodes, 0)
 
 	data := templateData{
 		Theme: opt.Theme,
-		Tree:  tree,
+		Tree:  tmpTree,
 		Files: make([]templateFile, 0, len(profiles)),
 	}
 
 	var buf bytes.Buffer
 	for _, p := range profiles {
-		b, err := ioutil.ReadFile(p.FilePath())
+		b, err := os.ReadFile(p.FilePath())
 		if err != nil {
 			return fmt.Errorf("can't read %q: %v", p.FileName, err)
 		}

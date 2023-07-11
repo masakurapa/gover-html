@@ -37,7 +37,6 @@ type optionConfig struct {
 	ExcludeFunc []string // exclude functions
 }
 
-// Option is option data
 type Option struct {
 	Input       string
 	Output      string
@@ -53,17 +52,14 @@ type ExcludeFuncOption struct {
 	Func    string
 }
 
-// Generator is generates option
 type Generator struct {
 	r reader.Reader
 }
 
-// New is initialization the option generator
 func New(r reader.Reader) *Generator {
 	return &Generator{r: r}
 }
 
-// Generate returns option
 func (g *Generator) Generate(
 	input *string,
 	output *string,
@@ -179,6 +175,11 @@ func (g *Generator) validateExcludeFunc(values []string) optionErrors {
 			continue
 		}
 
+		// ()が含まれない場合は関数名のみとみなしてOK
+		if !strings.Contains(v, "(") && !strings.Contains(v, ")") {
+			continue
+		}
+
 		if !excludeFuncFormat.MatchString(v) {
 			errs = append(errs, fmt.Errorf("exclude-func value (%q) format is invalid", v))
 		}
@@ -235,6 +236,12 @@ func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOptio
 	for _, v := range values {
 		s := strings.TrimSpace(v)
 		if g.isEmpty(s) {
+			continue
+		}
+
+		// ()が含まれない場合は関数名のみとみなして終了
+		if !strings.Contains(s, "(") && !strings.Contains(s, ")") {
+			ret = append(ret, ExcludeFuncOption{Func: s})
 			continue
 		}
 

@@ -281,13 +281,21 @@ func TestNew(t *testing.T) {
 				wantErr: false,
 			},
 			{
-				name: "exclude-funcにワイルドカードを指定",
+				name: "exclude-funcに関数名のみを指定",
 				args: args{
-					excludeFunc: helper.StringP("(**).Func1"),
+					excludeFunc: helper.StringP("Func1"),
 				},
-				// TODO: パスに**を指定することで全ファイルを対象にできるようにする
-				want:    nil,
-				wantErr: true,
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func1"},
+					},
+				},
+				wantErr: false,
 			},
 			{
 				name: "exclude-funcに/で始まるパスを指定",
@@ -301,14 +309,6 @@ func TestNew(t *testing.T) {
 				name: "exclude-funcに関数名を指定しない",
 				args: args{
 					excludeFunc: helper.StringP("(/path/to/dir3)"),
-				},
-				want:    nil,
-				wantErr: true,
-			},
-			{
-				name: "exclude-funcに関数名のみを指定",
-				args: args{
-					excludeFunc: helper.StringP("Func1"),
 				},
 				want:    nil,
 				wantErr: true,

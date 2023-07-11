@@ -7,15 +7,18 @@ import (
 	"go/parser"
 	"go/token"
 
+	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/profile"
 )
 
 type funcExtent struct {
-	name      string
-	startLine int
-	startCol  int
-	endLine   int
-	endCol    int
+	structName string
+	funcName   string
+	name       string
+	startLine  int
+	startCol   int
+	endLine    int
+	endCol     int
 }
 
 type funcVisitor struct {
@@ -48,25 +51,32 @@ func (v *funcVisitor) Visit(node ast.Node) ast.Visitor {
 			panic(err)
 		}
 
+		var structName string
+		if n.Recv != nil && len(n.Recv.List) > 0 {
+			structName = n.Recv.List[0].Type.(*ast.StarExpr).X.(*ast.Ident).Name
+		}
+
 		fe := &funcExtent{
-			name:      string(src),
-			startLine: start.Line,
-			startCol:  start.Column,
-			endLine:   end.Line,
-			endCol:    end.Column,
+			structName: structName,
+			funcName:   n.Name.Name,
+			name:       string(src),
+			startLine:  start.Line,
+			startCol:   start.Column,
+			endLine:    end.Line,
+			endCol:     end.Column,
 		}
 		v.funcs = append(v.funcs, fe)
 	}
 	return v
 }
 
-func makeFuncs(prof profile.Profile) (profile.Functions, error) {
+func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error) {
 	exts, err := findFuncs(prof.FilePath())
 	if err != nil {
 		return nil, err
 	}
 
-	return toFunctions(prof, exts), nil
+	return newProfile(prof, exts, f), nil
 }
 
 func findFuncs(name string) ([]*funcExtent, error) {
@@ -84,11 +94,14 @@ func findFuncs(name string) ([]*funcExtent, error) {
 	return visitor.funcs, nil
 }
 
-func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions {
+func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile {
 	fncs := make(profile.Functions, 0, len(exts))
+	blocks := make(profile.Blocks, 0, len(prof.Blocks))
 
 	bi := 0
 	for _, e := range exts {
+		isCoverageBlock := f.IsOutputTargetFunc(prof.RemoveModulePathFromFileName(), e.structName, e.funcName)
+
 		fnc := profile.Function{
 			Name:      e.name,
 			StartLine: e.startLine,
@@ -99,6 +112,9 @@ func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions {
 			b := prof.Blocks[bi]
 
 			if b.StartLine < e.startLine {
+				if isCoverageBlock {
+					blocks = append(blocks, b)
+				}
 				bi++
 				continue
 			}
@@ -106,14 +122,21 @@ func toFunctions(prof profile.Profile, exts []*funcExtent) profile.Functions {
 			if b.StartLine >= e.startLine &&
 				b.EndLine <= e.endLine {
 				fnc.Blocks = append(fnc.Blocks, b)
+				if isCoverageBlock {
+					blocks = append(blocks, b)
+				}
 				bi++
 				continue
 			}
 			break
 		}
 
-		fncs = append(fncs, fnc)
+		if isCoverageBlock {
+			fncs = append(fncs, fnc)
+		}
 	}
 
-	return fncs
+	prof.Blocks = blocks
+	prof.Functions = fncs
+	return prof
 }

@@ -35,7 +35,7 @@ type optionConfig struct {
 	Theme       string
 	Include     []string // include fire or directories
 	Exclude     []string // exclude fire or directories
-	ExcludeFunc []string // exclude functions
+	ExcludeFunc []string `yaml:"exclude-func"` // exclude functions
 }
 
 type Option struct {

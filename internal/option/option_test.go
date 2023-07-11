@@ -315,9 +315,17 @@ func TestNew(t *testing.T) {
 				wantErr: true,
 			},
 			{
-				name: "exclude-funcに関数名を指定しない",
+				name: "exclude-funcにパスのみ指定",
 				args: args{
-					excludeFunc: helper.StringP("(/path/to/dir3)"),
+					excludeFunc: helper.StringP("(path/to/dir3)"),
+				},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcにパス+構造体名のみ指定",
+				args: args{
+					excludeFunc: helper.StringP("(path/to/dir3.Struct1)"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -365,15 +373,23 @@ include:
 exclude:
   - path/to/dir3
   - path/to/dir4
+exclude-func:
+  - Func1
+  - (path/to/dir3).Func1
+  - (path/to/dir3.Struct1).Func1
 `,
 				args: args{},
 				want: &option.Option{
-					Input:       "example.out",
-					Output:      "example.html",
-					Theme:       "dark",
-					Include:     []string{"path/to/dir1", "path/to/dir2"},
-					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
-					ExcludeFunc: []option.ExcludeFuncOption{},
+					Input:   "example.out",
+					Output:  "example.html",
+					Theme:   "dark",
+					Include: []string{"path/to/dir1", "path/to/dir2"},
+					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
 				},
 				wantErr: false,
 			},
@@ -389,15 +405,23 @@ include:
 exclude:
   - path/to/dir3
   - path/to/dir4
+exclude-func:
+  - Func1
+  - (path/to/dir3).Func1
+  - (path/to/dir3.Struct1).Func1
 `,
 				args: args{},
 				want: &option.Option{
-					Input:       "example.out",
-					Output:      "example.html",
-					Theme:       "light",
-					Include:     []string{"path/to/dir1", "path/to/dir2"},
-					Exclude:     []string{"path/to/dir3", "path/to/dir4"},
-					ExcludeFunc: []option.ExcludeFuncOption{},
+					Input:   "example.out",
+					Output:  "example.html",
+					Theme:   "light",
+					Include: []string{"path/to/dir1", "path/to/dir2"},
+					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
 				},
 				wantErr: false,
 			},
@@ -413,21 +437,29 @@ include:
 exclude:
   - path/to/dir3
   - path/to/dir4
+exclude-func:
+  - Func1
+  - (path/to/dir3).Func1
+  - (path/to/dir3.Struct1).Func1
 `,
 				args: args{
-					input:   helper.StringP("example2.out"),
-					output:  helper.StringP("example2.html"),
-					theme:   helper.StringP("light"),
-					include: helper.StringP("path/to/dir5"),
-					exclude: helper.StringP("path/to/dir6"),
+					input:       helper.StringP("example2.out"),
+					output:      helper.StringP("example2.html"),
+					theme:       helper.StringP("light"),
+					include:     helper.StringP("path/to/dir5"),
+					exclude:     helper.StringP("path/to/dir6"),
+					excludeFunc: helper.StringP("Func2,Func3"),
 				},
 				want: &option.Option{
-					Input:       "example2.out",
-					Output:      "example2.html",
-					Theme:       "light",
-					Include:     []string{"path/to/dir5"},
-					Exclude:     []string{"path/to/dir6"},
-					ExcludeFunc: []option.ExcludeFuncOption{},
+					Input:   "example2.out",
+					Output:  "example2.html",
+					Theme:   "light",
+					Include: []string{"path/to/dir5"},
+					Exclude: []string{"path/to/dir6"},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func2"},
+						{Package: "", Struct: "", Func: "Func3"},
+					},
 				},
 				wantErr: false,
 			},
@@ -443,13 +475,18 @@ include:
 exclude:
   - path/to/dir3
   - path/to/dir4
+exclude-func:
+  - Func1
+  - (path/to/dir3).Func1
+  - (path/to/dir3.Struct1).Func1
 `,
 				args: args{
-					input:   helper.StringP(""),
-					output:  helper.StringP(""),
-					theme:   helper.StringP(""),
-					include: helper.StringP(""),
-					exclude: helper.StringP(""),
+					input:       helper.StringP(""),
+					output:      helper.StringP(""),
+					theme:       helper.StringP(""),
+					include:     helper.StringP(""),
+					exclude:     helper.StringP(""),
+					excludeFunc: helper.StringP(""),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -470,6 +507,7 @@ output:
 theme:
 include:
 exclude:
+exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
@@ -623,6 +661,105 @@ exclude:
 				settings: `
 exclude:
   - /path/to/dir3
+`,
+				args:    args{},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcに空の値を持つ",
+				settings: `
+exclude-func:
+  - Func1
+  -
+  - (path/to/dir3).Func1
+  -
+  - (path/to/dir3.Struct1).Func1
+`,
+				args: args{},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcに./で始まるパスを指定",
+				settings: `
+exclude-func:
+  - (./path/to/dir3).Func1
+  - (./path/to/dir3.Struct1).Func1
+`,
+				args: args{},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcに/で終わるパスを指定",
+				settings: `
+exclude-func:
+  - (path/to/dir3/).Func1
+  - (path/to/dir3/.Struct1).Func1
+`,
+				args: args{},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+
+			{
+				name: "exclude-funcに/で始まるパスを指定",
+				settings: `
+exclude-func:
+  - (/path/to/dir3).Func1
+`,
+				args:    args{},
+				want:    nil,
+				wantErr: true,
+			},
+
+			{
+				name: "exclude-funcにパスのみ指定",
+				settings: `
+exclude-func:
+  - (/path/to/dir3)
+`,
+				args:    args{},
+				want:    nil,
+				wantErr: true,
+			},
+			{
+				name: "exclude-funcにパス+構造体名のみ",
+				settings: `
+exclude-func:
+  - (/path/to/dir3.Struct1)
 `,
 				args:    args{},
 				want:    nil,

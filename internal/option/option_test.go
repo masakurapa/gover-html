@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
 	"github.com/masakurapa/gover-html/internal/option"
 	"github.com/masakurapa/gover-html/internal/reader"
 	"github.com/masakurapa/gover-html/test/helper"

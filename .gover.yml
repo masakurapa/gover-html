@@ -21,7 +21,7 @@
   # - ./internal/html/tree/html.go
 
 # exclude specified function from output.
-exclude-func:
+# exclude-func:
   # - FuncName
   # - (internal/cover).FuncName
   # - (internal/cover.StructName).FuncName

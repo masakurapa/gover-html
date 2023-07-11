@@ -25,7 +25,7 @@ const (
 
 var (
 	// 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
-	excludeFuncFormat = regexp.MustCompile(`^\(([a-zA-Z\d/\-_]+)(\.[a-zA-Z].+)?\)\.([a-zA-Z].+)$`)
+	excludeFuncFormat = regexp.MustCompile(`^\((\./)?([a-zA-Z\d/\-_]+)(\.[a-zA-Z].+)?\)\.([a-zA-Z].+)$`)
 )
 
 type optionConfig struct {
@@ -246,15 +246,15 @@ func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOptio
 		}
 
 		matches := excludeFuncFormat.FindStringSubmatch(s)
-		structName := matches[2]
+		structName := matches[3]
 		if structName != "" {
 			structName = structName[1:]
 		}
 
 		ret = append(ret, ExcludeFuncOption{
-			Package: strings.TrimSuffix(strings.TrimPrefix(matches[1], "./"), "/"),
+			Package: strings.TrimSuffix(strings.TrimPrefix(matches[2], "./"), "/"),
 			Struct:  structName,
-			Func:    matches[3],
+			Func:    matches[4],
 		})
 	}
 	return ret

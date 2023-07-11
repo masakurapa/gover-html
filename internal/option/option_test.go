@@ -257,11 +257,19 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに./で始まるパスを指定",
 				args: args{
-					excludeFunc: helper.StringP("(./path/to/dir3).Func1"),
+					excludeFunc: helper.StringP("(./path/to/dir3.Struct1).Func1"),
 				},
-				// TODO: ./で始まるパスを許可する
-				want:    nil,
-				wantErr: true,
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
 			},
 			{
 				name: "exclude-funcに/で終わるパスを指定",

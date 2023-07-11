@@ -33,22 +33,27 @@ $ open coverage.html
 ```
 
 ## Options
+
 ### -i
-coverage profile for input. default is `coverage.out`.
+
+Coverage profile for input. default is `coverage.out`.
 
 ### -o
-file for output. default is `coverage.html`.
+
+File for output. default is `coverage.html`.
 
 ### -include
-output only the specified file or directory.
 
-you can specify multiple items separated by commas.
+Output only the specified file or directory.
 
-**if "exclude" is also specified, "exclude" option takes precedence.**
+You can specify multiple items separated by commas.
+
+**If "exclude" is also specified, "exclude" option takes precedence.**
 
 **Must specify a relative path from the package root directory!!**
 
 #### example
+
 In the case of the following directory tree
 
 ```
@@ -82,15 +87,17 @@ $ gover-html -include 'html/tree'
 ```
 
 ### -exclude
-output expect the specified file or directory.
+
+Exclude specified files or directories from output.
 
 You can specify multiple items separated by commas.
 
-**if "include" is also specified, this option takes precedence.**
+**If "include" is also specified, this option takes precedence.**
 
 **Must specify a relative path from the package root directory!!**
 
 #### example
+
 In the case of the following directory tree
 
 ```
@@ -136,19 +143,24 @@ github.com/masakurapa/gover-html
 
 ### -exclude-func
 
-TODO: add Readme text
+Exclude specified function from output.
+
+You can specify multiple items separated by commas.
 
 #### example
 
 ```sh
-# Output excluding the `Example` function in `internal/cover`!!
+# Output excluding the all `Example` function!!
+$ gover-html -exclude-func 'Example'
+
+# Output from the `internal/cover` package without the `Example` function!!
 $ gover-html -exclude-func '(internal/cover).Example'
 
-# Output of struct `Sample` in `internal/cover` without the `Example` function!!
+# Output except for the `Example` function in the `Sample` structure of the `internal/cover` package!!
 $ gover-html -exclude-func '(internal/cover.Sample).Example'
 
 # When specifying more than one
-$ gover-html -exclude '(internal/cover).Example,(internal/cover.Sample).Example'
+$ gover-html -exclude 'Example,(internal/cover).Example,(internal/cover.Sample).Example'
 ```
 
 ### -theme

@@ -290,6 +290,40 @@ func TestNew(t *testing.T) {
 				wantErr: false,
 			},
 			{
+				name: "exclude-funcに/で終わるパスを指定(構造体名指定",
+				args: args{
+					excludeFunc: helper.StringP("(path/to/dir3/.Struct1).Func1"),
+				},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcのパスにワイルドカードを指定",
+				args: args{
+					excludeFunc: helper.StringP("(*.Struct1).Func1"),
+				},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
 				name: "exclude-funcに関数名のみを指定",
 				args: args{
 					excludeFunc: helper.StringP("Func1"),
@@ -744,7 +778,27 @@ exclude-func:
 				want:    nil,
 				wantErr: true,
 			},
-
+			{
+				name: "exclude-funcのパスにワイルドカードを指定",
+				settings: `
+exclude-func:
+  - (*).Func1
+  - (*.Struct1).Func1
+`,
+				args: args{},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Package: "", Struct: "", Func: "Func1"},
+						{Package: "", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
 			{
 				name: "exclude-funcにパスのみ指定",
 				settings: `

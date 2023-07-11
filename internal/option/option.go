@@ -26,7 +26,7 @@ const (
 
 var (
 	// 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
-	excludeFuncFormat = regexp.MustCompile(`^\((\./)?([a-zA-Z\d/\-_]+)(\.[a-zA-Z].+)?\)\.([a-zA-Z].+)$`)
+	excludeFuncFormat = regexp.MustCompile(`^\((\./)?([a-zA-Z\d/\-_]+|\*)(\.[a-zA-Z].+)?\)\.([a-zA-Z].+)$`)
 )
 
 type optionConfig struct {
@@ -158,7 +158,7 @@ func (g *Generator) validateFilter(f string, values []string) optionErrors {
 		}
 
 		if strings.HasPrefix(v, "/") {
-			errs = append(errs, fmt.Errorf("%s value (%q) must not be an absolute path", f, v))
+			errs = append(errs, fmt.Errorf("%s value %q must not be an absolute path", f, v))
 		}
 	}
 	return errs
@@ -172,7 +172,7 @@ func (g *Generator) validateExcludeFunc(values []string) optionErrors {
 		}
 
 		if strings.HasPrefix(v, "(/") {
-			errs = append(errs, fmt.Errorf("exclude-func value (%q) must not be an absolute path", v))
+			errs = append(errs, fmt.Errorf("exclude-func value %q must not be an absolute path", v))
 			continue
 		}
 
@@ -182,7 +182,7 @@ func (g *Generator) validateExcludeFunc(values []string) optionErrors {
 		}
 
 		if !excludeFuncFormat.MatchString(v) {
-			errs = append(errs, fmt.Errorf("exclude-func value (%q) format is invalid", v))
+			errs = append(errs, fmt.Errorf("exclude-func value %q format is invalid", v))
 		}
 	}
 	return errs
@@ -247,13 +247,19 @@ func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOptio
 		}
 
 		matches := excludeFuncFormat.FindStringSubmatch(s)
+
+		packageName := strings.TrimSuffix(strings.TrimPrefix(matches[2], "./"), "/")
+		if packageName == "*" {
+			packageName = ""
+		}
+
 		structName := matches[3]
 		if structName != "" {
 			structName = structName[1:]
 		}
 
 		ret = append(ret, ExcludeFuncOption{
-			Package: strings.TrimSuffix(strings.TrimPrefix(matches[2], "./"), "/"),
+			Package: packageName,
 			Struct:  structName,
 			Func:    matches[4],
 		})

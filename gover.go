@@ -25,9 +25,8 @@ if "exclude" is also specified, "exclude" option takes precedence.`)
 multiple directories can be specified separated by commas.
 
 if "include" is also specified, this option takes precedence.`)
-
-	// FIXME: add usage
-	excludeFunc = flag.String("exclude-func", "", "")
+	excludeFunc = flag.String("exclude-func", "", `exclude specified function from output.
+multiple directories can be specified separated by commas.`)
 )
 
 func main() {

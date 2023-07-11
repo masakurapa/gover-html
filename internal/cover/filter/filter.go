@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"path/filepath"
 	"strings"
 
 	"github.com/masakurapa/gover-html/internal/option"
@@ -51,15 +52,17 @@ func (f *filter) IsOutputTarget(relativePath, fileName string) bool {
 
 func (f *filter) IsOutputTargetFunc(relativePath, structName, funcName string) bool {
 	path := f.convertPathForValidate(relativePath)
+	// ファイル名が入っているので削除
+	path = filepath.Dir(path)
 
 	for _, opt := range f.opt.ExcludeFunc {
+		if opt.Package != "" && opt.Package != path {
+			continue
+		}
+		if opt.Struct != "" && opt.Struct != structName {
+			continue
+		}
 		if opt.Func != funcName {
-			continue
-		}
-		if opt.Struct != structName {
-			continue
-		}
-		if opt.Package != path {
 			continue
 		}
 		return false

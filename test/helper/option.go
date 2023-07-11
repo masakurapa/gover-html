@@ -36,6 +36,11 @@ func GetOptionForIncludeAndExclude(t *testing.T, val []string) option.Option {
 	return makeOption(t, nil, nil, nil, nil, joinComma(val), nil)
 }
 
+// GetOptionForExcludeFunc returns option with exclude set
+func GetOptionForExcludeFunc(t *testing.T, val []string) option.Option {
+	return makeOption(t, nil, nil, nil, nil, nil, joinComma(val))
+}
+
 func joinComma(val []string) *string {
 	s := strings.Join(val, ",")
 	return &s

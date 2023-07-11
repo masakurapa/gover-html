@@ -384,3 +384,151 @@ func TestFilter_IsOutputTarget(t *testing.T) {
 		})
 	}
 }
+
+func TestFilter_IsOutputTargetFunc(t *testing.T) {
+	type newArgs struct {
+		option option.Option
+	}
+	type args struct {
+		relativePath string
+		structName   string
+		funcName     string
+	}
+
+	tests := []struct {
+		name    string
+		newArgs newArgs
+		args    args
+		want    bool
+	}{
+		{
+			name: "exclude-funcの指定なしの場合はtrueが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForDefault(t),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "path, struct, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2.Struct).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: false,
+		},
+		{
+			name: "pathが一致しない, structが一致, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir.Struct).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "pathが一致, structが一致しない, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2.Struct1).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "pathが一致, structが一致, funcが一致しない場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2.Struct).Func1"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "path, func が一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: false,
+		},
+		{
+			name: "pathが一致しない, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir3).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "pathが一致, funcが一致しない場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2).Func2"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: false,
+		},
+		{
+			name: "funcが一致しない場合はtrueが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"Func2"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f := filter.New(tt.newArgs.option)
+			if got := f.IsOutputTargetFunc(tt.args.relativePath, tt.args.structName, tt.args.funcName); got != tt.want {
+				t.Errorf("filter.IsOutputTargetFunc() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

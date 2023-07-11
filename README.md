@@ -162,6 +162,9 @@ $ gover-html -exclude-func '(internal/cover/cover.go).Example'
 # Output except for the `Example` function in the `Sample` structure of the `internal/cover` package!!
 $ gover-html -exclude-func '(internal/cover.Sample).Example'
 
+# If you specify a structure, wildcards can be used in the path.
+$ gover-html -exclude-func '(*.Sample).Example'
+
 # When specifying more than one
 $ gover-html -exclude 'Example,(internal/cover).Example,(internal/cover.Sample).Example'
 ```

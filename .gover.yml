@@ -27,3 +27,4 @@
   # - (internal/cover.StructName).FuncName
   # - (internal/cover/cover.go).FuncName
   # - (internal/cover/cover.go.StructName).FuncName
+  # - (*.StructName).FuncName

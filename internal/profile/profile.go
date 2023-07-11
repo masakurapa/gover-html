@@ -51,7 +51,7 @@ func (prof *Profile) IsRelativeOrAbsolute() bool {
 
 // RemoveModulePathFromFileName returns FileName with ModulePath removed
 func (prof *Profile) RemoveModulePathFromFileName() string {
-	return strings.TrimPrefix(prof.FileName, prof.ModulePath)
+	return strings.TrimPrefix(strings.TrimPrefix(prof.FileName, prof.ModulePath), "/")
 }
 
 // FilePath returns readable file path

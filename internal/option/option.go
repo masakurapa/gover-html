@@ -2,7 +2,8 @@ package option
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
+	"regexp"
 	"strings"
 
 	"github.com/masakurapa/gover-html/internal/reader"
@@ -23,40 +24,58 @@ const (
 	themeDefault = themeDark
 )
 
-// Option is option data
-type Option struct {
-	Input   string
-	Output  string
-	Theme   string
-	Include []string
-	Exclude []string
+var (
+	// 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
+	excludeFuncFormat = regexp.MustCompile(`^\((.+)\)\.([a-zA-Z].+)$`)
+)
+
+type optionConfig struct {
+	Input       string
+	Output      string
+	Theme       string
+	Include     []string // include fire or directories
+	Exclude     []string // exclude fire or directories
+	ExcludeFunc []string `yaml:"exclude-func"` // exclude functions
 }
 
-// Generator is generates option
+type Option struct {
+	Input       string
+	Output      string
+	Theme       string
+	Include     []string            // include fire or directories
+	Exclude     []string            // exclude fire or directories
+	ExcludeFunc []ExcludeFuncOption // exclude functions
+}
+
+type ExcludeFuncOption struct {
+	Path   string
+	Struct string
+	Func   string
+}
+
 type Generator struct {
 	r reader.Reader
 }
 
-// New is initialize the option generator
 func New(r reader.Reader) *Generator {
 	return &Generator{r: r}
 }
 
-// Generate returns option
 func (g *Generator) Generate(
 	input *string,
 	output *string,
 	theme *string,
 	include *string,
 	exclude *string,
+	excludeFunc *string,
 ) (*Option, error) {
-	opt := Option{}
+	opt := &optionConfig{}
 	if g.r.Exists(fileName) {
 		fileOpt, err := g.readOptionFile()
 		if err != nil {
 			return nil, err
 		}
-		opt = *fileOpt
+		opt = fileOpt
 	}
 
 	opt.Input = g.stringValue(input, opt.Input)
@@ -64,21 +83,22 @@ func (g *Generator) Generate(
 	opt.Theme = g.stringValue(theme, opt.Theme)
 	opt.Include = g.stringsValue(include, opt.Include)
 	opt.Exclude = g.stringsValue(exclude, opt.Exclude)
+	opt.ExcludeFunc = g.stringsValue(excludeFunc, opt.ExcludeFunc)
 	return g.getValidatedOption(opt)
 }
 
-func (g *Generator) readOptionFile() (*Option, error) {
+func (g *Generator) readOptionFile() (*optionConfig, error) {
 	r, err := g.r.Read(fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
 
-	opt := Option{}
+	opt := optionConfig{}
 	if err := yaml.Unmarshal(b, &opt); err != nil {
 		return nil, err
 	}
@@ -100,14 +120,14 @@ func (g *Generator) stringsValue(arg *string, opt []string) []string {
 	return strings.Split(*arg, optionSeparator)
 }
 
-func (g *Generator) getValidatedOption(opt Option) (*Option, error) {
+func (g *Generator) getValidatedOption(opt *optionConfig) (*Option, error) {
 	if err := g.validate(opt); err != nil {
 		return nil, err
 	}
 	return g.getOptionWithDefaultValue(opt), nil
 }
 
-func (g *Generator) validate(opt Option) error {
+func (g *Generator) validate(opt *optionConfig) error {
 	errs := make(optionErrors, 0)
 
 	if !g.isEmpty(opt.Theme) && opt.Theme != themeDark && opt.Theme != themeLight {
@@ -118,6 +138,9 @@ func (g *Generator) validate(opt Option) error {
 		errs = append(errs, es...)
 	}
 	if es := g.validateFilter("exclude", opt.Exclude); len(es) > 0 {
+		errs = append(errs, es...)
+	}
+	if es := g.validateExcludeFunc(opt.ExcludeFunc); len(es) > 0 {
 		errs = append(errs, es...)
 	}
 
@@ -135,26 +158,59 @@ func (g *Generator) validateFilter(f string, values []string) optionErrors {
 		}
 
 		if strings.HasPrefix(v, "/") {
-			errs = append(errs, fmt.Errorf("%s value (%q) must not be an absolute path", f, v))
+			errs = append(errs, fmt.Errorf("%s value %q must not be an absolute path", f, v))
 		}
 	}
 	return errs
 }
 
-func (g *Generator) getOptionWithDefaultValue(opt Option) *Option {
-	if g.isEmpty(opt.Input) {
-		opt.Input = inputDefault
+func (g *Generator) validateExcludeFunc(values []string) optionErrors {
+	errs := make(optionErrors, 0)
+	for _, v := range values {
+		if g.isEmpty(v) {
+			continue
+		}
+
+		if strings.HasPrefix(v, "(/") {
+			errs = append(errs, fmt.Errorf("exclude-func value %q must not be an absolute path", v))
+			continue
+		}
+
+		// ()が含まれない場合は関数名のみとみなしてOK
+		if !strings.Contains(v, "(") && !strings.Contains(v, ")") {
+			continue
+		}
+
+		if !excludeFuncFormat.MatchString(v) {
+			errs = append(errs, fmt.Errorf("exclude-func value %q format is invalid", v))
+		}
 	}
-	if g.isEmpty(opt.Output) {
-		opt.Output = outputDefault
-	}
-	if g.isEmpty(opt.Theme) {
-		opt.Theme = themeDefault
+	return errs
+}
+
+func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option {
+	newOpt := &Option{
+		Input:   opt.Input,
+		Output:  opt.Output,
+		Theme:   opt.Theme,
+		Include: opt.Include,
+		Exclude: opt.Exclude,
 	}
 
-	opt.Include = g.convertFilterValue(opt.Include)
-	opt.Exclude = g.convertFilterValue(opt.Exclude)
-	return &opt
+	if g.isEmpty(newOpt.Input) {
+		newOpt.Input = inputDefault
+	}
+	if g.isEmpty(newOpt.Output) {
+		newOpt.Output = outputDefault
+	}
+	if g.isEmpty(newOpt.Theme) {
+		newOpt.Theme = themeDefault
+	}
+
+	newOpt.Include = g.convertFilterValue(newOpt.Include)
+	newOpt.Exclude = g.convertFilterValue(newOpt.Exclude)
+	newOpt.ExcludeFunc = g.convertExcludeFuncOption(opt.ExcludeFunc)
+	return newOpt
 }
 
 func (g *Generator) isEmpty(s string) bool {
@@ -172,6 +228,55 @@ func (g *Generator) convertFilterValue(values []string) []string {
 		s = strings.TrimPrefix(s, "./")
 		s = strings.TrimSuffix(s, "/")
 		ret = append(ret, s)
+	}
+	return ret
+}
+
+func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOption {
+	ret := make([]ExcludeFuncOption, 0, len(values))
+	for _, v := range values {
+		s := strings.TrimSpace(v)
+		if g.isEmpty(s) {
+			continue
+		}
+
+		// ()が含まれない場合は関数名のみとみなして終了
+		if !strings.Contains(s, "(") && !strings.Contains(s, ")") {
+			ret = append(ret, ExcludeFuncOption{Func: s})
+			continue
+		}
+
+		// excludeFuncFormat = regexp.MustCompile(`^\(.+\)\.([a-zA-Z].+)$`)
+
+		matches := excludeFuncFormat.FindStringSubmatch(s)
+		optPath := strings.TrimSuffix(strings.TrimPrefix(matches[1], "./"), "/")
+
+		var path, structName string
+		idx := strings.LastIndex(optPath, ".")
+
+		if idx == -1 {
+			// ファイル名で指定していない or 構造体名未指定
+			path = optPath
+		} else {
+			s := optPath[idx+1:]
+			if s == "go" {
+				// ファイル名のみ指定している
+				path = optPath
+			} else {
+				path = optPath[:idx]
+				structName = s
+			}
+		}
+
+		if path == "*" {
+			path = ""
+		}
+
+		ret = append(ret, ExcludeFuncOption{
+			Path:   strings.TrimSuffix(strings.TrimPrefix(path, "./"), "/"),
+			Struct: structName,
+			Func:   matches[2],
+		})
 	}
 	return ret
 }

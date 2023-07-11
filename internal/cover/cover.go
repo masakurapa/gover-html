@@ -104,13 +104,11 @@ func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Pro
 		p.Dir = d.dir
 		p.ModulePath = d.modulePath
 
-		fn, err := makeFuncs(*p)
+		pp, err := makeNewProfile(p, f)
 		if err != nil {
 			return nil, err
 		}
-		p.Functions = fn
-
-		profiles = append(profiles, *p)
+		profiles = append(profiles, *pp)
 	}
 
 	sort.SliceStable(profiles, func(i, j int) bool {
@@ -184,7 +182,7 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 		if p.Error != nil {
 			return nil, fmt.Errorf(p.Error.Err)
 		}
-		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
+		// should have the same result for "pkg.ImportPath" and "path.Path(Profile.FileName)"
 		pkgs[p.ImportPath] = importDir{
 			modulePath: p.Module.Path,
 			relative:   strings.TrimPrefix(p.Dir, p.Module.Dir+"/"),

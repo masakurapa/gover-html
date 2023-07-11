@@ -22,5 +22,10 @@ make_covers: build
 	./gover-html -o covers/exclude_1.html -exclude "internal/cover"
 	./gover-html -o covers/exclude_2.html -exclude "internal/cover,./internal/html/tree/"
 	./gover-html -o covers/exclude_3.html -exclude "internal/cover/cover.go"
+	./gover-html -o covers/exclude_func_1.html -exclude-func "IsOutputTarget"
+	./gover-html -o covers/exclude_func_2.html -exclude-func "(internal/cover/filter).IsOutputTarget"
+	./gover-html -o covers/exclude_func_3.html -exclude-func "(internal/cover/filter.filter).IsOutputTargetFunc"
+	./gover-html -o covers/exclude_func_4.html -exclude-func "(internal/cover/filter/filter.go).IsOutputTarget"
+	./gover-html -o covers/exclude_func_5.html -exclude-func "(internal/cover/filter/filter.go.filter).IsOutputTargetFunc"
 
 .PHONY: test

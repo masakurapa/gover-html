@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"path/filepath"
 	"strings"
 
 	"github.com/masakurapa/gover-html/internal/option"
@@ -9,19 +10,16 @@ import (
 // Filter is filter the output directory
 type Filter interface {
 	IsOutputTarget(string, string) bool
+	IsOutputTargetFunc(string, string, string) bool
 }
 
 type filter struct {
-	include []string
-	exclude []string
+	opt option.Option
 }
 
 // New is initialize the filter
 func New(opt option.Option) Filter {
-	return &filter{
-		include: opt.Include,
-		exclude: opt.Exclude,
-	}
+	return &filter{opt: opt}
 }
 
 // IsOutputTarget returns true if output target
@@ -34,22 +32,41 @@ func (f *filter) IsOutputTarget(relativePath, fileName string) bool {
 
 	path := f.convertPathForValidate(relativePath)
 
-	for _, s := range f.exclude {
+	for _, s := range f.opt.Exclude {
 		if f.hasPrefix(path, fileName, s) {
 			return false
 		}
 	}
 
-	if len(f.include) == 0 {
+	if len(f.opt.Include) == 0 {
 		return true
 	}
 
-	for _, s := range f.include {
+	for _, s := range f.opt.Include {
 		if f.hasPrefix(path, fileName, s) {
 			return true
 		}
 	}
 	return false
+}
+
+func (f *filter) IsOutputTargetFunc(relativePath, structName, funcName string) bool {
+	path := f.convertPathForValidate(relativePath)
+	dir := filepath.Dir(path)
+
+	for _, opt := range f.opt.ExcludeFunc {
+		if opt.Path != "" && opt.Path != path && opt.Path != dir {
+			continue
+		}
+		if opt.Struct != "" && opt.Struct != structName {
+			continue
+		}
+		if opt.Func != funcName {
+			continue
+		}
+		return false
+	}
+	return true
 }
 
 func (f *filter) hasPrefix(path, fileName, prefix string) bool {

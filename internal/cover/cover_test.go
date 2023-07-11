@@ -3,9 +3,10 @@ package cover_test
 import (
 	"io"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/masakurapa/gover-html/internal/cover"
 	"github.com/masakurapa/gover-html/internal/cover/filter"
@@ -14,11 +15,16 @@ import (
 
 type mockFilter struct {
 	filter.Filter
-	mockIsOutputTarget func(string, string) bool
+	mockIsOutputTarget     func(string, string) bool
+	mockIsOutputTargetFunc func(string, string, string) bool
 }
 
 func (f *mockFilter) IsOutputTarget(path, fileName string) bool {
 	return f.mockIsOutputTarget(path, fileName)
+}
+
+func (f *mockFilter) IsOutputTargetFunc(s1, s2, s3 string) bool {
+	return f.mockIsOutputTargetFunc(s1, s2, s3)
 }
 
 func TestReadProfile(t *testing.T) {
@@ -37,6 +43,9 @@ func TestReadProfile(t *testing.T) {
 
 	defaultFilter := &mockFilter{
 		mockIsOutputTarget: func(string, string) bool {
+			return true
+		},
+		mockIsOutputTargetFunc: func(s1 string, s2 string, s3 string) bool {
 			return true
 		},
 	}
@@ -73,7 +82,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func Func1() string", StartLine: 3, StartCol: 1},
+						{Name: "func Func2(s string) int", StartLine: 7, StartCol: 1},
+					},
 				},
 				{
 					ID:         3,
@@ -83,7 +95,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Blocks: []profile.Block{
 						{StartLine: 4, StartCol: 14, EndLine: 24, EndCol: 34, NumState: 44, Count: 54},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func Func3()", StartLine: 7, StartCol: 1},
+						{Name: "func Func4(s string) bool", StartLine: 25, StartCol: 1},
+					},
 				},
 				{
 					ID:         4,
@@ -93,7 +108,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Blocks: []profile.Block{
 						{StartLine: 5, StartCol: 15, EndLine: 25, EndCol: 35, NumState: 45, Count: 55},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func (s *Struct2) Func1()", StartLine: 9, StartCol: 1},
+						{Name: "func (s *Struct2) Func4(ss string) bool", StartLine: 27, StartCol: 1},
+					},
 				},
 				{
 					ID:         1,
@@ -103,7 +121,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func (*Struct1) Func1() string", StartLine: 5, StartCol: 1},
+						{Name: "func (*Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
+					},
 				},
 			},
 			wantErr: false,
@@ -128,7 +149,10 @@ github.com/masakurapa/gover-html/testdata/dir1/file0.go:3.13,23.33 43 53
 						{StartLine: 2, StartCol: 12, EndLine: 22, EndCol: 32, NumState: 42, Count: 52},
 						{StartLine: 3, StartCol: 13, EndLine: 23, EndCol: 33, NumState: 43, Count: 53},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func Func1() string", StartLine: 3, StartCol: 1},
+						{Name: "func Func2(s string) int", StartLine: 7, StartCol: 1},
+					},
 				},
 			},
 			wantErr: false,
@@ -161,6 +185,9 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 						t.Errorf("Unexpected parameters. path: %q, fileName: %q", path, fileName)
 						return false
 					},
+					mockIsOutputTargetFunc: func(s string, s2 string, s3 string) bool {
+						return true
+					},
 				},
 			},
 			want: profile.Profiles{
@@ -172,7 +199,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Blocks: []profile.Block{
 						{StartLine: 5, StartCol: 15, EndLine: 25, EndCol: 35, NumState: 45, Count: 55},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func (s *Struct2) Func1()", StartLine: 9, StartCol: 1},
+						{Name: "func (s *Struct2) Func4(ss string) bool", StartLine: 27, StartCol: 1},
+					},
 				},
 				{
 					ID:         1,
@@ -182,7 +212,10 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 					Blocks: []profile.Block{
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
-					Functions: profile.Functions{},
+					Functions: profile.Functions{
+						{Name: "func (*Struct1) Func1() string", StartLine: 5, StartCol: 1},
+						{Name: "func (*Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
+					},
 				},
 			},
 			wantErr: false,
@@ -214,12 +247,13 @@ github.com/masakurapa/gover-html/testdata/dir1/file0.go,2.12,22.32 42 52
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := cover.ReadProfile(tt.args.r, tt.args.f)
+			_, _ = got, err
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("Read() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Read() = %#v, want %#v", got, tt.want)
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf(diff)
 			}
 		})
 	}

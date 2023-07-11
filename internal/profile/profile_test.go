@@ -69,7 +69,7 @@ func TestProfile_FilePath(t *testing.T) {
 			want:   "/path/to/file.go",
 		},
 		{
-			name:   "FileNameが相対パス、絶対パスの以外の場合、Dir+ファイル名を連結した値を返す",
+			name:   "FileNameが相対パス、絶対パスの以外の場合、Path+ファイル名を連結した値を返す",
 			fields: fields{Dir: "/path/to/dir", FileName: "path/to/file.go"},
 			want:   "/path/to/dir/file.go",
 		},

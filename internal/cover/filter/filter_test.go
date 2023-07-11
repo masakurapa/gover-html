@@ -426,9 +426,33 @@ func TestFilter_IsOutputTargetFunc(t *testing.T) {
 			want: false,
 		},
 		{
+			name: "path(ファイル名含む), struct, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2/file3.go.Struct).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: false,
+		},
+		{
 			name: "pathが一致しない, structが一致, funcが一致する場合はfalseが返る",
 			newArgs: newArgs{
 				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir.Struct).Func"}),
+			},
+			args: args{
+				relativePath: "testdata/dir1/dir2/file3.go",
+				structName:   "Struct",
+				funcName:     "Func",
+			},
+			want: true,
+		},
+		{
+			name: "ファイル名が一致しない, structが一致, funcが一致する場合はfalseが返る",
+			newArgs: newArgs{
+				option: helper.GetOptionForExcludeFunc(t, []string{"(testdata/dir1/dir2/file.go.Struct).Func"}),
 			},
 			args: args{
 				relativePath: "testdata/dir1/dir2/file3.go",

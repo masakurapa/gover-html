@@ -156,6 +156,9 @@ $ gover-html -exclude-func 'Example'
 # Output from the `internal/cover` package without the `Example` function!!
 $ gover-html -exclude-func '(internal/cover).Example'
 
+# Output from the `internal/cover/cover.go` without the `Example` function!!
+$ gover-html -exclude-func '(internal/cover/cover.go).Example'
+
 # Output except for the `Example` function in the `Sample` structure of the `internal/cover` package!!
 $ gover-html -exclude-func '(internal/cover.Sample).Example'
 

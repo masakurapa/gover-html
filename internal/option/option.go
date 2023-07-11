@@ -26,7 +26,7 @@ const (
 
 var (
 	// 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
-	excludeFuncFormat = regexp.MustCompile(`^\((\./)?([a-zA-Z\d/\-_]+|\*)(\.[a-zA-Z].+)?\)\.([a-zA-Z].+)$`)
+	excludeFuncFormat = regexp.MustCompile(`^\((.+)\)\.([a-zA-Z].+)$`)
 )
 
 type optionConfig struct {
@@ -48,9 +48,9 @@ type Option struct {
 }
 
 type ExcludeFuncOption struct {
-	Package string
-	Struct  string
-	Func    string
+	Path   string
+	Struct string
+	Func   string
 }
 
 type Generator struct {
@@ -246,22 +246,36 @@ func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOptio
 			continue
 		}
 
-		matches := excludeFuncFormat.FindStringSubmatch(s)
+		// excludeFuncFormat = regexp.MustCompile(`^\(.+\)\.([a-zA-Z].+)$`)
 
-		packageName := strings.TrimSuffix(strings.TrimPrefix(matches[2], "./"), "/")
-		if packageName == "*" {
-			packageName = ""
+		matches := excludeFuncFormat.FindStringSubmatch(s)
+		optPath := strings.TrimSuffix(strings.TrimPrefix(matches[1], "./"), "/")
+
+		var path, structName string
+		idx := strings.LastIndex(optPath, ".")
+
+		if idx == -1 {
+			// ファイル名で指定していない or 構造体名未指定
+			path = optPath
+		} else {
+			s := optPath[idx+1:]
+			if s == "go" {
+				// ファイル名のみ指定している
+				path = optPath
+			} else {
+				path = optPath[:idx]
+				structName = s
+			}
 		}
 
-		structName := matches[3]
-		if structName != "" {
-			structName = structName[1:]
+		if path == "*" {
+			path = ""
 		}
 
 		ret = append(ret, ExcludeFuncOption{
-			Package: packageName,
-			Struct:  structName,
-			Func:    matches[4],
+			Path:   strings.TrimSuffix(strings.TrimPrefix(path, "./"), "/"),
+			Struct: structName,
+			Func:   matches[2],
 		})
 	}
 	return ret

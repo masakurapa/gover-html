@@ -62,8 +62,8 @@ func TestNew(t *testing.T) {
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
 					},
 				},
 				wantErr: false,
@@ -85,8 +85,8 @@ func TestNew(t *testing.T) {
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
 					},
 				},
 				wantErr: false,
@@ -249,8 +249,8 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
 					},
 				},
 				wantErr: false,
@@ -267,7 +267,7 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -284,7 +284,7 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -301,7 +301,7 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -318,7 +318,7 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "Struct1", Func: "Func1"},
+						{Path: "", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -335,7 +335,7 @@ func TestNew(t *testing.T) {
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func1"},
+						{Path: "", Struct: "", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -420,9 +420,9 @@ exclude-func:
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -452,9 +452,9 @@ exclude-func:
 					Include: []string{"path/to/dir1", "path/to/dir2"},
 					Exclude: []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -491,8 +491,8 @@ exclude-func:
 					Include: []string{"path/to/dir5"},
 					Exclude: []string{"path/to/dir6"},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func2"},
-						{Package: "", Struct: "", Func: "Func3"},
+						{Path: "", Struct: "", Func: "Func2"},
+						{Path: "", Struct: "", Func: "Func3"},
 					},
 				},
 				wantErr: false,
@@ -718,9 +718,9 @@ exclude-func:
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -740,8 +740,8 @@ exclude-func:
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -761,8 +761,8 @@ exclude-func:
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "path/to/dir3", Struct: "", Func: "Func1"},
-						{Package: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,
@@ -793,8 +793,29 @@ exclude-func:
 					Include: []string{},
 					Exclude: []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
-						{Package: "", Struct: "", Func: "Func1"},
-						{Package: "", Struct: "Struct1", Func: "Func1"},
+						{Path: "", Struct: "", Func: "Func1"},
+						{Path: "", Struct: "Struct1", Func: "Func1"},
+					},
+				},
+				wantErr: false,
+			},
+			{
+				name: "exclude-funcのパスにファイル名まで指定",
+				settings: `
+exclude-func:
+  - (path/to/dir3/sample.go).Func1
+  - (path/to/dir3/sample.go.Struct1).Func1
+`,
+				args: args{},
+				want: &option.Option{
+					Input:   "coverage.out",
+					Output:  "coverage.html",
+					Theme:   "dark",
+					Include: []string{},
+					Exclude: []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{
+						{Path: "path/to/dir3/sample.go", Struct: "", Func: "Func1"},
+						{Path: "path/to/dir3/sample.go", Struct: "Struct1", Func: "Func1"},
 					},
 				},
 				wantErr: false,

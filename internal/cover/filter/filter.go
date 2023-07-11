@@ -52,11 +52,10 @@ func (f *filter) IsOutputTarget(relativePath, fileName string) bool {
 
 func (f *filter) IsOutputTargetFunc(relativePath, structName, funcName string) bool {
 	path := f.convertPathForValidate(relativePath)
-	// ファイル名が入っているので削除
-	path = filepath.Dir(path)
+	dir := filepath.Dir(path)
 
 	for _, opt := range f.opt.ExcludeFunc {
-		if opt.Package != "" && opt.Package != path {
+		if opt.Path != "" && opt.Path != path && opt.Path != dir {
 			continue
 		}
 		if opt.Struct != "" && opt.Struct != structName {

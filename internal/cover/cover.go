@@ -182,7 +182,7 @@ func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, 
 		if p.Error != nil {
 			return nil, fmt.Errorf(p.Error.Err)
 		}
-		// should have the same result for "pkg.ImportPath" and "path.Dir(Profile.FileName)"
+		// should have the same result for "pkg.ImportPath" and "path.Path(Profile.FileName)"
 		pkgs[p.ImportPath] = importDir{
 			modulePath: p.Module.Path,
 			relative:   strings.TrimPrefix(p.Dir, p.Module.Dir+"/"),

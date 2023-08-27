@@ -121,15 +121,15 @@
 			<div id="tree">
 			
 				
-				<div style="padding-inline-start: 8px">github.com/masakurapa/gover-html/ (92.5%)</div>
+				<div style="padding-inline-start: 8px">github.com/masakurapa/gover-html/ (92.3%)</div>
 				
 			
 				
-				<div style="padding-inline-start: 38px">internal/ (92.5%)</div>
+				<div style="padding-inline-start: 38px">internal/ (92.3%)</div>
 				
 			
 				
-				<div style="padding-inline-start: 68px">cover/ (89.4%)</div>
+				<div style="padding-inline-start: 68px">cover/ (89%)</div>
 				
 			
 				
@@ -150,7 +150,7 @@
 			
 				
 				<div class="file clickable" style="padding-inline-start: 98px;" id="tree3" onclick="change( 3 ,  3 );">
-					func.go (81.5%)
+					func.go (80.7%)
 				</div>
 				
 			
@@ -163,19 +163,19 @@
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 128px;" id="tree6" onclick="change( 6 ,  4 );">
+				<div class="file clickable" style="padding-inline-start: 128px;" id="tree4" onclick="change( 4 ,  4 );">
 					tree.go (100%)
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree4" onclick="change( 4 ,  3 );">
+				<div class="file clickable" style="padding-inline-start: 98px;" id="tree5" onclick="change( 5 ,  3 );">
 					html.go (95.4%)
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree5" onclick="change( 5 ,  3 );">
+				<div class="file clickable" style="padding-inline-start: 98px;" id="tree6" onclick="change( 6 ,  3 );">
 					template.go (0%)
 				</div>
 				
@@ -594,25 +594,25 @@
 				<div id="file3"  style="display: none">
 					<table>
 						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">81.5%</td></tr>
+						<tr><td class="total">Total</td><td class="cov">80.7%</td></tr>
 						
 						<tr>
 							<td class="fnc"><span class="clickable" onclick="scrollById('file3-31');">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor</span></td>
-							<td class="cov">83.3%</td>
+							<td class="cov">81%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-73');">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-78');">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error)</span></td>
 							<td class="cov">75%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-82');">func findFuncs(name string) ([]*funcExtent, error)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-87');">func findFuncs(name string) ([]*funcExtent, error)</span></td>
 							<td class="cov">85.7%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-97');">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file3-102');">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile</span></td>
 							<td class="cov">80%</td>
 						</tr>
 						
@@ -674,310 +674,98 @@
 </li><li id="file3-53">
 </li><li id="file3-54">                <span class="cov1">var structName string
 </span></li><li id="file3-55"><span class="cov1">                if n.Recv != nil &amp;&amp; len(n.Recv.List) &gt; 0 </span><span class="cov1">{
-</span></li><li id="file3-56"><span class="cov1">                        structName = n.Recv.List[0].Type.(*ast.StarExpr).X.(*ast.Ident).Name
-</span></li><li id="file3-57"><span class="cov1">                }</span>
-</li><li id="file3-58">
-</li><li id="file3-59">                <span class="cov1">fe := &amp;funcExtent{
-</span></li><li id="file3-60"><span class="cov1">                        structName: structName,
-</span></li><li id="file3-61"><span class="cov1">                        funcName:   n.Name.Name,
-</span></li><li id="file3-62"><span class="cov1">                        name:       string(src),
-</span></li><li id="file3-63"><span class="cov1">                        startLine:  start.Line,
-</span></li><li id="file3-64"><span class="cov1">                        startCol:   start.Column,
-</span></li><li id="file3-65"><span class="cov1">                        endLine:    end.Line,
-</span></li><li id="file3-66"><span class="cov1">                        endCol:     end.Column,
-</span></li><li id="file3-67"><span class="cov1">                }
-</span></li><li id="file3-68"><span class="cov1">                v.funcs = append(v.funcs, fe)</span>
-</li><li id="file3-69">        }
-</li><li id="file3-70">        <span class="cov1">return v</span>
-</li><li id="file3-71">}
-</li><li id="file3-72">
-</li><li id="file3-73">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error) <span class="cov1">{
-</span></li><li id="file3-74"><span class="cov1">        exts, err := findFuncs(prof.FilePath())
-</span></li><li id="file3-75"><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li id="file3-76"><span class="cov0">                return nil, err
-</span></li><li id="file3-77"><span class="cov0">        }</span>
-</li><li id="file3-78">
-</li><li id="file3-79">        <span class="cov1">return newProfile(prof, exts, f), nil</span>
-</li><li id="file3-80">}
-</li><li id="file3-81">
-</li><li id="file3-82">func findFuncs(name string) ([]*funcExtent, error) <span class="cov1">{
-</span></li><li id="file3-83"><span class="cov1">        fset := token.NewFileSet()
-</span></li><li id="file3-84"><span class="cov1">        parsedFile, err := parser.ParseFile(fset, name, nil, 0)
-</span></li><li id="file3-85"><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li id="file3-86"><span class="cov0">                return nil, err
-</span></li><li id="file3-87"><span class="cov0">        }</span>
-</li><li id="file3-88">        <span class="cov1">visitor := &amp;funcVisitor{
-</span></li><li id="file3-89"><span class="cov1">                fset:    fset,
-</span></li><li id="file3-90"><span class="cov1">                name:    name,
-</span></li><li id="file3-91"><span class="cov1">                astFile: parsedFile,
-</span></li><li id="file3-92"><span class="cov1">        }
-</span></li><li id="file3-93"><span class="cov1">        ast.Walk(visitor, visitor.astFile)
-</span></li><li id="file3-94"><span class="cov1">        return visitor.funcs, nil</span>
-</li><li id="file3-95">}
-</li><li id="file3-96">
-</li><li id="file3-97">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile <span class="cov1">{
-</span></li><li id="file3-98"><span class="cov1">        fncs := make(profile.Functions, 0, len(exts))
-</span></li><li id="file3-99"><span class="cov1">        blocks := make(profile.Blocks, 0, len(prof.Blocks))
-</span></li><li id="file3-100"><span class="cov1">
-</span></li><li id="file3-101"><span class="cov1">        bi := 0
-</span></li><li id="file3-102"><span class="cov1">        for _, e := range exts </span><span class="cov1">{
-</span></li><li id="file3-103"><span class="cov1">                isCoverageBlock := f.IsOutputTargetFunc(prof.RemoveModulePathFromFileName(), e.structName, e.funcName)
-</span></li><li id="file3-104"><span class="cov1">
-</span></li><li id="file3-105"><span class="cov1">                fnc := profile.Function{
-</span></li><li id="file3-106"><span class="cov1">                        Name:      e.name,
-</span></li><li id="file3-107"><span class="cov1">                        StartLine: e.startLine,
-</span></li><li id="file3-108"><span class="cov1">                        StartCol:  e.startCol,
-</span></li><li id="file3-109"><span class="cov1">                }
-</span></li><li id="file3-110"><span class="cov1">
-</span></li><li id="file3-111"><span class="cov1">                for bi &lt; len(prof.Blocks) </span><span class="cov1">{
-</span></li><li id="file3-112"><span class="cov1">                        b := prof.Blocks[bi]
-</span></li><li id="file3-113"><span class="cov1">
-</span></li><li id="file3-114"><span class="cov1">                        if b.StartLine &lt; e.startLine </span><span class="cov1">{
-</span></li><li id="file3-115"><span class="cov1">                                if isCoverageBlock </span><span class="cov1">{
-</span></li><li id="file3-116"><span class="cov1">                                        blocks = append(blocks, b)
-</span></li><li id="file3-117"><span class="cov1">                                }</span>
-</li><li id="file3-118">                                <span class="cov1">bi++
-</span></li><li id="file3-119"><span class="cov1">                                continue</span>
-</li><li id="file3-120">                        }
-</li><li id="file3-121">
-</li><li id="file3-122">                        <span class="cov1">if b.StartLine &gt;= e.startLine &amp;&amp;
-</span></li><li id="file3-123"><span class="cov1">                                b.EndLine &lt;= e.endLine </span><span class="cov0">{
-</span></li><li id="file3-124"><span class="cov0">                                fnc.Blocks = append(fnc.Blocks, b)
-</span></li><li id="file3-125"><span class="cov0">                                if isCoverageBlock </span><span class="cov0">{
-</span></li><li id="file3-126"><span class="cov0">                                        blocks = append(blocks, b)
-</span></li><li id="file3-127"><span class="cov0">                                }</span>
-</li><li id="file3-128">                                <span class="cov0">bi++
-</span></li><li id="file3-129"><span class="cov0">                                continue</span>
-</li><li id="file3-130">                        }
-</li><li id="file3-131">                        <span class="cov1">break</span>
-</li><li id="file3-132">                }
-</li><li id="file3-133">
-</li><li id="file3-134">                <span class="cov1">if isCoverageBlock </span><span class="cov1">{
-</span></li><li id="file3-135"><span class="cov1">                        fncs = append(fncs, fnc)
-</span></li><li id="file3-136"><span class="cov1">                }</span>
-</li><li id="file3-137">        }
+</span></li><li id="file3-56"><span class="cov1">                        if t, ok := n.Recv.List[0].Type.(*ast.Ident); ok </span><span class="cov0">{
+</span></li><li id="file3-57"><span class="cov0">                                structName = t.Name
+</span></li><li id="file3-58"><span class="cov0">                        }</span>
+</li><li id="file3-59">                        <span class="cov1">if t, ok := n.Recv.List[0].Type.(*ast.StarExpr); ok </span><span class="cov1">{
+</span></li><li id="file3-60"><span class="cov1">                                structName = t.X.(*ast.Ident).Name
+</span></li><li id="file3-61"><span class="cov1">                        }</span>
+</li><li id="file3-62">                }
+</li><li id="file3-63">
+</li><li id="file3-64">                <span class="cov1">fe := &amp;funcExtent{
+</span></li><li id="file3-65"><span class="cov1">                        structName: structName,
+</span></li><li id="file3-66"><span class="cov1">                        funcName:   n.Name.Name,
+</span></li><li id="file3-67"><span class="cov1">                        name:       string(src),
+</span></li><li id="file3-68"><span class="cov1">                        startLine:  start.Line,
+</span></li><li id="file3-69"><span class="cov1">                        startCol:   start.Column,
+</span></li><li id="file3-70"><span class="cov1">                        endLine:    end.Line,
+</span></li><li id="file3-71"><span class="cov1">                        endCol:     end.Column,
+</span></li><li id="file3-72"><span class="cov1">                }
+</span></li><li id="file3-73"><span class="cov1">                v.funcs = append(v.funcs, fe)</span>
+</li><li id="file3-74">        }
+</li><li id="file3-75">        <span class="cov1">return v</span>
+</li><li id="file3-76">}
+</li><li id="file3-77">
+</li><li id="file3-78">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error) <span class="cov1">{
+</span></li><li id="file3-79"><span class="cov1">        exts, err := findFuncs(prof.FilePath())
+</span></li><li id="file3-80"><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li id="file3-81"><span class="cov0">                return nil, err
+</span></li><li id="file3-82"><span class="cov0">        }</span>
+</li><li id="file3-83">
+</li><li id="file3-84">        <span class="cov1">return newProfile(prof, exts, f), nil</span>
+</li><li id="file3-85">}
+</li><li id="file3-86">
+</li><li id="file3-87">func findFuncs(name string) ([]*funcExtent, error) <span class="cov1">{
+</span></li><li id="file3-88"><span class="cov1">        fset := token.NewFileSet()
+</span></li><li id="file3-89"><span class="cov1">        parsedFile, err := parser.ParseFile(fset, name, nil, 0)
+</span></li><li id="file3-90"><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li id="file3-91"><span class="cov0">                return nil, err
+</span></li><li id="file3-92"><span class="cov0">        }</span>
+</li><li id="file3-93">        <span class="cov1">visitor := &amp;funcVisitor{
+</span></li><li id="file3-94"><span class="cov1">                fset:    fset,
+</span></li><li id="file3-95"><span class="cov1">                name:    name,
+</span></li><li id="file3-96"><span class="cov1">                astFile: parsedFile,
+</span></li><li id="file3-97"><span class="cov1">        }
+</span></li><li id="file3-98"><span class="cov1">        ast.Walk(visitor, visitor.astFile)
+</span></li><li id="file3-99"><span class="cov1">        return visitor.funcs, nil</span>
+</li><li id="file3-100">}
+</li><li id="file3-101">
+</li><li id="file3-102">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile <span class="cov1">{
+</span></li><li id="file3-103"><span class="cov1">        fncs := make(profile.Functions, 0, len(exts))
+</span></li><li id="file3-104"><span class="cov1">        blocks := make(profile.Blocks, 0, len(prof.Blocks))
+</span></li><li id="file3-105"><span class="cov1">
+</span></li><li id="file3-106"><span class="cov1">        bi := 0
+</span></li><li id="file3-107"><span class="cov1">        for _, e := range exts </span><span class="cov1">{
+</span></li><li id="file3-108"><span class="cov1">                isCoverageBlock := f.IsOutputTargetFunc(prof.RemoveModulePathFromFileName(), e.structName, e.funcName)
+</span></li><li id="file3-109"><span class="cov1">
+</span></li><li id="file3-110"><span class="cov1">                fnc := profile.Function{
+</span></li><li id="file3-111"><span class="cov1">                        Name:      e.name,
+</span></li><li id="file3-112"><span class="cov1">                        StartLine: e.startLine,
+</span></li><li id="file3-113"><span class="cov1">                        StartCol:  e.startCol,
+</span></li><li id="file3-114"><span class="cov1">                }
+</span></li><li id="file3-115"><span class="cov1">
+</span></li><li id="file3-116"><span class="cov1">                for bi &lt; len(prof.Blocks) </span><span class="cov1">{
+</span></li><li id="file3-117"><span class="cov1">                        b := prof.Blocks[bi]
+</span></li><li id="file3-118"><span class="cov1">
+</span></li><li id="file3-119"><span class="cov1">                        if b.StartLine &lt; e.startLine </span><span class="cov1">{
+</span></li><li id="file3-120"><span class="cov1">                                if isCoverageBlock </span><span class="cov1">{
+</span></li><li id="file3-121"><span class="cov1">                                        blocks = append(blocks, b)
+</span></li><li id="file3-122"><span class="cov1">                                }</span>
+</li><li id="file3-123">                                <span class="cov1">bi++
+</span></li><li id="file3-124"><span class="cov1">                                continue</span>
+</li><li id="file3-125">                        }
+</li><li id="file3-126">
+</li><li id="file3-127">                        <span class="cov1">if b.StartLine &gt;= e.startLine &amp;&amp;
+</span></li><li id="file3-128"><span class="cov1">                                b.EndLine &lt;= e.endLine </span><span class="cov0">{
+</span></li><li id="file3-129"><span class="cov0">                                fnc.Blocks = append(fnc.Blocks, b)
+</span></li><li id="file3-130"><span class="cov0">                                if isCoverageBlock </span><span class="cov0">{
+</span></li><li id="file3-131"><span class="cov0">                                        blocks = append(blocks, b)
+</span></li><li id="file3-132"><span class="cov0">                                }</span>
+</li><li id="file3-133">                                <span class="cov0">bi++
+</span></li><li id="file3-134"><span class="cov0">                                continue</span>
+</li><li id="file3-135">                        }
+</li><li id="file3-136">                        <span class="cov1">break</span>
+</li><li id="file3-137">                }
 </li><li id="file3-138">
-</li><li id="file3-139">        <span class="cov1">prof.Blocks = blocks
-</span></li><li id="file3-140"><span class="cov1">        prof.Functions = fncs
-</span></li><li id="file3-141"><span class="cov1">        return prof</span>
-</li><li id="file3-142">}
-</li></ol></pre>
-					</div>
-				</div>
-				
-				<div id="file4"  style="display: none">
-					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">95.4%</td></tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-54');">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error</span></td>
-							<td class="cov">87.5%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-96');">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-119');">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
-							<td class="cov">97.4%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-179');">func writeChar(buf *bytes.Buffer, b byte)</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-					</table>
-
-					<div class="source">
-						<pre><ol><li id="file4-1">package html
-</li><li id="file4-2">
-</li><li id="file4-3">import (
-</li><li id="file4-4">        "bytes"
-</li><li id="file4-5">        "fmt"
-</li><li id="file4-6">        "html/template"
-</li><li id="file4-7">        "io"
-</li><li id="file4-8">        "os"
-</li><li id="file4-9">        "path"
-</li><li id="file4-10">
-</li><li id="file4-11">        "github.com/masakurapa/gover-html/internal/html/tree"
-</li><li id="file4-12">        "github.com/masakurapa/gover-html/internal/option"
-</li><li id="file4-13">        "github.com/masakurapa/gover-html/internal/profile"
-</li><li id="file4-14">)
-</li><li id="file4-15">
-</li><li id="file4-16">var (
-</li><li id="file4-17">        escapeChar = map[byte]string{
-</li><li id="file4-18">                '&lt;':  "&amp;lt;",
-</li><li id="file4-19">                '&gt;':  "&amp;gt;",
-</li><li id="file4-20">                '&amp;':  "&amp;amp;",
-</li><li id="file4-21">                '\t': "        ",
-</li><li id="file4-22">        }
-</li><li id="file4-23">)
-</li><li id="file4-24">
-</li><li id="file4-25">type templateData struct {
-</li><li id="file4-26">        Theme string
-</li><li id="file4-27">        Tree  []templateTree
-</li><li id="file4-28">        Files []templateFile
-</li><li id="file4-29">}
-</li><li id="file4-30">
-</li><li id="file4-31">type templateTree struct {
-</li><li id="file4-32">        ID       int
-</li><li id="file4-33">        Name     string
-</li><li id="file4-34">        Indent   int
-</li><li id="file4-35">        Coverage float64
-</li><li id="file4-36">        IsFile   bool
-</li><li id="file4-37">}
-</li><li id="file4-38">
-</li><li id="file4-39">type templateFile struct {
-</li><li id="file4-40">        ID        int
-</li><li id="file4-41">        Name      string
-</li><li id="file4-42">        Body      template.HTML
-</li><li id="file4-43">        Coverage  float64
-</li><li id="file4-44">        Functions []templateFunc
-</li><li id="file4-45">}
-</li><li id="file4-46">
-</li><li id="file4-47">type templateFunc struct {
-</li><li id="file4-48">        Name     string
-</li><li id="file4-49">        Line     int
-</li><li id="file4-50">        Coverage float64
-</li><li id="file4-51">}
-</li><li id="file4-52">
-</li><li id="file4-53">// WriteTreeView outputs coverage as a tree view HTML file
-</li><li id="file4-54">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error <span class="cov1">{
-</span></li><li id="file4-55"><span class="cov1">        nodes := tree.Create(profiles)
-</span></li><li id="file4-56"><span class="cov1">        tmpTree := make([]templateTree, 0)
-</span></li><li id="file4-57"><span class="cov1">        makeTemplateTree(&amp;tmpTree, nodes, 0)
-</span></li><li id="file4-58"><span class="cov1">
-</span></li><li id="file4-59"><span class="cov1">        data := templateData{
-</span></li><li id="file4-60"><span class="cov1">                Theme: opt.Theme,
-</span></li><li id="file4-61"><span class="cov1">                Tree:  tmpTree,
-</span></li><li id="file4-62"><span class="cov1">                Files: make([]templateFile, 0, len(profiles)),
-</span></li><li id="file4-63"><span class="cov1">        }
-</span></li><li id="file4-64"><span class="cov1">
-</span></li><li id="file4-65"><span class="cov1">        var buf bytes.Buffer
-</span></li><li id="file4-66"><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
-</span></li><li id="file4-67"><span class="cov1">                b, err := os.ReadFile(p.FilePath())
-</span></li><li id="file4-68"><span class="cov1">                if err != nil </span><span class="cov0">{
-</span></li><li id="file4-69"><span class="cov0">                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
-</span></li><li id="file4-70"><span class="cov0">                }</span>
-</li><li id="file4-71">
-</li><li id="file4-72">                <span class="cov1">writeSource(&amp;buf, b, &amp;p)
-</span></li><li id="file4-73"><span class="cov1">                f := templateFile{
-</span></li><li id="file4-74"><span class="cov1">                        ID:        p.ID,
-</span></li><li id="file4-75"><span class="cov1">                        Name:      p.FileName,
-</span></li><li id="file4-76"><span class="cov1">                        Body:      template.HTML(buf.String()),
-</span></li><li id="file4-77"><span class="cov1">                        Coverage:  p.Blocks.Coverage(),
-</span></li><li id="file4-78"><span class="cov1">                        Functions: make([]templateFunc, 0, len(p.Functions)),
-</span></li><li id="file4-79"><span class="cov1">                }
-</span></li><li id="file4-80"><span class="cov1">                buf.Reset()
-</span></li><li id="file4-81"><span class="cov1">
-</span></li><li id="file4-82"><span class="cov1">                for _, fn := range p.Functions </span><span class="cov0">{
-</span></li><li id="file4-83"><span class="cov0">                        f.Functions = append(f.Functions, templateFunc{
-</span></li><li id="file4-84"><span class="cov0">                                Name:     fn.Name,
-</span></li><li id="file4-85"><span class="cov0">                                Line:     fn.StartLine,
-</span></li><li id="file4-86"><span class="cov0">                                Coverage: fn.Blocks.Coverage(),
-</span></li><li id="file4-87"><span class="cov0">                        })
-</span></li><li id="file4-88"><span class="cov0">                }</span>
-</li><li id="file4-89">
-</li><li id="file4-90">                <span class="cov1">data.Files = append(data.Files, f)</span>
-</li><li id="file4-91">        }
-</li><li id="file4-92">
-</li><li id="file4-93">        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
-</li><li id="file4-94">}
-</li><li id="file4-95">
-</li><li id="file4-96">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) <span class="cov1">{
-</span></li><li id="file4-97"><span class="cov1">        for _, node := range nodes </span><span class="cov1">{
-</span></li><li id="file4-98"><span class="cov1">                childBlocks := node.ChildBlocks()
-</span></li><li id="file4-99"><span class="cov1">                *tree = append(*tree, templateTree{
-</span></li><li id="file4-100"><span class="cov1">                        Name:     node.Name,
-</span></li><li id="file4-101"><span class="cov1">                        Indent:   indent,
-</span></li><li id="file4-102"><span class="cov1">                        Coverage: childBlocks.Coverage(),
-</span></li><li id="file4-103"><span class="cov1">                })
-</span></li><li id="file4-104"><span class="cov1">
-</span></li><li id="file4-105"><span class="cov1">                makeTemplateTree(tree, node.Dirs, indent+1)
-</span></li><li id="file4-106"><span class="cov1">
-</span></li><li id="file4-107"><span class="cov1">                for _, p := range node.Files </span><span class="cov1">{
-</span></li><li id="file4-108"><span class="cov1">                        *tree = append(*tree, templateTree{
-</span></li><li id="file4-109"><span class="cov1">                                ID:       p.ID,
-</span></li><li id="file4-110"><span class="cov1">                                Name:     path.Base(p.FileName),
-</span></li><li id="file4-111"><span class="cov1">                                Indent:   indent + 1,
-</span></li><li id="file4-112"><span class="cov1">                                Coverage: p.Blocks.Coverage(),
-</span></li><li id="file4-113"><span class="cov1">                                IsFile:   true,
-</span></li><li id="file4-114"><span class="cov1">                        })
-</span></li><li id="file4-115"><span class="cov1">                }</span>
-</li><li id="file4-116">        }
-</li><li id="file4-117">}
-</li><li id="file4-118">
-</li><li id="file4-119">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov1">{
-</span></li><li id="file4-120"><span class="cov1">        bi := 0
-</span></li><li id="file4-121"><span class="cov1">        si := 0
-</span></li><li id="file4-122"><span class="cov1">        line := 1
-</span></li><li id="file4-123"><span class="cov1">        col := 1
-</span></li><li id="file4-124"><span class="cov1">        cov0 := false
-</span></li><li id="file4-125"><span class="cov1">        cov1 := false
-</span></li><li id="file4-126"><span class="cov1">
-</span></li><li id="file4-127"><span class="cov1">        buf.WriteString("&lt;ol&gt;")
-</span></li><li id="file4-128"><span class="cov1">
-</span></li><li id="file4-129"><span class="cov1">        for si &lt; len(src) </span><span class="cov1">{
-</span></li><li id="file4-130"><span class="cov1">                if col == 1 </span><span class="cov1">{
-</span></li><li id="file4-131"><span class="cov1">                        buf.WriteString(fmt.Sprintf(`&lt;li id="file%d-%d"&gt;`, prof.ID, line))
-</span></li><li id="file4-132"><span class="cov1">                        if cov0 </span><span class="cov0">{
-</span></li><li id="file4-133"><span class="cov0">                                buf.WriteString(`&lt;span class="cov0"&gt;`)
-</span></li><li id="file4-134"><span class="cov0">                        }</span>
-</li><li id="file4-135">                        <span class="cov1">if cov1 </span><span class="cov1">{
-</span></li><li id="file4-136"><span class="cov1">                                buf.WriteString(`&lt;span class="cov1"&gt;`)
-</span></li><li id="file4-137"><span class="cov1">                        }</span>
-</li><li id="file4-138">                }
-</li><li id="file4-139">
-</li><li id="file4-140">                <span class="cov1">if len(prof.Blocks) &gt; bi </span><span class="cov1">{
-</span></li><li id="file4-141"><span class="cov1">                        block := prof.Blocks[bi]
-</span></li><li id="file4-142"><span class="cov1">                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov1">{
-</span></li><li id="file4-143"><span class="cov1">                                if block.Count == 0 </span><span class="cov1">{
-</span></li><li id="file4-144"><span class="cov1">                                        buf.WriteString(`&lt;span class="cov0"&gt;`)
-</span></li><li id="file4-145"><span class="cov1">                                        cov0 = true
-</span></li><li id="file4-146"><span class="cov1">                                }</span> else<span class="cov1"> {
-</span></li><li id="file4-147"><span class="cov1">                                        buf.WriteString(`&lt;span class="cov1"&gt;`)
-</span></li><li id="file4-148"><span class="cov1">                                        cov1 = true
-</span></li><li id="file4-149"><span class="cov1">                                }</span>
-</li><li id="file4-150">                        }
-</li><li id="file4-151">                        <span class="cov1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov1">{
-</span></li><li id="file4-152"><span class="cov1">                                buf.WriteString(`&lt;/span&gt;`)
-</span></li><li id="file4-153"><span class="cov1">                                bi++
-</span></li><li id="file4-154"><span class="cov1">                                cov0 = false
-</span></li><li id="file4-155"><span class="cov1">                                cov1 = false
-</span></li><li id="file4-156"><span class="cov1">                                continue</span>
-</li><li id="file4-157">                        }
-</li><li id="file4-158">                }
-</li><li id="file4-159">
-</li><li id="file4-160">                <span class="cov1">b := src[si]
-</span></li><li id="file4-161"><span class="cov1">                writeChar(buf, b)
-</span></li><li id="file4-162"><span class="cov1">
-</span></li><li id="file4-163"><span class="cov1">                if b == '\n' </span><span class="cov1">{
-</span></li><li id="file4-164"><span class="cov1">                        if cov0 || cov1 </span><span class="cov1">{
-</span></li><li id="file4-165"><span class="cov1">                                buf.WriteString("&lt;/span&gt;")
-</span></li><li id="file4-166"><span class="cov1">                        }</span>
-</li><li id="file4-167">                        <span class="cov1">buf.WriteString("&lt;/li&gt;")
-</span></li><li id="file4-168"><span class="cov1">                        line++
-</span></li><li id="file4-169"><span class="cov1">                        col = 0</span>
-</li><li id="file4-170">                }
-</li><li id="file4-171">
-</li><li id="file4-172">                <span class="cov1">si++
-</span></li><li id="file4-173"><span class="cov1">                col++</span>
-</li><li id="file4-174">        }
-</li><li id="file4-175">
-</li><li id="file4-176">        <span class="cov1">buf.WriteString("&lt;/ol&gt;")</span>
-</li><li id="file4-177">}
-</li><li id="file4-178">
-</li><li id="file4-179">func writeChar(buf *bytes.Buffer, b byte) <span class="cov1">{
-</span></li><li id="file4-180"><span class="cov1">        if s, ok := escapeChar[b]; ok </span><span class="cov1">{
-</span></li><li id="file4-181"><span class="cov1">                buf.WriteString(s)
-</span></li><li id="file4-182"><span class="cov1">                return
-</span></li><li id="file4-183"><span class="cov1">        }</span>
-</li><li id="file4-184">        <span class="cov1">buf.WriteByte(b)</span>
-</li><li id="file4-185">}
+</li><li id="file3-139">                <span class="cov1">if isCoverageBlock </span><span class="cov1">{
+</span></li><li id="file3-140"><span class="cov1">                        fncs = append(fncs, fnc)
+</span></li><li id="file3-141"><span class="cov1">                }</span>
+</li><li id="file3-142">        }
+</li><li id="file3-143">
+</li><li id="file3-144">        <span class="cov1">prof.Blocks = blocks
+</span></li><li id="file3-145"><span class="cov1">        prof.Functions = fncs
+</span></li><li id="file3-146"><span class="cov1">        return prof</span>
+</li><li id="file3-147">}
 </li></ol></pre>
 					</div>
 				</div>
@@ -985,248 +773,216 @@
 				<div id="file5"  style="display: none">
 					<table>
 						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">0%</td></tr>
+						<tr><td class="total">Total</td><td class="cov">95.4%</td></tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-54');">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error</span></td>
+							<td class="cov">87.5%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-96');">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
+							<td class="cov">100%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-119');">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
+							<td class="cov">97.4%</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file5-179');">func writeChar(buf *bytes.Buffer, b byte)</span></td>
+							<td class="cov">100%</td>
+						</tr>
 						
 					</table>
 
 					<div class="source">
 						<pre><ol><li id="file5-1">package html
 </li><li id="file5-2">
-</li><li id="file5-3">import "html/template"
-</li><li id="file5-4">
-</li><li id="file5-5">var parsedTreeTemplate = template.
-</li><li id="file5-6">        Must(template.New("html").
-</li><li id="file5-7">                Funcs(template.FuncMap{
-</li><li id="file5-8">                        "indent": func(i int) int { return i*30 + 8 },
-</li><li id="file5-9">                }).
-</li><li id="file5-10">                Parse(treeTemplate))
-</li><li id="file5-11">
-</li><li id="file5-12">const treeTemplate = `&lt;!DOCTYPE html&gt;
-</li><li id="file5-13">&lt;html&gt;
-</li><li id="file5-14">        &lt;head&gt;
-</li><li id="file5-15">                &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
-</li><li id="file5-16">                &lt;title&gt;Coverage Report&lt;/title&gt;
-</li><li id="file5-17">                &lt;style&gt;
-</li><li id="file5-18">                        body {
-</li><li id="file5-19">                                margin: 0;
-</li><li id="file5-20">                        }
-</li><li id="file5-21">                        .main {
-</li><li id="file5-22">                                width: 100%;
-</li><li id="file5-23">                                display: flex;
-</li><li id="file5-24">                        }
-</li><li id="file5-25">                        .light {
-</li><li id="file5-26">                                background: #FFFFFF;
-</li><li id="file5-27">                                color: rgb(80, 80, 80);
-</li><li id="file5-28">                        }
-</li><li id="file5-29">                        .dark {
-</li><li id="file5-30">                                background: #000000;
-</li><li id="file5-31">                                color: rgb(160, 160, 160);
-</li><li id="file5-32">                        }
-</li><li id="file5-33">
-</li><li id="file5-34">                        #tree {
-</li><li id="file5-35">                                width: 25%;
-</li><li id="file5-36">                                height: 100vh;
-</li><li id="file5-37">                                padding: 8px 0;
-</li><li id="file5-38">                                white-space: nowrap;
-</li><li id="file5-39">                                overflow: scroll;
-</li><li id="file5-40">                                position: sticky;
-</li><li id="file5-41">                                position: -webkit-sticky;
-</li><li id="file5-42">                                top: 0;
-</li><li id="file5-43">                                left: 0;
-</li><li id="file5-44">                                border-right: 1px solid rgb(160, 160, 160);
-</li><li id="file5-45">                        }
-</li><li id="file5-46">                        #tree div {
-</li><li id="file5-47">                                padding: 4px 0;
-</li><li id="file5-48">                        }
-</li><li id="file5-49">                        .clickable {
-</li><li id="file5-50">                                cursor: pointer;
-</li><li id="file5-51">                                color: #3EA6FF;
-</li><li id="file5-52">                                text-decoration: underline;
-</li><li id="file5-53">                        }
-</li><li id="file5-54">
-</li><li id="file5-55">                        .current {
-</li><li id="file5-56">                                font-weight: bold;
-</li><li id="file5-57">                        }
-</li><li id="file5-58">                        .light .current {
-</li><li id="file5-59">                                background-color: #E6F0FF;
-</li><li id="file5-60">                        }
-</li><li id="file5-61">                        .dark .current {
-</li><li id="file5-62">                                background-color: #555555;
-</li><li id="file5-63">                        }
-</li><li id="file5-64">
-</li><li id="file5-65">                        #coverage {
-</li><li id="file5-66">                                width: 70%;
-</li><li id="file5-67">                                margin-left: 16px;
-</li><li id="file5-68">                                margin-right: 32px;
-</li><li id="file5-69">                        }
-</li><li id="file5-70">
-</li><li id="file5-71">                        .source {
-</li><li id="file5-72">                                white-space: nowrap;
-</li><li id="file5-73">                        }
-</li><li id="file5-74">                        pre {
-</li><li id="file5-75">                                counter-reset: line;
-</li><li id="file5-76">                                font-family: Menlo, monospace;
-</li><li id="file5-77">                                font-weight: bold;
-</li><li id="file5-78">                        }
-</li><li id="file5-79">                        ol {
-</li><li id="file5-80">                                list-style: none;
-</li><li id="file5-81">                                counter-reset: number;
-</li><li id="file5-82">                                margin: 0;
-</li><li id="file5-83">                                padding: 0;
-</li><li id="file5-84">                        }
-</li><li id="file5-85">                        li:before {
-</li><li id="file5-86">                                counter-increment: number;
-</li><li id="file5-87">                                content: counter(number);
-</li><li id="file5-88">                                margin-right: 24px;
-</li><li id="file5-89">                                display: inline-block;
-</li><li id="file5-90">                                width: 50px;
-</li><li id="file5-91">                                text-align: right;
-</li><li id="file5-92">                        }
-</li><li id="file5-93">                        .light li:before {
-</li><li id="file5-94">                                color: rgb(200, 200, 200);
-</li><li id="file5-95">                        }
-</li><li id="file5-96">                        .dark li:before {
-</li><li id="file5-97">                                color: rgb(80, 80, 80);
-</li><li id="file5-98">                        }
-</li><li id="file5-99">
-</li><li id="file5-100">                        .cov0 {
-</li><li id="file5-101">                                color: rgb(192, 0, 0);
-</li><li id="file5-102">                        }
-</li><li id="file5-103">                        .cov1 {
-</li><li id="file5-104">                                color: rgb(44, 212, 149);
-</li><li id="file5-105">                        }
-</li><li id="file5-106">                        table, tr, td, th {
-</li><li id="file5-107">                                border-collapse: collapse;
-</li><li id="file5-108">                                border:1px solid #BBBBBB;
-</li><li id="file5-109">                        }
-</li><li id="file5-110">                        table {
-</li><li id="file5-111">                                margin: 16px 0 32px 74px;
-</li><li id="file5-112">                        }
-</li><li id="file5-113">                        table .total {
-</li><li id="file5-114">                                min-width: 300px;
-</li><li id="file5-115">                                text-align: left;
-</li><li id="file5-116">                                padding-left: 8px;
-</li><li id="file5-117">                        }
-</li><li id="file5-118">                        table .fnc {
-</li><li id="file5-119">                                min-width: 300px;
-</li><li id="file5-120">                                text-align: left;
-</li><li id="file5-121">                                padding: 0 20px 0 20px;
-</li><li id="file5-122">                        }
-</li><li id="file5-123">                        table .cov {
-</li><li id="file5-124">                                width: 70px;
-</li><li id="file5-125">                                text-align: right;
-</li><li id="file5-126">                                padding-right: 8px;
-</li><li id="file5-127">                        }
-</li><li id="file5-128">                &lt;/style&gt;
-</li><li id="file5-129">        &lt;/head&gt;
-</li><li id="file5-130">        &lt;body&gt;
-</li><li id="file5-131">                &lt;div class="main {{.Theme}}"&gt;
-</li><li id="file5-132">                        &lt;div id="tree"&gt;
-</li><li id="file5-133">                        {{range $i, $t := .Tree}}
-</li><li id="file5-134">                                {{if $t.IsFile}}
-</li><li id="file5-135">                                &lt;div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
-</li><li id="file5-136">                                        {{$t.Name}} ({{$t.Coverage}}%)
-</li><li id="file5-137">                                &lt;/div&gt;
-</li><li id="file5-138">                                {{else}}
-</li><li id="file5-139">                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/ ({{$t.Coverage}}%)&lt;/div&gt;
-</li><li id="file5-140">                                {{end}}
-</li><li id="file5-141">                        {{end}}
-</li><li id="file5-142">                        &lt;/div&gt;
-</li><li id="file5-143">                        &lt;div id="coverage"&gt;
-</li><li id="file5-144">                                {{range $i, $f := .Files}}
-</li><li id="file5-145">                                &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
-</li><li id="file5-146">                                        &lt;table&gt;
-</li><li id="file5-147">                                                &lt;tr&gt;&lt;th colspan="2"&gt;Coverages&lt;/th&gt;&lt;/tr&gt;
-</li><li id="file5-148">                                                &lt;tr&gt;&lt;td class="total"&gt;Total&lt;/td&gt;&lt;td class="cov"&gt;{{$f.Coverage}}%&lt;/td&gt;&lt;/tr&gt;
-</li><li id="file5-149">                                                {{range $j, $fn := .Functions}}
-</li><li id="file5-150">                                                &lt;tr&gt;
-</li><li id="file5-151">                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
-</li><li id="file5-152">                                                        &lt;td class="cov"&gt;{{$fn.Coverage}}%&lt;/td&gt;
-</li><li id="file5-153">                                                &lt;/tr&gt;
-</li><li id="file5-154">                                                {{end}}
-</li><li id="file5-155">                                        &lt;/table&gt;
-</li><li id="file5-156">
-</li><li id="file5-157">                                        &lt;div class="source"&gt;
-</li><li id="file5-158">                                                &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
-</li><li id="file5-159">                                        &lt;/div&gt;
-</li><li id="file5-160">                                &lt;/div&gt;
-</li><li id="file5-161">                                {{end}}
-</li><li id="file5-162">                        &lt;/div&gt;
-</li><li id="file5-163">                &lt;/div&gt;
-</li><li id="file5-164">
-</li><li id="file5-165">                &lt;script&gt;
-</li><li id="file5-166">                        // tree max width
-</li><li id="file5-167">                        const scrollWidth = document.getElementById('tree').scrollWidth;
-</li><li id="file5-168">
-</li><li id="file5-169">                        let current;
-</li><li id="file5-170">                        let currentTree;
-</li><li id="file5-171">                        updateByQuery();
-</li><li id="file5-172">
-</li><li id="file5-173">                        window.addEventListener('popstate', function(e) {
-</li><li id="file5-174">                                updateByQuery();
-</li><li id="file5-175">                        })
-</li><li id="file5-176">
-</li><li id="file5-177">                        function updateByQuery() {
-</li><li id="file5-178">                                const searchParams = new URLSearchParams(window.location.search);
-</li><li id="file5-179">                                const n = searchParams.get('n');
-</li><li id="file5-180">                                const i = searchParams.get('i');
-</li><li id="file5-181">                                if (n &amp;&amp; i) {
-</li><li id="file5-182">                                        change(n, i);
-</li><li id="file5-183">                                } 
-</li><li id="file5-184">                        }
-</li><li id="file5-185">
-</li><li id="file5-186">                        function select(n) {
-</li><li id="file5-187">                                if (current) {
-</li><li id="file5-188">                                        current.style.display = 'none';
-</li><li id="file5-189">                                }
-</li><li id="file5-190">
-</li><li id="file5-191">                                current = document.getElementById('file' + n);
-</li><li id="file5-192">                                if (!current) {
-</li><li id="file5-193">                                        return;
-</li><li id="file5-194">                                }
-</li><li id="file5-195">                                current.style.display = 'block';
-</li><li id="file5-196">                                scrollById('coverage');
-</li><li id="file5-197">                        }
-</li><li id="file5-198">                        function selectTree(n, indent) {
-</li><li id="file5-199">                                if (currentTree) {
-</li><li id="file5-200">                                        currentTree.classList.remove('current');
-</li><li id="file5-201">                                }
-</li><li id="file5-202">
-</li><li id="file5-203">                                currentTree = document.getElementById('tree' + n);
-</li><li id="file5-204">                                if (!current) {
-</li><li id="file5-205">                                        return;
-</li><li id="file5-206">                                }
-</li><li id="file5-207">                                currentTree.classList.add('current');
-</li><li id="file5-208">                                currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
-</li><li id="file5-209">                        }
-</li><li id="file5-210">                        function scrollById(id) {
-</li><li id="file5-211">                                const elm = document.getElementById(id);
-</li><li id="file5-212">                                const rect = elm.getBoundingClientRect();
-</li><li id="file5-213">                                document.documentElement.scrollTop = rect.top + window.pageYOffset;
-</li><li id="file5-214">                        }
-</li><li id="file5-215">                        function change(n, i) {
-</li><li id="file5-216">                                select(n);
-</li><li id="file5-217">                                selectTree(n, i);
-</li><li id="file5-218">                                updateUrl(n, i)
-</li><li id="file5-219">                        }
-</li><li id="file5-220">                        function updateUrl(n, i) {
-</li><li id="file5-221">                                const url = new URL(window.location.href);
-</li><li id="file5-222">                                if( !url.searchParams.get('n') ) {
-</li><li id="file5-223">                                        url.searchParams.append('n',n);
-</li><li id="file5-224">                                        url.searchParams.append('i',i);
-</li><li id="file5-225">                                        location.href = url;
-</li><li id="file5-226">                                } else {
-</li><li id="file5-227">                                        if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
-</li><li id="file5-228">                                                url.searchParams.set('n',n);
-</li><li id="file5-229">                                                url.searchParams.set('i',i);
-</li><li id="file5-230">                                                history.pushState("", "", url);
-</li><li id="file5-231">                                        }
-</li><li id="file5-232">                                }
-</li><li id="file5-233">                        }
-</li><li id="file5-234">                &lt;/script&gt;
-</li><li id="file5-235">        &lt;/body&gt;
-</li><li id="file5-236">&lt;/html&gt;
-</li><li id="file5-237">`
+</li><li id="file5-3">import (
+</li><li id="file5-4">        "bytes"
+</li><li id="file5-5">        "fmt"
+</li><li id="file5-6">        "html/template"
+</li><li id="file5-7">        "io"
+</li><li id="file5-8">        "os"
+</li><li id="file5-9">        "path"
+</li><li id="file5-10">
+</li><li id="file5-11">        "github.com/masakurapa/gover-html/internal/html/tree"
+</li><li id="file5-12">        "github.com/masakurapa/gover-html/internal/option"
+</li><li id="file5-13">        "github.com/masakurapa/gover-html/internal/profile"
+</li><li id="file5-14">)
+</li><li id="file5-15">
+</li><li id="file5-16">var (
+</li><li id="file5-17">        escapeChar = map[byte]string{
+</li><li id="file5-18">                '&lt;':  "&amp;lt;",
+</li><li id="file5-19">                '&gt;':  "&amp;gt;",
+</li><li id="file5-20">                '&amp;':  "&amp;amp;",
+</li><li id="file5-21">                '\t': "        ",
+</li><li id="file5-22">        }
+</li><li id="file5-23">)
+</li><li id="file5-24">
+</li><li id="file5-25">type templateData struct {
+</li><li id="file5-26">        Theme string
+</li><li id="file5-27">        Tree  []templateTree
+</li><li id="file5-28">        Files []templateFile
+</li><li id="file5-29">}
+</li><li id="file5-30">
+</li><li id="file5-31">type templateTree struct {
+</li><li id="file5-32">        ID       int
+</li><li id="file5-33">        Name     string
+</li><li id="file5-34">        Indent   int
+</li><li id="file5-35">        Coverage float64
+</li><li id="file5-36">        IsFile   bool
+</li><li id="file5-37">}
+</li><li id="file5-38">
+</li><li id="file5-39">type templateFile struct {
+</li><li id="file5-40">        ID        int
+</li><li id="file5-41">        Name      string
+</li><li id="file5-42">        Body      template.HTML
+</li><li id="file5-43">        Coverage  float64
+</li><li id="file5-44">        Functions []templateFunc
+</li><li id="file5-45">}
+</li><li id="file5-46">
+</li><li id="file5-47">type templateFunc struct {
+</li><li id="file5-48">        Name     string
+</li><li id="file5-49">        Line     int
+</li><li id="file5-50">        Coverage float64
+</li><li id="file5-51">}
+</li><li id="file5-52">
+</li><li id="file5-53">// WriteTreeView outputs coverage as a tree view HTML file
+</li><li id="file5-54">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error <span class="cov1">{
+</span></li><li id="file5-55"><span class="cov1">        nodes := tree.Create(profiles)
+</span></li><li id="file5-56"><span class="cov1">        tmpTree := make([]templateTree, 0)
+</span></li><li id="file5-57"><span class="cov1">        makeTemplateTree(&amp;tmpTree, nodes, 0)
+</span></li><li id="file5-58"><span class="cov1">
+</span></li><li id="file5-59"><span class="cov1">        data := templateData{
+</span></li><li id="file5-60"><span class="cov1">                Theme: opt.Theme,
+</span></li><li id="file5-61"><span class="cov1">                Tree:  tmpTree,
+</span></li><li id="file5-62"><span class="cov1">                Files: make([]templateFile, 0, len(profiles)),
+</span></li><li id="file5-63"><span class="cov1">        }
+</span></li><li id="file5-64"><span class="cov1">
+</span></li><li id="file5-65"><span class="cov1">        var buf bytes.Buffer
+</span></li><li id="file5-66"><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
+</span></li><li id="file5-67"><span class="cov1">                b, err := os.ReadFile(p.FilePath())
+</span></li><li id="file5-68"><span class="cov1">                if err != nil </span><span class="cov0">{
+</span></li><li id="file5-69"><span class="cov0">                        return fmt.Errorf("can't read %q: %v", p.FileName, err)
+</span></li><li id="file5-70"><span class="cov0">                }</span>
+</li><li id="file5-71">
+</li><li id="file5-72">                <span class="cov1">writeSource(&amp;buf, b, &amp;p)
+</span></li><li id="file5-73"><span class="cov1">                f := templateFile{
+</span></li><li id="file5-74"><span class="cov1">                        ID:        p.ID,
+</span></li><li id="file5-75"><span class="cov1">                        Name:      p.FileName,
+</span></li><li id="file5-76"><span class="cov1">                        Body:      template.HTML(buf.String()),
+</span></li><li id="file5-77"><span class="cov1">                        Coverage:  p.Blocks.Coverage(),
+</span></li><li id="file5-78"><span class="cov1">                        Functions: make([]templateFunc, 0, len(p.Functions)),
+</span></li><li id="file5-79"><span class="cov1">                }
+</span></li><li id="file5-80"><span class="cov1">                buf.Reset()
+</span></li><li id="file5-81"><span class="cov1">
+</span></li><li id="file5-82"><span class="cov1">                for _, fn := range p.Functions </span><span class="cov0">{
+</span></li><li id="file5-83"><span class="cov0">                        f.Functions = append(f.Functions, templateFunc{
+</span></li><li id="file5-84"><span class="cov0">                                Name:     fn.Name,
+</span></li><li id="file5-85"><span class="cov0">                                Line:     fn.StartLine,
+</span></li><li id="file5-86"><span class="cov0">                                Coverage: fn.Blocks.Coverage(),
+</span></li><li id="file5-87"><span class="cov0">                        })
+</span></li><li id="file5-88"><span class="cov0">                }</span>
+</li><li id="file5-89">
+</li><li id="file5-90">                <span class="cov1">data.Files = append(data.Files, f)</span>
+</li><li id="file5-91">        }
+</li><li id="file5-92">
+</li><li id="file5-93">        <span class="cov1">return parsedTreeTemplate.Execute(out, data)</span>
+</li><li id="file5-94">}
+</li><li id="file5-95">
+</li><li id="file5-96">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int) <span class="cov1">{
+</span></li><li id="file5-97"><span class="cov1">        for _, node := range nodes </span><span class="cov1">{
+</span></li><li id="file5-98"><span class="cov1">                childBlocks := node.ChildBlocks()
+</span></li><li id="file5-99"><span class="cov1">                *tree = append(*tree, templateTree{
+</span></li><li id="file5-100"><span class="cov1">                        Name:     node.Name,
+</span></li><li id="file5-101"><span class="cov1">                        Indent:   indent,
+</span></li><li id="file5-102"><span class="cov1">                        Coverage: childBlocks.Coverage(),
+</span></li><li id="file5-103"><span class="cov1">                })
+</span></li><li id="file5-104"><span class="cov1">
+</span></li><li id="file5-105"><span class="cov1">                makeTemplateTree(tree, node.Dirs, indent+1)
+</span></li><li id="file5-106"><span class="cov1">
+</span></li><li id="file5-107"><span class="cov1">                for _, p := range node.Files </span><span class="cov1">{
+</span></li><li id="file5-108"><span class="cov1">                        *tree = append(*tree, templateTree{
+</span></li><li id="file5-109"><span class="cov1">                                ID:       p.ID,
+</span></li><li id="file5-110"><span class="cov1">                                Name:     path.Base(p.FileName),
+</span></li><li id="file5-111"><span class="cov1">                                Indent:   indent + 1,
+</span></li><li id="file5-112"><span class="cov1">                                Coverage: p.Blocks.Coverage(),
+</span></li><li id="file5-113"><span class="cov1">                                IsFile:   true,
+</span></li><li id="file5-114"><span class="cov1">                        })
+</span></li><li id="file5-115"><span class="cov1">                }</span>
+</li><li id="file5-116">        }
+</li><li id="file5-117">}
+</li><li id="file5-118">
+</li><li id="file5-119">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile) <span class="cov1">{
+</span></li><li id="file5-120"><span class="cov1">        bi := 0
+</span></li><li id="file5-121"><span class="cov1">        si := 0
+</span></li><li id="file5-122"><span class="cov1">        line := 1
+</span></li><li id="file5-123"><span class="cov1">        col := 1
+</span></li><li id="file5-124"><span class="cov1">        cov0 := false
+</span></li><li id="file5-125"><span class="cov1">        cov1 := false
+</span></li><li id="file5-126"><span class="cov1">
+</span></li><li id="file5-127"><span class="cov1">        buf.WriteString("&lt;ol&gt;")
+</span></li><li id="file5-128"><span class="cov1">
+</span></li><li id="file5-129"><span class="cov1">        for si &lt; len(src) </span><span class="cov1">{
+</span></li><li id="file5-130"><span class="cov1">                if col == 1 </span><span class="cov1">{
+</span></li><li id="file5-131"><span class="cov1">                        buf.WriteString(fmt.Sprintf(`&lt;li id="file%d-%d"&gt;`, prof.ID, line))
+</span></li><li id="file5-132"><span class="cov1">                        if cov0 </span><span class="cov0">{
+</span></li><li id="file5-133"><span class="cov0">                                buf.WriteString(`&lt;span class="cov0"&gt;`)
+</span></li><li id="file5-134"><span class="cov0">                        }</span>
+</li><li id="file5-135">                        <span class="cov1">if cov1 </span><span class="cov1">{
+</span></li><li id="file5-136"><span class="cov1">                                buf.WriteString(`&lt;span class="cov1"&gt;`)
+</span></li><li id="file5-137"><span class="cov1">                        }</span>
+</li><li id="file5-138">                }
+</li><li id="file5-139">
+</li><li id="file5-140">                <span class="cov1">if len(prof.Blocks) &gt; bi </span><span class="cov1">{
+</span></li><li id="file5-141"><span class="cov1">                        block := prof.Blocks[bi]
+</span></li><li id="file5-142"><span class="cov1">                        if block.StartLine == line &amp;&amp; block.StartCol == col </span><span class="cov1">{
+</span></li><li id="file5-143"><span class="cov1">                                if block.Count == 0 </span><span class="cov1">{
+</span></li><li id="file5-144"><span class="cov1">                                        buf.WriteString(`&lt;span class="cov0"&gt;`)
+</span></li><li id="file5-145"><span class="cov1">                                        cov0 = true
+</span></li><li id="file5-146"><span class="cov1">                                }</span> else<span class="cov1"> {
+</span></li><li id="file5-147"><span class="cov1">                                        buf.WriteString(`&lt;span class="cov1"&gt;`)
+</span></li><li id="file5-148"><span class="cov1">                                        cov1 = true
+</span></li><li id="file5-149"><span class="cov1">                                }</span>
+</li><li id="file5-150">                        }
+</li><li id="file5-151">                        <span class="cov1">if block.EndLine == line &amp;&amp; block.EndCol == col || line &gt; block.EndLine </span><span class="cov1">{
+</span></li><li id="file5-152"><span class="cov1">                                buf.WriteString(`&lt;/span&gt;`)
+</span></li><li id="file5-153"><span class="cov1">                                bi++
+</span></li><li id="file5-154"><span class="cov1">                                cov0 = false
+</span></li><li id="file5-155"><span class="cov1">                                cov1 = false
+</span></li><li id="file5-156"><span class="cov1">                                continue</span>
+</li><li id="file5-157">                        }
+</li><li id="file5-158">                }
+</li><li id="file5-159">
+</li><li id="file5-160">                <span class="cov1">b := src[si]
+</span></li><li id="file5-161"><span class="cov1">                writeChar(buf, b)
+</span></li><li id="file5-162"><span class="cov1">
+</span></li><li id="file5-163"><span class="cov1">                if b == '\n' </span><span class="cov1">{
+</span></li><li id="file5-164"><span class="cov1">                        if cov0 || cov1 </span><span class="cov1">{
+</span></li><li id="file5-165"><span class="cov1">                                buf.WriteString("&lt;/span&gt;")
+</span></li><li id="file5-166"><span class="cov1">                        }</span>
+</li><li id="file5-167">                        <span class="cov1">buf.WriteString("&lt;/li&gt;")
+</span></li><li id="file5-168"><span class="cov1">                        line++
+</span></li><li id="file5-169"><span class="cov1">                        col = 0</span>
+</li><li id="file5-170">                }
+</li><li id="file5-171">
+</li><li id="file5-172">                <span class="cov1">si++
+</span></li><li id="file5-173"><span class="cov1">                col++</span>
+</li><li id="file5-174">        }
+</li><li id="file5-175">
+</li><li id="file5-176">        <span class="cov1">buf.WriteString("&lt;/ol&gt;")</span>
+</li><li id="file5-177">}
+</li><li id="file5-178">
+</li><li id="file5-179">func writeChar(buf *bytes.Buffer, b byte) <span class="cov1">{
+</span></li><li id="file5-180"><span class="cov1">        if s, ok := escapeChar[b]; ok </span><span class="cov1">{
+</span></li><li id="file5-181"><span class="cov1">                buf.WriteString(s)
+</span></li><li id="file5-182"><span class="cov1">                return
+</span></li><li id="file5-183"><span class="cov1">        }</span>
+</li><li id="file5-184">        <span class="cov1">buf.WriteByte(b)</span>
+</li><li id="file5-185">}
 </li></ol></pre>
 					</div>
 				</div>
@@ -1234,139 +990,388 @@
 				<div id="file6"  style="display: none">
 					<table>
 						<tr><th colspan="2">Coverages</th></tr>
+						<tr><td class="total">Total</td><td class="cov">0%</td></tr>
+						
+					</table>
+
+					<div class="source">
+						<pre><ol><li id="file6-1">package html
+</li><li id="file6-2">
+</li><li id="file6-3">import "html/template"
+</li><li id="file6-4">
+</li><li id="file6-5">var parsedTreeTemplate = template.
+</li><li id="file6-6">        Must(template.New("html").
+</li><li id="file6-7">                Funcs(template.FuncMap{
+</li><li id="file6-8">                        "indent": func(i int) int { return i*30 + 8 },
+</li><li id="file6-9">                }).
+</li><li id="file6-10">                Parse(treeTemplate))
+</li><li id="file6-11">
+</li><li id="file6-12">const treeTemplate = `&lt;!DOCTYPE html&gt;
+</li><li id="file6-13">&lt;html&gt;
+</li><li id="file6-14">        &lt;head&gt;
+</li><li id="file6-15">                &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+</li><li id="file6-16">                &lt;title&gt;Coverage Report&lt;/title&gt;
+</li><li id="file6-17">                &lt;style&gt;
+</li><li id="file6-18">                        body {
+</li><li id="file6-19">                                margin: 0;
+</li><li id="file6-20">                        }
+</li><li id="file6-21">                        .main {
+</li><li id="file6-22">                                width: 100%;
+</li><li id="file6-23">                                display: flex;
+</li><li id="file6-24">                        }
+</li><li id="file6-25">                        .light {
+</li><li id="file6-26">                                background: #FFFFFF;
+</li><li id="file6-27">                                color: rgb(80, 80, 80);
+</li><li id="file6-28">                        }
+</li><li id="file6-29">                        .dark {
+</li><li id="file6-30">                                background: #000000;
+</li><li id="file6-31">                                color: rgb(160, 160, 160);
+</li><li id="file6-32">                        }
+</li><li id="file6-33">
+</li><li id="file6-34">                        #tree {
+</li><li id="file6-35">                                width: 25%;
+</li><li id="file6-36">                                height: 100vh;
+</li><li id="file6-37">                                padding: 8px 0;
+</li><li id="file6-38">                                white-space: nowrap;
+</li><li id="file6-39">                                overflow: scroll;
+</li><li id="file6-40">                                position: sticky;
+</li><li id="file6-41">                                position: -webkit-sticky;
+</li><li id="file6-42">                                top: 0;
+</li><li id="file6-43">                                left: 0;
+</li><li id="file6-44">                                border-right: 1px solid rgb(160, 160, 160);
+</li><li id="file6-45">                        }
+</li><li id="file6-46">                        #tree div {
+</li><li id="file6-47">                                padding: 4px 0;
+</li><li id="file6-48">                        }
+</li><li id="file6-49">                        .clickable {
+</li><li id="file6-50">                                cursor: pointer;
+</li><li id="file6-51">                                color: #3EA6FF;
+</li><li id="file6-52">                                text-decoration: underline;
+</li><li id="file6-53">                        }
+</li><li id="file6-54">
+</li><li id="file6-55">                        .current {
+</li><li id="file6-56">                                font-weight: bold;
+</li><li id="file6-57">                        }
+</li><li id="file6-58">                        .light .current {
+</li><li id="file6-59">                                background-color: #E6F0FF;
+</li><li id="file6-60">                        }
+</li><li id="file6-61">                        .dark .current {
+</li><li id="file6-62">                                background-color: #555555;
+</li><li id="file6-63">                        }
+</li><li id="file6-64">
+</li><li id="file6-65">                        #coverage {
+</li><li id="file6-66">                                width: 70%;
+</li><li id="file6-67">                                margin-left: 16px;
+</li><li id="file6-68">                                margin-right: 32px;
+</li><li id="file6-69">                        }
+</li><li id="file6-70">
+</li><li id="file6-71">                        .source {
+</li><li id="file6-72">                                white-space: nowrap;
+</li><li id="file6-73">                        }
+</li><li id="file6-74">                        pre {
+</li><li id="file6-75">                                counter-reset: line;
+</li><li id="file6-76">                                font-family: Menlo, monospace;
+</li><li id="file6-77">                                font-weight: bold;
+</li><li id="file6-78">                        }
+</li><li id="file6-79">                        ol {
+</li><li id="file6-80">                                list-style: none;
+</li><li id="file6-81">                                counter-reset: number;
+</li><li id="file6-82">                                margin: 0;
+</li><li id="file6-83">                                padding: 0;
+</li><li id="file6-84">                        }
+</li><li id="file6-85">                        li:before {
+</li><li id="file6-86">                                counter-increment: number;
+</li><li id="file6-87">                                content: counter(number);
+</li><li id="file6-88">                                margin-right: 24px;
+</li><li id="file6-89">                                display: inline-block;
+</li><li id="file6-90">                                width: 50px;
+</li><li id="file6-91">                                text-align: right;
+</li><li id="file6-92">                        }
+</li><li id="file6-93">                        .light li:before {
+</li><li id="file6-94">                                color: rgb(200, 200, 200);
+</li><li id="file6-95">                        }
+</li><li id="file6-96">                        .dark li:before {
+</li><li id="file6-97">                                color: rgb(80, 80, 80);
+</li><li id="file6-98">                        }
+</li><li id="file6-99">
+</li><li id="file6-100">                        .cov0 {
+</li><li id="file6-101">                                color: rgb(192, 0, 0);
+</li><li id="file6-102">                        }
+</li><li id="file6-103">                        .cov1 {
+</li><li id="file6-104">                                color: rgb(44, 212, 149);
+</li><li id="file6-105">                        }
+</li><li id="file6-106">                        table, tr, td, th {
+</li><li id="file6-107">                                border-collapse: collapse;
+</li><li id="file6-108">                                border:1px solid #BBBBBB;
+</li><li id="file6-109">                        }
+</li><li id="file6-110">                        table {
+</li><li id="file6-111">                                margin: 16px 0 32px 74px;
+</li><li id="file6-112">                        }
+</li><li id="file6-113">                        table .total {
+</li><li id="file6-114">                                min-width: 300px;
+</li><li id="file6-115">                                text-align: left;
+</li><li id="file6-116">                                padding-left: 8px;
+</li><li id="file6-117">                        }
+</li><li id="file6-118">                        table .fnc {
+</li><li id="file6-119">                                min-width: 300px;
+</li><li id="file6-120">                                text-align: left;
+</li><li id="file6-121">                                padding: 0 20px 0 20px;
+</li><li id="file6-122">                        }
+</li><li id="file6-123">                        table .cov {
+</li><li id="file6-124">                                width: 70px;
+</li><li id="file6-125">                                text-align: right;
+</li><li id="file6-126">                                padding-right: 8px;
+</li><li id="file6-127">                        }
+</li><li id="file6-128">                &lt;/style&gt;
+</li><li id="file6-129">        &lt;/head&gt;
+</li><li id="file6-130">        &lt;body&gt;
+</li><li id="file6-131">                &lt;div class="main {{.Theme}}"&gt;
+</li><li id="file6-132">                        &lt;div id="tree"&gt;
+</li><li id="file6-133">                        {{range $i, $t := .Tree}}
+</li><li id="file6-134">                                {{if $t.IsFile}}
+</li><li id="file6-135">                                &lt;div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
+</li><li id="file6-136">                                        {{$t.Name}} ({{$t.Coverage}}%)
+</li><li id="file6-137">                                &lt;/div&gt;
+</li><li id="file6-138">                                {{else}}
+</li><li id="file6-139">                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/ ({{$t.Coverage}}%)&lt;/div&gt;
+</li><li id="file6-140">                                {{end}}
+</li><li id="file6-141">                        {{end}}
+</li><li id="file6-142">                        &lt;/div&gt;
+</li><li id="file6-143">                        &lt;div id="coverage"&gt;
+</li><li id="file6-144">                                {{range $i, $f := .Files}}
+</li><li id="file6-145">                                &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
+</li><li id="file6-146">                                        &lt;table&gt;
+</li><li id="file6-147">                                                &lt;tr&gt;&lt;th colspan="2"&gt;Coverages&lt;/th&gt;&lt;/tr&gt;
+</li><li id="file6-148">                                                &lt;tr&gt;&lt;td class="total"&gt;Total&lt;/td&gt;&lt;td class="cov"&gt;{{$f.Coverage}}%&lt;/td&gt;&lt;/tr&gt;
+</li><li id="file6-149">                                                {{range $j, $fn := .Functions}}
+</li><li id="file6-150">                                                &lt;tr&gt;
+</li><li id="file6-151">                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
+</li><li id="file6-152">                                                        &lt;td class="cov"&gt;{{$fn.Coverage}}%&lt;/td&gt;
+</li><li id="file6-153">                                                &lt;/tr&gt;
+</li><li id="file6-154">                                                {{end}}
+</li><li id="file6-155">                                        &lt;/table&gt;
+</li><li id="file6-156">
+</li><li id="file6-157">                                        &lt;div class="source"&gt;
+</li><li id="file6-158">                                                &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
+</li><li id="file6-159">                                        &lt;/div&gt;
+</li><li id="file6-160">                                &lt;/div&gt;
+</li><li id="file6-161">                                {{end}}
+</li><li id="file6-162">                        &lt;/div&gt;
+</li><li id="file6-163">                &lt;/div&gt;
+</li><li id="file6-164">
+</li><li id="file6-165">                &lt;script&gt;
+</li><li id="file6-166">                        // tree max width
+</li><li id="file6-167">                        const scrollWidth = document.getElementById('tree').scrollWidth;
+</li><li id="file6-168">
+</li><li id="file6-169">                        let current;
+</li><li id="file6-170">                        let currentTree;
+</li><li id="file6-171">                        updateByQuery();
+</li><li id="file6-172">
+</li><li id="file6-173">                        window.addEventListener('popstate', function(e) {
+</li><li id="file6-174">                                updateByQuery();
+</li><li id="file6-175">                        })
+</li><li id="file6-176">
+</li><li id="file6-177">                        function updateByQuery() {
+</li><li id="file6-178">                                const searchParams = new URLSearchParams(window.location.search);
+</li><li id="file6-179">                                const n = searchParams.get('n');
+</li><li id="file6-180">                                const i = searchParams.get('i');
+</li><li id="file6-181">                                if (n &amp;&amp; i) {
+</li><li id="file6-182">                                        change(n, i);
+</li><li id="file6-183">                                } 
+</li><li id="file6-184">                        }
+</li><li id="file6-185">
+</li><li id="file6-186">                        function select(n) {
+</li><li id="file6-187">                                if (current) {
+</li><li id="file6-188">                                        current.style.display = 'none';
+</li><li id="file6-189">                                }
+</li><li id="file6-190">
+</li><li id="file6-191">                                current = document.getElementById('file' + n);
+</li><li id="file6-192">                                if (!current) {
+</li><li id="file6-193">                                        return;
+</li><li id="file6-194">                                }
+</li><li id="file6-195">                                current.style.display = 'block';
+</li><li id="file6-196">                                scrollById('coverage');
+</li><li id="file6-197">                        }
+</li><li id="file6-198">                        function selectTree(n, indent) {
+</li><li id="file6-199">                                if (currentTree) {
+</li><li id="file6-200">                                        currentTree.classList.remove('current');
+</li><li id="file6-201">                                }
+</li><li id="file6-202">
+</li><li id="file6-203">                                currentTree = document.getElementById('tree' + n);
+</li><li id="file6-204">                                if (!current) {
+</li><li id="file6-205">                                        return;
+</li><li id="file6-206">                                }
+</li><li id="file6-207">                                currentTree.classList.add('current');
+</li><li id="file6-208">                                currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
+</li><li id="file6-209">                        }
+</li><li id="file6-210">                        function scrollById(id) {
+</li><li id="file6-211">                                const elm = document.getElementById(id);
+</li><li id="file6-212">                                const rect = elm.getBoundingClientRect();
+</li><li id="file6-213">                                document.documentElement.scrollTop = rect.top + window.pageYOffset;
+</li><li id="file6-214">                        }
+</li><li id="file6-215">                        function change(n, i) {
+</li><li id="file6-216">                                select(n);
+</li><li id="file6-217">                                selectTree(n, i);
+</li><li id="file6-218">                                updateUrl(n, i)
+</li><li id="file6-219">                        }
+</li><li id="file6-220">                        function updateUrl(n, i) {
+</li><li id="file6-221">                                const url = new URL(window.location.href);
+</li><li id="file6-222">                                if( !url.searchParams.get('n') ) {
+</li><li id="file6-223">                                        url.searchParams.append('n',n);
+</li><li id="file6-224">                                        url.searchParams.append('i',i);
+</li><li id="file6-225">                                        location.href = url;
+</li><li id="file6-226">                                } else {
+</li><li id="file6-227">                                        if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
+</li><li id="file6-228">                                                url.searchParams.set('n',n);
+</li><li id="file6-229">                                                url.searchParams.set('i',i);
+</li><li id="file6-230">                                                history.pushState("", "", url);
+</li><li id="file6-231">                                        }
+</li><li id="file6-232">                                }
+</li><li id="file6-233">                        }
+</li><li id="file6-234">                &lt;/script&gt;
+</li><li id="file6-235">        &lt;/body&gt;
+</li><li id="file6-236">&lt;/html&gt;
+</li><li id="file6-237">`
+</li></ol></pre>
+					</div>
+				</div>
+				
+				<div id="file4"  style="display: none">
+					<table>
+						<tr><th colspan="2">Coverages</th></tr>
 						<tr><td class="total">Total</td><td class="cov">100%</td></tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-18');">func (n *Node) ChildBlocks() profile.Blocks</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file4-18');">func (n *Node) ChildBlocks() profile.Blocks</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-30');">func Create(profiles profile.Profiles) []Node</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file4-30');">func Create(profiles profile.Profiles) []Node</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-48');">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file4-48');">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-67');">func index(nodes []Node, name string) int</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file4-67');">func index(nodes []Node, name string) int</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-86');">func mergeSingreDir(nodes []Node) []Node</span></td>
+							<td class="fnc"><span class="clickable" onclick="scrollById('file4-86');">func mergeSingreDir(nodes []Node) []Node</span></td>
 							<td class="cov">100%</td>
 						</tr>
 						
 					</table>
 
 					<div class="source">
-						<pre><ol><li id="file6-1">package tree
-</li><li id="file6-2">
-</li><li id="file6-3">import (
-</li><li id="file6-4">        "path/filepath"
-</li><li id="file6-5">        "strings"
-</li><li id="file6-6">
-</li><li id="file6-7">        "github.com/masakurapa/gover-html/internal/profile"
-</li><li id="file6-8">)
-</li><li id="file6-9">
-</li><li id="file6-10">// Node is single node of directory tree
-</li><li id="file6-11">type Node struct {
-</li><li id="file6-12">        Name  string
-</li><li id="file6-13">        Files profile.Profiles
-</li><li id="file6-14">        Dirs  []Node
-</li><li id="file6-15">}
-</li><li id="file6-16">
-</li><li id="file6-17">// ChildBlocks returns all child Blocks for Node
-</li><li id="file6-18">func (n *Node) ChildBlocks() profile.Blocks <span class="cov1">{
-</span></li><li id="file6-19"><span class="cov1">        blocks := make(profile.Blocks, 0)
-</span></li><li id="file6-20"><span class="cov1">        for _, f := range n.Files </span><span class="cov1">{
-</span></li><li id="file6-21"><span class="cov1">                blocks = append(blocks, f.Blocks...)
-</span></li><li id="file6-22"><span class="cov1">        }</span>
-</li><li id="file6-23">        <span class="cov1">for _, ch := range n.Dirs </span><span class="cov1">{
-</span></li><li id="file6-24"><span class="cov1">                blocks = append(blocks, ch.ChildBlocks()...)
-</span></li><li id="file6-25"><span class="cov1">        }</span>
-</li><li id="file6-26">        <span class="cov1">return blocks</span>
-</li><li id="file6-27">}
-</li><li id="file6-28">
-</li><li id="file6-29">// Create returns directory tree
-</li><li id="file6-30">func Create(profiles profile.Profiles) []Node <span class="cov1">{
-</span></li><li id="file6-31"><span class="cov1">        nodes := make([]Node, 0)
-</span></li><li id="file6-32"><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
-</span></li><li id="file6-33"><span class="cov1">                idx := index(nodes, p.ModulePath)
-</span></li><li id="file6-34"><span class="cov1">                if idx == -1 </span><span class="cov1">{
-</span></li><li id="file6-35"><span class="cov1">                        nodes = append(nodes, Node{Name: p.ModulePath})
-</span></li><li id="file6-36"><span class="cov1">                        idx = len(nodes) - 1
-</span></li><li id="file6-37"><span class="cov1">                }</span>
-</li><li id="file6-38">
-</li><li id="file6-39">                <span class="cov1">addNode(&amp;nodes[idx].Dirs, strings.Split(p.RemoveModulePathFromFileName(), "/"), &amp;p)</span>
-</li><li id="file6-40">        }
-</li><li id="file6-41">
-</li><li id="file6-42">        <span class="cov1">for i, node := range nodes </span><span class="cov1">{
-</span></li><li id="file6-43"><span class="cov1">                nodes[i].Dirs = mergeSingreDir(node.Dirs)
-</span></li><li id="file6-44"><span class="cov1">        }</span>
-</li><li id="file6-45">        <span class="cov1">return nodes</span>
-</li><li id="file6-46">}
-</li><li id="file6-47">
-</li><li id="file6-48">func addNode(nodes *[]Node, paths []string, p *profile.Profile) <span class="cov1">{
-</span></li><li id="file6-49"><span class="cov1">        name := paths[0]
-</span></li><li id="file6-50"><span class="cov1">        nextPaths := paths[1:]
-</span></li><li id="file6-51"><span class="cov1">
-</span></li><li id="file6-52"><span class="cov1">        idx := index(*nodes, name)
-</span></li><li id="file6-53"><span class="cov1">        if idx == -1 </span><span class="cov1">{
-</span></li><li id="file6-54"><span class="cov1">                *nodes = append(*nodes, Node{Name: name})
-</span></li><li id="file6-55"><span class="cov1">                idx = len(*nodes) - 1
-</span></li><li id="file6-56"><span class="cov1">        }</span>
-</li><li id="file6-57">
-</li><li id="file6-58">        <span class="cov1">n := *nodes
-</span></li><li id="file6-59"><span class="cov1">        if len(nextPaths) == 1 </span><span class="cov1">{
-</span></li><li id="file6-60"><span class="cov1">                n[idx].Files = append(n[idx].Files, *p)
-</span></li><li id="file6-61"><span class="cov1">                return
-</span></li><li id="file6-62"><span class="cov1">        }</span>
-</li><li id="file6-63">
-</li><li id="file6-64">        <span class="cov1">addNode(&amp;n[idx].Dirs, nextPaths, p)</span>
-</li><li id="file6-65">}
-</li><li id="file6-66">
-</li><li id="file6-67">func index(nodes []Node, name string) int <span class="cov1">{
-</span></li><li id="file6-68"><span class="cov1">        for i, t := range nodes </span><span class="cov1">{
-</span></li><li id="file6-69"><span class="cov1">                if t.Name == name </span><span class="cov1">{
-</span></li><li id="file6-70"><span class="cov1">                        return i
-</span></li><li id="file6-71"><span class="cov1">                }</span>
-</li><li id="file6-72">        }
-</li><li id="file6-73">        <span class="cov1">return -1</span>
-</li><li id="file6-74">}
-</li><li id="file6-75">
-</li><li id="file6-76">// merge directories with no files and only one child directory
-</li><li id="file6-77">//
-</li><li id="file6-78">//        path/
-</li><li id="file6-79">//                to/
-</li><li id="file6-80">//                file.go
-</li><li id="file6-81">//
-</li><li id="file6-82">// to
-</li><li id="file6-83">//
-</li><li id="file6-84">//        path/to/
-</li><li id="file6-85">//                file.go
-</li><li id="file6-86">func mergeSingreDir(nodes []Node) []Node <span class="cov1">{
-</span></li><li id="file6-87"><span class="cov1">        for i, n := range nodes </span><span class="cov1">{
-</span></li><li id="file6-88"><span class="cov1">                if len(n.Dirs) == 0 </span><span class="cov1">{
-</span></li><li id="file6-89"><span class="cov1">                        continue</span>
-</li><li id="file6-90">                }
-</li><li id="file6-91">
-</li><li id="file6-92">                <span class="cov1">mergeSingreDir(n.Dirs)
-</span></li><li id="file6-93"><span class="cov1">                if len(n.Files) &gt; 0 || len(n.Dirs) != 1 </span><span class="cov1">{
-</span></li><li id="file6-94"><span class="cov1">                        continue</span>
-</li><li id="file6-95">                }
-</li><li id="file6-96">
-</li><li id="file6-97">                <span class="cov1">sub := n.Dirs[0]
-</span></li><li id="file6-98"><span class="cov1">                nodes[i].Name = filepath.Join(n.Name, sub.Name)
-</span></li><li id="file6-99"><span class="cov1">                nodes[i].Files = sub.Files
-</span></li><li id="file6-100"><span class="cov1">                nodes[i].Dirs = sub.Dirs</span>
-</li><li id="file6-101">        }
-</li><li id="file6-102">        <span class="cov1">return nodes</span>
-</li><li id="file6-103">}
+						<pre><ol><li id="file4-1">package tree
+</li><li id="file4-2">
+</li><li id="file4-3">import (
+</li><li id="file4-4">        "path/filepath"
+</li><li id="file4-5">        "strings"
+</li><li id="file4-6">
+</li><li id="file4-7">        "github.com/masakurapa/gover-html/internal/profile"
+</li><li id="file4-8">)
+</li><li id="file4-9">
+</li><li id="file4-10">// Node is single node of directory tree
+</li><li id="file4-11">type Node struct {
+</li><li id="file4-12">        Name  string
+</li><li id="file4-13">        Files profile.Profiles
+</li><li id="file4-14">        Dirs  []Node
+</li><li id="file4-15">}
+</li><li id="file4-16">
+</li><li id="file4-17">// ChildBlocks returns all child Blocks for Node
+</li><li id="file4-18">func (n *Node) ChildBlocks() profile.Blocks <span class="cov1">{
+</span></li><li id="file4-19"><span class="cov1">        blocks := make(profile.Blocks, 0)
+</span></li><li id="file4-20"><span class="cov1">        for _, f := range n.Files </span><span class="cov1">{
+</span></li><li id="file4-21"><span class="cov1">                blocks = append(blocks, f.Blocks...)
+</span></li><li id="file4-22"><span class="cov1">        }</span>
+</li><li id="file4-23">        <span class="cov1">for _, ch := range n.Dirs </span><span class="cov1">{
+</span></li><li id="file4-24"><span class="cov1">                blocks = append(blocks, ch.ChildBlocks()...)
+</span></li><li id="file4-25"><span class="cov1">        }</span>
+</li><li id="file4-26">        <span class="cov1">return blocks</span>
+</li><li id="file4-27">}
+</li><li id="file4-28">
+</li><li id="file4-29">// Create returns directory tree
+</li><li id="file4-30">func Create(profiles profile.Profiles) []Node <span class="cov1">{
+</span></li><li id="file4-31"><span class="cov1">        nodes := make([]Node, 0)
+</span></li><li id="file4-32"><span class="cov1">        for _, p := range profiles </span><span class="cov1">{
+</span></li><li id="file4-33"><span class="cov1">                idx := index(nodes, p.ModulePath)
+</span></li><li id="file4-34"><span class="cov1">                if idx == -1 </span><span class="cov1">{
+</span></li><li id="file4-35"><span class="cov1">                        nodes = append(nodes, Node{Name: p.ModulePath})
+</span></li><li id="file4-36"><span class="cov1">                        idx = len(nodes) - 1
+</span></li><li id="file4-37"><span class="cov1">                }</span>
+</li><li id="file4-38">
+</li><li id="file4-39">                <span class="cov1">addNode(&amp;nodes[idx].Dirs, strings.Split(p.RemoveModulePathFromFileName(), "/"), &amp;p)</span>
+</li><li id="file4-40">        }
+</li><li id="file4-41">
+</li><li id="file4-42">        <span class="cov1">for i, node := range nodes </span><span class="cov1">{
+</span></li><li id="file4-43"><span class="cov1">                nodes[i].Dirs = mergeSingreDir(node.Dirs)
+</span></li><li id="file4-44"><span class="cov1">        }</span>
+</li><li id="file4-45">        <span class="cov1">return nodes</span>
+</li><li id="file4-46">}
+</li><li id="file4-47">
+</li><li id="file4-48">func addNode(nodes *[]Node, paths []string, p *profile.Profile) <span class="cov1">{
+</span></li><li id="file4-49"><span class="cov1">        name := paths[0]
+</span></li><li id="file4-50"><span class="cov1">        nextPaths := paths[1:]
+</span></li><li id="file4-51"><span class="cov1">
+</span></li><li id="file4-52"><span class="cov1">        idx := index(*nodes, name)
+</span></li><li id="file4-53"><span class="cov1">        if idx == -1 </span><span class="cov1">{
+</span></li><li id="file4-54"><span class="cov1">                *nodes = append(*nodes, Node{Name: name})
+</span></li><li id="file4-55"><span class="cov1">                idx = len(*nodes) - 1
+</span></li><li id="file4-56"><span class="cov1">        }</span>
+</li><li id="file4-57">
+</li><li id="file4-58">        <span class="cov1">n := *nodes
+</span></li><li id="file4-59"><span class="cov1">        if len(nextPaths) == 1 </span><span class="cov1">{
+</span></li><li id="file4-60"><span class="cov1">                n[idx].Files = append(n[idx].Files, *p)
+</span></li><li id="file4-61"><span class="cov1">                return
+</span></li><li id="file4-62"><span class="cov1">        }</span>
+</li><li id="file4-63">
+</li><li id="file4-64">        <span class="cov1">addNode(&amp;n[idx].Dirs, nextPaths, p)</span>
+</li><li id="file4-65">}
+</li><li id="file4-66">
+</li><li id="file4-67">func index(nodes []Node, name string) int <span class="cov1">{
+</span></li><li id="file4-68"><span class="cov1">        for i, t := range nodes </span><span class="cov1">{
+</span></li><li id="file4-69"><span class="cov1">                if t.Name == name </span><span class="cov1">{
+</span></li><li id="file4-70"><span class="cov1">                        return i
+</span></li><li id="file4-71"><span class="cov1">                }</span>
+</li><li id="file4-72">        }
+</li><li id="file4-73">        <span class="cov1">return -1</span>
+</li><li id="file4-74">}
+</li><li id="file4-75">
+</li><li id="file4-76">// merge directories with no files and only one child directory
+</li><li id="file4-77">//
+</li><li id="file4-78">//        path/
+</li><li id="file4-79">//                to/
+</li><li id="file4-80">//                file.go
+</li><li id="file4-81">//
+</li><li id="file4-82">// to
+</li><li id="file4-83">//
+</li><li id="file4-84">//        path/to/
+</li><li id="file4-85">//                file.go
+</li><li id="file4-86">func mergeSingreDir(nodes []Node) []Node <span class="cov1">{
+</span></li><li id="file4-87"><span class="cov1">        for i, n := range nodes </span><span class="cov1">{
+</span></li><li id="file4-88"><span class="cov1">                if len(n.Dirs) == 0 </span><span class="cov1">{
+</span></li><li id="file4-89"><span class="cov1">                        continue</span>
+</li><li id="file4-90">                }
+</li><li id="file4-91">
+</li><li id="file4-92">                <span class="cov1">mergeSingreDir(n.Dirs)
+</span></li><li id="file4-93"><span class="cov1">                if len(n.Files) &gt; 0 || len(n.Dirs) != 1 </span><span class="cov1">{
+</span></li><li id="file4-94"><span class="cov1">                        continue</span>
+</li><li id="file4-95">                }
+</li><li id="file4-96">
+</li><li id="file4-97">                <span class="cov1">sub := n.Dirs[0]
+</span></li><li id="file4-98"><span class="cov1">                nodes[i].Name = filepath.Join(n.Name, sub.Name)
+</span></li><li id="file4-99"><span class="cov1">                nodes[i].Files = sub.Files
+</span></li><li id="file4-100"><span class="cov1">                nodes[i].Dirs = sub.Dirs</span>
+</li><li id="file4-101">        }
+</li><li id="file4-102">        <span class="cov1">return nodes</span>
+</li><li id="file4-103">}
 </li></ol></pre>
 					</div>
 				</div>

@@ -122,8 +122,8 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
 					Functions: profile.Functions{
-						{Name: "func (*Struct1) Func1() string", StartLine: 5, StartCol: 1},
-						{Name: "func (*Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
+						{Name: "func (Struct1) Func1() string", StartLine: 5, StartCol: 1},
+						{Name: "func (Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
 					},
 				},
 			},
@@ -213,8 +213,8 @@ github.com/masakurapa/gover-html/testdata/dir2/dir3/file3.go:5.15,25.35 45 55
 						{StartLine: 1, StartCol: 11, EndLine: 21, EndCol: 31, NumState: 41, Count: 51},
 					},
 					Functions: profile.Functions{
-						{Name: "func (*Struct1) Func1() string", StartLine: 5, StartCol: 1},
-						{Name: "func (*Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
+						{Name: "func (Struct1) Func1() string", StartLine: 5, StartCol: 1},
+						{Name: "func (Struct1) Func2(s string) int", StartLine: 9, StartCol: 1},
 					},
 				},
 			},

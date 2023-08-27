@@ -2,11 +2,11 @@ package dir2
 
 type Struct1 struct{}
 
-func (*Struct1) Func1() string {
+func (Struct1) Func1() string {
 	return ""
 }
 
-func (*Struct1) Func2(s string) int {
+func (Struct1) Func2(s string) int {
 	switch s {
 	case "a":
 		return 1

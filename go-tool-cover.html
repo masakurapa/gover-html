@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/masakurapa/gover-html/internal/cover/filter/filter.go (100.0%)</option>
 				
-				<option value="file2">github.com/masakurapa/gover-html/internal/cover/func.go (80.7%)</option>
+				<option value="file2">github.com/masakurapa/gover-html/internal/cover/func.go (82.5%)</option>
 				
 				<option value="file3">github.com/masakurapa/gover-html/internal/html/html.go (95.4%)</option>
 				
@@ -447,7 +447,7 @@ func (v *funcVisitor) Visit(node ast.Node) ast.Visitor <span class="cov8" title=
 
                 <span class="cov8" title="1">var structName string
                 if n.Recv != nil &amp;&amp; len(n.Recv.List) &gt; 0 </span><span class="cov8" title="1">{
-                        if t, ok := n.Recv.List[0].Type.(*ast.Ident); ok </span><span class="cov0" title="0">{
+                        if t, ok := n.Recv.List[0].Type.(*ast.Ident); ok </span><span class="cov8" title="1">{
                                 structName = t.Name
                         }</span>
                         <span class="cov8" title="1">if t, ok := n.Recv.List[0].Type.(*ast.StarExpr); ok </span><span class="cov8" title="1">{

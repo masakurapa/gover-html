@@ -53,7 +53,12 @@ func (v *funcVisitor) Visit(node ast.Node) ast.Visitor {
 
 		var structName string
 		if n.Recv != nil && len(n.Recv.List) > 0 {
-			structName = n.Recv.List[0].Type.(*ast.StarExpr).X.(*ast.Ident).Name
+			if t, ok := n.Recv.List[0].Type.(*ast.Ident); ok {
+				structName = t.Name
+			}
+			if t, ok := n.Recv.List[0].Type.(*ast.StarExpr); ok {
+				structName = t.X.(*ast.Ident).Name
+			}
 		}
 
 		fe := &funcExtent{

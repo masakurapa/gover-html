@@ -1,7 +1,8 @@
 # coverage profile for input. default is `coverage.out`.
 # input: coverage.out
 
-# coverage profile for input. default is `coverage.out`.
+# specify multiple input coverage profiles.
+# if "input-files" is specified, "input" value is not used
 # input-files:
   # - ./path/to/dir1/coverage.out
   # - ./path/to/dir2/coverage.out

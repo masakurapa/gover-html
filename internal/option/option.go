@@ -31,6 +31,7 @@ var (
 
 type optionConfig struct {
 	Input       string
+	InputFiles  []string `yaml:"input-files"`
 	Output      string
 	Theme       string
 	Include     []string // include fire or directories
@@ -40,6 +41,7 @@ type optionConfig struct {
 
 type Option struct {
 	Input       string
+	InputFiles  []string
 	Output      string
 	Theme       string
 	Include     []string            // include fire or directories
@@ -63,6 +65,7 @@ func New(r reader.Reader) *Generator {
 
 func (g *Generator) Generate(
 	input *string,
+	inputFiles *string,
 	output *string,
 	theme *string,
 	include *string,
@@ -79,6 +82,7 @@ func (g *Generator) Generate(
 	}
 
 	opt.Input = g.stringValue(input, opt.Input)
+	opt.InputFiles = g.stringsValue(inputFiles, opt.InputFiles)
 	opt.Output = g.stringValue(output, opt.Output)
 	opt.Theme = g.stringValue(theme, opt.Theme)
 	opt.Include = g.stringsValue(include, opt.Include)
@@ -207,6 +211,7 @@ func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option {
 		newOpt.Theme = themeDefault
 	}
 
+	newOpt.InputFiles = g.convertInputFilesOption(opt.InputFiles)
 	newOpt.Include = g.convertFilterValue(newOpt.Include)
 	newOpt.Exclude = g.convertFilterValue(newOpt.Exclude)
 	newOpt.ExcludeFunc = g.convertExcludeFuncOption(opt.ExcludeFunc)
@@ -215,6 +220,18 @@ func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option {
 
 func (g *Generator) isEmpty(s string) bool {
 	return s == ""
+}
+
+func (g *Generator) convertInputFilesOption(values []string) []string {
+	ret := make([]string, 0, len(values))
+	for _, v := range values {
+		s := strings.TrimSpace(v)
+		if g.isEmpty(s) {
+			continue
+		}
+		ret = append(ret, s)
+	}
+	return ret
 }
 
 func (g *Generator) convertFilterValue(values []string) []string {

@@ -18,27 +18,27 @@ func (m *mockReader) Exists(string) bool {
 
 // GetOptionForDefault returns default option
 func GetOptionForDefault(t *testing.T) option.Option {
-	return makeOption(t, nil, nil, nil, nil, nil, nil)
+	return makeOption(t, nil, nil, nil, nil, nil, nil, nil)
 }
 
 // GetOptionForInclude returns option with include set
 func GetOptionForInclude(t *testing.T, val []string) option.Option {
-	return makeOption(t, nil, nil, nil, joinComma(val), nil, nil)
+	return makeOption(t, nil, nil, nil, nil, joinComma(val), nil, nil)
 }
 
 // GetOptionForExclude returns option with exclude set
 func GetOptionForExclude(t *testing.T, val []string) option.Option {
-	return makeOption(t, nil, nil, nil, nil, joinComma(val), nil)
+	return makeOption(t, nil, nil, nil, nil, nil, joinComma(val), nil)
 }
 
 // GetOptionForIncludeAndExclude returns option with include and exclude set
 func GetOptionForIncludeAndExclude(t *testing.T, val []string) option.Option {
-	return makeOption(t, nil, nil, nil, nil, joinComma(val), nil)
+	return makeOption(t, nil, nil, nil, nil, nil, joinComma(val), nil)
 }
 
 // GetOptionForExcludeFunc returns option with exclude set
 func GetOptionForExcludeFunc(t *testing.T, val []string) option.Option {
-	return makeOption(t, nil, nil, nil, nil, nil, joinComma(val))
+	return makeOption(t, nil, nil, nil, nil, nil, nil, joinComma(val))
 }
 
 func joinComma(val []string) *string {
@@ -49,6 +49,7 @@ func joinComma(val []string) *string {
 func makeOption(
 	t *testing.T,
 	input *string,
+	inputFiles *string,
 	output *string,
 	theme *string,
 	include *string,
@@ -57,6 +58,7 @@ func makeOption(
 ) option.Option {
 	opt, err := option.New(&mockReader{}).Generate(
 		input,
+		inputFiles,
 		output,
 		theme,
 		include,

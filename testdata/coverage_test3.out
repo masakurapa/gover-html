@@ -1,0 +1,9 @@
+mode: set
+github.com/masakurapa/gover-html/internal/cover/func.go:31.56,32.26 1 1
+github.com/masakurapa/gover-html/internal/cover/func.go:33.21,34.20 1 1
+github.com/masakurapa/gover-html/internal/cover/func.go:34.20,35.9 1 0
+github.com/masakurapa/gover-html/internal/cover/func.go:37.3,46.17 5 1
+github.com/masakurapa/gover-html/internal/cover/func.go:46.17,47.14 1 0
+github.com/masakurapa/gover-html/internal/cover/func.go:49.3,50.17 2 1
+github.com/masakurapa/gover-html/internal/cover/func.go:50.17,51.14 1 0
+github.com/masakurapa/gover-html/internal/cover/func.go:54.3,55.44 2 1

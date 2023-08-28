@@ -417,8 +417,15 @@ func TestNew(t *testing.T) {
 					mockExists: func(string) bool { return false },
 				}
 
-				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.inputFiles, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
+				got, err := option.New(readerMock).Generate(
+					tt.args.input,
+					tt.args.inputFiles,
+					tt.args.output,
+					tt.args.theme,
+					tt.args.include,
+					tt.args.exclude,
+					tt.args.excludeFunc,
+				)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return
@@ -952,8 +959,15 @@ theme: unknown
 					},
 				}
 
-				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.inputFiles, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
+				got, err := option.New(readerMock).Generate(
+					tt.args.input,
+					tt.args.inputFiles,
+					tt.args.output,
+					tt.args.theme,
+					tt.args.include,
+					tt.args.exclude,
+					tt.args.excludeFunc,
+				)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return

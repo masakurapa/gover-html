@@ -69,9 +69,11 @@
 				
 				<option value="file6">github.com/masakurapa/gover-html/internal/option/error.go (0.0%)</option>
 				
-				<option value="file7">github.com/masakurapa/gover-html/internal/option/option.go (96.3%)</option>
+				<option value="file7">github.com/masakurapa/gover-html/internal/option/option.go (96.6%)</option>
 				
 				<option value="file8">github.com/masakurapa/gover-html/internal/profile/profile.go (92.3%)</option>
+				
+				<option value="file9">github.com/masakurapa/gover-html/internal/profile/reader.go (87.5%)</option>
 				
 				</select>
 			</div>
@@ -1120,6 +1122,7 @@ var (
 
 type optionConfig struct {
         Input       string
+        InputFiles  []string `yaml:"input-files"`
         Output      string
         Theme       string
         Include     []string // include fire or directories
@@ -1129,6 +1132,7 @@ type optionConfig struct {
 
 type Option struct {
         Input       string
+        InputFiles  []string
         Output      string
         Theme       string
         Include     []string            // include fire or directories
@@ -1152,6 +1156,7 @@ func New(r reader.Reader) *Generator <span class="cov8" title="1">{
 
 func (g *Generator) Generate(
         input *string,
+        inputFiles *string,
         output *string,
         theme *string,
         include *string,
@@ -1168,6 +1173,7 @@ func (g *Generator) Generate(
         }
 
         <span class="cov8" title="1">opt.Input = g.stringValue(input, opt.Input)
+        opt.InputFiles = g.stringsValue(inputFiles, opt.InputFiles)
         opt.Output = g.stringValue(output, opt.Output)
         opt.Theme = g.stringValue(theme, opt.Theme)
         opt.Include = g.stringsValue(include, opt.Include)
@@ -1296,7 +1302,8 @@ func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option <span c
                 newOpt.Theme = themeDefault
         }</span>
 
-        <span class="cov8" title="1">newOpt.Include = g.convertFilterValue(newOpt.Include)
+        <span class="cov8" title="1">newOpt.InputFiles = g.convertInputFilesOption(opt.InputFiles)
+        newOpt.Include = g.convertFilterValue(newOpt.Include)
         newOpt.Exclude = g.convertFilterValue(newOpt.Exclude)
         newOpt.ExcludeFunc = g.convertExcludeFuncOption(opt.ExcludeFunc)
         return newOpt</span>
@@ -1305,6 +1312,18 @@ func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option <span c
 func (g *Generator) isEmpty(s string) bool <span class="cov8" title="1">{
         return s == ""
 }</span>
+
+func (g *Generator) convertInputFilesOption(values []string) []string <span class="cov8" title="1">{
+        ret := make([]string, 0, len(values))
+        for _, v := range values </span><span class="cov8" title="1">{
+                s := strings.TrimSpace(v)
+                if g.isEmpty(s) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">ret = append(ret, s)</span>
+        }
+        <span class="cov8" title="1">return ret</span>
+}
 
 func (g *Generator) convertFilterValue(values []string) []string <span class="cov8" title="1">{
         ret := make([]string, 0, len(values))
@@ -1450,6 +1469,67 @@ func (blocks *Blocks) Coverage() float64 <span class="cov8" title="1">{
         }</span>
 
         <span class="cov8" title="1">return math.Round((float64(covered)/float64(total)*100)*10) / 10</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package profile
+
+import (
+        "bufio"
+        "bytes"
+        "io"
+        "os"
+
+        "github.com/masakurapa/gover-html/internal/option"
+)
+
+var (
+        newline = []byte("\n")
+)
+
+func Read(opt option.Option) (io.Reader, error) <span class="cov8" title="1">{
+        // InputFilesが指定されていない場合だけInputを使う
+        if len(opt.InputFiles) == 0 </span><span class="cov8" title="1">{
+                b, err := os.ReadFile(opt.Input)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov8" title="1">return bytes.NewReader(b), nil</span>
+        }
+
+        // 1行目は "mode: set" を固定にする
+        <span class="cov8" title="1">buf := bytes.NewBuffer([]byte("mode: set"))
+        buf.Write(newline)
+
+        for _, in := range opt.InputFiles </span><span class="cov8" title="1">{
+                if err := read(buf, in); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+
+        <span class="cov8" title="1">return buf, nil</span>
+}
+
+func read(buf *bytes.Buffer, in string) error <span class="cov8" title="1">{
+        f, err := os.Open(in)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">defer f.Close()
+
+        // 1行目には "mode: xxx" が入っているはずなので無視して2行目から読み込む
+        skip := true
+        r := bufio.NewScanner(f)
+        for r.Scan() </span><span class="cov8" title="1">{
+                if skip </span><span class="cov8" title="1">{
+                        skip = false
+                        continue</span>
+                }
+                <span class="cov8" title="1">buf.Write(r.Bytes())
+                buf.Write(newline)</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		

@@ -38,6 +38,14 @@ $ open coverage.html
 
 Coverage profile for input. default is `coverage.out`.
 
+### -input-files
+
+Specify multiple input coverage profiles.
+
+If "input-files" is specified, "input" value is not used.
+
+You can specify multiple items separated by commas.
+
 ### -o
 
 File for output. default is `coverage.html`.

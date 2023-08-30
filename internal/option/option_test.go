@@ -29,6 +29,7 @@ func (m *mockReader) Exists(s string) bool {
 func TestNew(t *testing.T) {
 	type args struct {
 		input       *string
+		inputFiles  *string
 		output      *string
 		theme       *string
 		include     *string
@@ -49,6 +50,7 @@ func TestNew(t *testing.T) {
 				name: "全項目に設定値が存在(theme=dark)",
 				args: args{
 					input:       helper.StringP("example.out"),
+					inputFiles:  helper.StringP("example1.out,example2.out"),
 					output:      helper.StringP("example.html"),
 					theme:       helper.StringP("dark"),
 					include:     helper.StringP("path/to/dir1,path/to/dir2"),
@@ -56,11 +58,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:      "example.out",
+					InputFiles: []string{"example1.out", "example2.out"},
+					Output:     "example.html",
+					Theme:      "dark",
+					Include:    []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:    []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
@@ -72,6 +75,7 @@ func TestNew(t *testing.T) {
 				name: "全項目に設定値が存在(theme=light)",
 				args: args{
 					input:       helper.StringP("example.out"),
+					inputFiles:  helper.StringP("example1.out,example2.out"),
 					output:      helper.StringP("example.html"),
 					theme:       helper.StringP("light"),
 					include:     helper.StringP("path/to/dir1,path/to/dir2"),
@@ -79,11 +83,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "light",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:      "example.out",
+					InputFiles: []string{"example1.out", "example2.out"},
+					Output:     "example.html",
+					Theme:      "light",
+					Include:    []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:    []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
@@ -95,6 +100,7 @@ func TestNew(t *testing.T) {
 				name: "全項目に空文字を指定",
 				args: args{
 					input:       helper.StringP(""),
+					inputFiles:  helper.StringP(""),
 					output:      helper.StringP(""),
 					theme:       helper.StringP(""),
 					include:     helper.StringP(""),
@@ -103,6 +109,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -115,6 +122,7 @@ func TestNew(t *testing.T) {
 				name: "全項目にnilを指定",
 				args: args{
 					input:       nil,
+					inputFiles:  nil,
 					output:      nil,
 					theme:       nil,
 					include:     nil,
@@ -123,6 +131,23 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
+				},
+				wantErr: false,
+			},
+			{
+				name: "input-filesに空の値を持つ",
+				args: args{
+					inputFiles: helper.StringP("example1.out,,example2.out,"),
+				},
+				want: &option.Option{
+					Input:       "coverage.out",
+					InputFiles:  []string{"example1.out", "example2.out"},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -138,6 +163,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1", "path/to/dir2"},
@@ -153,6 +179,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1"},
@@ -168,6 +195,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1"},
@@ -191,6 +219,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -206,6 +235,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -221,6 +251,7 @@ func TestNew(t *testing.T) {
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -243,11 +274,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(path/to/dir3).Func1,,(path/to/dir4.Struct1).Func2,,"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir4", Struct: "Struct1", Func: "Func2"},
@@ -261,11 +293,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(./path/to/dir3.Struct1).Func1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
@@ -278,11 +311,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(path/to/dir3/).Func1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 					},
@@ -295,11 +329,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(path/to/dir3/.Struct1).Func1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
 					},
@@ -312,11 +347,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("(*.Struct1).Func1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "Struct1", Func: "Func1"},
 					},
@@ -329,11 +365,12 @@ func TestNew(t *testing.T) {
 					excludeFunc: helper.StringP("Func1"),
 				},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func1"},
 					},
@@ -380,8 +417,15 @@ func TestNew(t *testing.T) {
 					mockExists: func(string) bool { return false },
 				}
 
-				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
+				got, err := option.New(readerMock).Generate(
+					tt.args.input,
+					tt.args.inputFiles,
+					tt.args.output,
+					tt.args.theme,
+					tt.args.include,
+					tt.args.exclude,
+					tt.args.excludeFunc,
+				)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return
@@ -399,6 +443,9 @@ func TestNew(t *testing.T) {
 				name: "全項目に設定値が存在(theme=dark)",
 				settings: `
 input: example.out
+input-files:
+  - example1.out
+  - example2.out
 output: example.html
 theme: dark
 include:
@@ -414,11 +461,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "dark",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:      "example.out",
+					InputFiles: []string{"example1.out", "example2.out"},
+					Output:     "example.html",
+					Theme:      "dark",
+					Include:    []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:    []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
@@ -431,6 +479,9 @@ exclude-func:
 				name: "全項目に設定値が存在(theme=light)",
 				settings: `
 input: example.out
+input-files:
+  - example1.out
+  - example2.out
 output: example.html
 theme: light
 include:
@@ -446,11 +497,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "example.out",
-					Output:  "example.html",
-					Theme:   "light",
-					Include: []string{"path/to/dir1", "path/to/dir2"},
-					Exclude: []string{"path/to/dir3", "path/to/dir4"},
+					Input:      "example.out",
+					InputFiles: []string{"example1.out", "example2.out"},
+					Output:     "example.html",
+					Theme:      "light",
+					Include:    []string{"path/to/dir1", "path/to/dir2"},
+					Exclude:    []string{"path/to/dir3", "path/to/dir4"},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
@@ -463,6 +515,9 @@ exclude-func:
 				name: "全項目に設定値が存在し、引数に全項目に設定値が存在",
 				settings: `
 input: example.out
+input-files:
+  - example1.out
+  - example2.out
 output: example.html
 theme: dark
 include:
@@ -478,6 +533,7 @@ exclude-func:
 `,
 				args: args{
 					input:       helper.StringP("example2.out"),
+					inputFiles:  helper.StringP("example1.out,example2.out"),
 					output:      helper.StringP("example2.html"),
 					theme:       helper.StringP("light"),
 					include:     helper.StringP("path/to/dir5"),
@@ -485,11 +541,12 @@ exclude-func:
 					excludeFunc: helper.StringP("Func2,Func3"),
 				},
 				want: &option.Option{
-					Input:   "example2.out",
-					Output:  "example2.html",
-					Theme:   "light",
-					Include: []string{"path/to/dir5"},
-					Exclude: []string{"path/to/dir6"},
+					Input:      "example2.out",
+					InputFiles: []string{"example1.out", "example2.out"},
+					Output:     "example2.html",
+					Theme:      "light",
+					Include:    []string{"path/to/dir5"},
+					Exclude:    []string{"path/to/dir6"},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func2"},
 						{Path: "", Struct: "", Func: "Func3"},
@@ -501,6 +558,9 @@ exclude-func:
 				name: "全項目に設定値が存在し、引数に全項目に空文字を設定",
 				settings: `
 input: example.out
+input-files:
+  - example1.out
+  - example2.out
 output: example.html
 theme: light
 include:
@@ -516,6 +576,7 @@ exclude-func:
 `,
 				args: args{
 					input:       helper.StringP(""),
+					inputFiles:  helper.StringP(""),
 					output:      helper.StringP(""),
 					theme:       helper.StringP(""),
 					include:     helper.StringP(""),
@@ -524,6 +585,7 @@ exclude-func:
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -537,6 +599,7 @@ exclude-func:
 				name: "全項目のキーのみが存在する",
 				settings: `
 input:
+input-files:
 output:
 theme:
 include:
@@ -546,6 +609,7 @@ exclude-func:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -562,6 +626,7 @@ exclude-func:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -570,6 +635,29 @@ exclude-func:
 				},
 				wantErr: false,
 			},
+			{
+				name: "input-filesに空の値を持つ",
+				settings: `
+input-files:
+  - example1.out
+  -
+  - example2.out
+  -
+  -
+`,
+				args: args{},
+				want: &option.Option{
+					Input:       "coverage.out",
+					InputFiles:  []string{"example1.out", "example2.out"},
+					Output:      "coverage.html",
+					Theme:       "dark",
+					Include:     []string{},
+					Exclude:     []string{},
+					ExcludeFunc: []option.ExcludeFuncOption{},
+				},
+				wantErr: false,
+			},
+
 			{
 				name: "includeに空の値を持つ",
 				settings: `
@@ -583,6 +671,7 @@ include:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1", "path/to/dir2"},
@@ -600,6 +689,7 @@ include:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1"},
@@ -617,6 +707,7 @@ include:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{"path/to/dir1"},
@@ -648,6 +739,7 @@ exclude:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -665,6 +757,7 @@ exclude:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -682,6 +775,7 @@ exclude:
 				args: args{},
 				want: &option.Option{
 					Input:       "coverage.out",
+					InputFiles:  []string{},
 					Output:      "coverage.html",
 					Theme:       "dark",
 					Include:     []string{},
@@ -712,11 +806,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
@@ -734,11 +829,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
@@ -755,11 +851,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3", Struct: "Struct1", Func: "Func1"},
@@ -787,11 +884,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "", Struct: "", Func: "Func1"},
 						{Path: "", Struct: "Struct1", Func: "Func1"},
@@ -808,11 +906,12 @@ exclude-func:
 `,
 				args: args{},
 				want: &option.Option{
-					Input:   "coverage.out",
-					Output:  "coverage.html",
-					Theme:   "dark",
-					Include: []string{},
-					Exclude: []string{},
+					Input:      "coverage.out",
+					InputFiles: []string{},
+					Output:     "coverage.html",
+					Theme:      "dark",
+					Include:    []string{},
+					Exclude:    []string{},
 					ExcludeFunc: []option.ExcludeFuncOption{
 						{Path: "path/to/dir3/sample.go", Struct: "", Func: "Func1"},
 						{Path: "path/to/dir3/sample.go", Struct: "Struct1", Func: "Func1"},
@@ -860,8 +959,15 @@ theme: unknown
 					},
 				}
 
-				got, err := option.New(readerMock).
-					Generate(tt.args.input, tt.args.output, tt.args.theme, tt.args.include, tt.args.exclude, tt.args.excludeFunc)
+				got, err := option.New(readerMock).Generate(
+					tt.args.input,
+					tt.args.inputFiles,
+					tt.args.output,
+					tt.args.theme,
+					tt.args.include,
+					tt.args.exclude,
+					tt.args.excludeFunc,
+				)
 				if (err != nil) != tt.wantErr {
 					t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 					return

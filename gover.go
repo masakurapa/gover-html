@@ -9,11 +9,14 @@ import (
 	"github.com/masakurapa/gover-html/internal/cover/filter"
 	"github.com/masakurapa/gover-html/internal/html"
 	"github.com/masakurapa/gover-html/internal/option"
+	"github.com/masakurapa/gover-html/internal/profile"
 	"github.com/masakurapa/gover-html/internal/reader"
 )
 
 var (
-	input  = flag.String("i", "coverage.out", "coverage profile for input")
+	input      = flag.String("i", "coverage.out", "coverage profile for input")
+	inputFiles = flag.String("input-files", "", `Specify multiple input coverage profiles.
+multiple files can be specified separated by commas.`)
 	output = flag.String("o", "coverage.html", "file for output")
 	theme  = flag.String("theme", "dark", `HTML color theme to output ('dark' or 'light')
 if the value is invalid, it will be 'dark'.`)
@@ -32,13 +35,12 @@ multiple directories can be specified separated by commas.`)
 func main() {
 	opt := getOption()
 
-	f, err := os.Open(opt.Input)
+	r, err := profile.Read(opt)
 	if err != nil {
 		exitError(err)
 	}
-	defer f.Close()
 
-	profiles, err := cover.ReadProfile(f, filter.New(opt))
+	profiles, err := cover.ReadProfile(r, filter.New(opt))
 	if err != nil {
 		exitError(err)
 	}
@@ -80,7 +82,7 @@ func getOption() option.Option {
 	parseFlags()
 
 	// make options with command line arguments
-	opt, err := option.New(reader.New()).Generate(input, output, theme, include, exclude, excludeFunc)
+	opt, err := option.New(reader.New()).Generate(input, inputFiles, output, theme, include, exclude, excludeFunc)
 	if err != nil {
 		exitError(err)
 	}

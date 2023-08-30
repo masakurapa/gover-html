@@ -1,6 +1,13 @@
 # coverage profile for input. default is `coverage.out`.
 # input: coverage.out
 
+# specify multiple input coverage profiles.
+# if "input-files" is specified, "input" value is not used
+# input-files:
+  # - ./path/to/dir1/coverage.out
+  # - ./path/to/dir2/coverage.out
+  # - ./path/to/dir3/coverage.out
+
 # file for output. default is `coverage.html`.
 # output: coverage.html
 

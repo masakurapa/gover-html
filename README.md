@@ -1,7 +1,5 @@
 # gover-html
 
-![github pages](https://github.com/masakurapa/gover-html/workflows/github%20pages/badge.svg)
-
 This is a tool for outputting Golang coverage in HTML format.
 
 ## Features

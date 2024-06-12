@@ -1,6 +1,6 @@
 package helper
 
-// StringP returns pointer to string
-func StringP(s string) *string {
-	return &s
+// P returns pointer to value
+func P[T any](v T) *T {
+	return &v
 }

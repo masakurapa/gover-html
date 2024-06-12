@@ -13,7 +13,7 @@ type Reader interface {
 
 type fileReader struct{}
 
-// New is initialize the file reader
+// New is initialization the file reader
 func New() Reader {
 	return &fileReader{}
 }

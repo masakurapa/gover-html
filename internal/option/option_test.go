@@ -49,13 +49,13 @@ func TestNew(t *testing.T) {
 			{
 				name: "全項目に設定値が存在(theme=dark)",
 				args: args{
-					input:       helper.StringP("example.out"),
-					inputFiles:  helper.StringP("example1.out,example2.out"),
-					output:      helper.StringP("example.html"),
-					theme:       helper.StringP("dark"),
-					include:     helper.StringP("path/to/dir1,path/to/dir2"),
-					exclude:     helper.StringP("path/to/dir3,path/to/dir4"),
-					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
+					input:       helper.P("example.out"),
+					inputFiles:  helper.P("example1.out,example2.out"),
+					output:      helper.P("example.html"),
+					theme:       helper.P("dark"),
+					include:     helper.P("path/to/dir1,path/to/dir2"),
+					exclude:     helper.P("path/to/dir3,path/to/dir4"),
+					excludeFunc: helper.P("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
 					Input:      "example.out",
@@ -74,13 +74,13 @@ func TestNew(t *testing.T) {
 			{
 				name: "全項目に設定値が存在(theme=light)",
 				args: args{
-					input:       helper.StringP("example.out"),
-					inputFiles:  helper.StringP("example1.out,example2.out"),
-					output:      helper.StringP("example.html"),
-					theme:       helper.StringP("light"),
-					include:     helper.StringP("path/to/dir1,path/to/dir2"),
-					exclude:     helper.StringP("path/to/dir3,path/to/dir4"),
-					excludeFunc: helper.StringP("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
+					input:       helper.P("example.out"),
+					inputFiles:  helper.P("example1.out,example2.out"),
+					output:      helper.P("example.html"),
+					theme:       helper.P("light"),
+					include:     helper.P("path/to/dir1,path/to/dir2"),
+					exclude:     helper.P("path/to/dir3,path/to/dir4"),
+					excludeFunc: helper.P("(path/to/dir3).Func1,(path/to/dir4.Struct1).Func2"),
 				},
 				want: &option.Option{
 					Input:      "example.out",
@@ -99,13 +99,13 @@ func TestNew(t *testing.T) {
 			{
 				name: "全項目に空文字を指定",
 				args: args{
-					input:       helper.StringP(""),
-					inputFiles:  helper.StringP(""),
-					output:      helper.StringP(""),
-					theme:       helper.StringP(""),
-					include:     helper.StringP(""),
-					exclude:     helper.StringP(""),
-					excludeFunc: helper.StringP(""),
+					input:       helper.P(""),
+					inputFiles:  helper.P(""),
+					output:      helper.P(""),
+					theme:       helper.P(""),
+					include:     helper.P(""),
+					exclude:     helper.P(""),
+					excludeFunc: helper.P(""),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -143,7 +143,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "input-filesに空の値を持つ",
 				args: args{
-					inputFiles: helper.StringP("example1.out,,example2.out,"),
+					inputFiles: helper.P("example1.out,,example2.out,"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -159,7 +159,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "includeに空の値を持つ",
 				args: args{
-					include: helper.StringP("path/to/dir1,,path/to/dir2,,"),
+					include: helper.P("path/to/dir1,,path/to/dir2,,"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -175,7 +175,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "include./で始まるパスを指定",
 				args: args{
-					include: helper.StringP("./path/to/dir1"),
+					include: helper.P("./path/to/dir1"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -191,7 +191,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "includeに/で終わるパスを指定",
 				args: args{
-					include: helper.StringP("path/to/dir1/"),
+					include: helper.P("path/to/dir1/"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -207,7 +207,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "includeに/で始まるパスを指定",
 				args: args{
-					include: helper.StringP("/path/to/dir1"),
+					include: helper.P("/path/to/dir1"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -215,7 +215,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "excludeに空の値を持つ",
 				args: args{
-					exclude: helper.StringP("path/to/dir3,,path/to/dir4,,"),
+					exclude: helper.P("path/to/dir3,,path/to/dir4,,"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -231,7 +231,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "excludeに./で始まるパスを指定",
 				args: args{
-					exclude: helper.StringP("./path/to/dir3"),
+					exclude: helper.P("./path/to/dir3"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -247,7 +247,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "excludeに/で終わるパスを指定",
 				args: args{
-					exclude: helper.StringP("path/to/dir3/"),
+					exclude: helper.P("path/to/dir3/"),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",
@@ -263,7 +263,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "excludeに/で始まるパスを指定",
 				args: args{
-					exclude: helper.StringP("/path/to/dir3"),
+					exclude: helper.P("/path/to/dir3"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -271,7 +271,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに空の値を持つ",
 				args: args{
-					excludeFunc: helper.StringP("(path/to/dir3).Func1,,(path/to/dir4.Struct1).Func2,,"),
+					excludeFunc: helper.P("(path/to/dir3).Func1,,(path/to/dir4.Struct1).Func2,,"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -290,7 +290,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに./で始まるパスを指定",
 				args: args{
-					excludeFunc: helper.StringP("(./path/to/dir3.Struct1).Func1"),
+					excludeFunc: helper.P("(./path/to/dir3.Struct1).Func1"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -308,7 +308,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに/で終わるパスを指定",
 				args: args{
-					excludeFunc: helper.StringP("(path/to/dir3/).Func1"),
+					excludeFunc: helper.P("(path/to/dir3/).Func1"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -326,7 +326,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに/で終わるパスを指定(構造体名指定",
 				args: args{
-					excludeFunc: helper.StringP("(path/to/dir3/.Struct1).Func1"),
+					excludeFunc: helper.P("(path/to/dir3/.Struct1).Func1"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -344,7 +344,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcのパスにワイルドカードを指定",
 				args: args{
-					excludeFunc: helper.StringP("(*.Struct1).Func1"),
+					excludeFunc: helper.P("(*.Struct1).Func1"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -362,7 +362,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに関数名のみを指定",
 				args: args{
-					excludeFunc: helper.StringP("Func1"),
+					excludeFunc: helper.P("Func1"),
 				},
 				want: &option.Option{
 					Input:      "coverage.out",
@@ -380,7 +380,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcに/で始まるパスを指定",
 				args: args{
-					excludeFunc: helper.StringP("(/path/to/dir3).Func1"),
+					excludeFunc: helper.P("(/path/to/dir3).Func1"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -388,7 +388,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcにパスのみ指定",
 				args: args{
-					excludeFunc: helper.StringP("(path/to/dir3)"),
+					excludeFunc: helper.P("(path/to/dir3)"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -396,7 +396,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "exclude-funcにパス+構造体名のみ指定",
 				args: args{
-					excludeFunc: helper.StringP("(path/to/dir3.Struct1)"),
+					excludeFunc: helper.P("(path/to/dir3.Struct1)"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -404,7 +404,7 @@ func TestNew(t *testing.T) {
 			{
 				name: "themeに期待値以外を設定",
 				args: args{
-					theme: helper.StringP("unknown"),
+					theme: helper.P("unknown"),
 				},
 				want:    nil,
 				wantErr: true,
@@ -532,13 +532,13 @@ exclude-func:
   - (path/to/dir3.Struct1).Func1
 `,
 				args: args{
-					input:       helper.StringP("example2.out"),
-					inputFiles:  helper.StringP("example1.out,example2.out"),
-					output:      helper.StringP("example2.html"),
-					theme:       helper.StringP("light"),
-					include:     helper.StringP("path/to/dir5"),
-					exclude:     helper.StringP("path/to/dir6"),
-					excludeFunc: helper.StringP("Func2,Func3"),
+					input:       helper.P("example2.out"),
+					inputFiles:  helper.P("example1.out,example2.out"),
+					output:      helper.P("example2.html"),
+					theme:       helper.P("light"),
+					include:     helper.P("path/to/dir5"),
+					exclude:     helper.P("path/to/dir6"),
+					excludeFunc: helper.P("Func2,Func3"),
 				},
 				want: &option.Option{
 					Input:      "example2.out",
@@ -575,13 +575,13 @@ exclude-func:
   - (path/to/dir3.Struct1).Func1
 `,
 				args: args{
-					input:       helper.StringP(""),
-					inputFiles:  helper.StringP(""),
-					output:      helper.StringP(""),
-					theme:       helper.StringP(""),
-					include:     helper.StringP(""),
-					exclude:     helper.StringP(""),
-					excludeFunc: helper.StringP(""),
+					input:       helper.P(""),
+					inputFiles:  helper.P(""),
+					output:      helper.P(""),
+					theme:       helper.P(""),
+					include:     helper.P(""),
+					exclude:     helper.P(""),
+					excludeFunc: helper.P(""),
 				},
 				want: &option.Option{
 					Input:       "coverage.out",

@@ -16,6 +16,7 @@ const treeTemplate = `<!DOCTYPE html>
 		<title>Coverage Report</title>
 		<style>
 			body {
+				font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
 				margin: 0;
 			}
 			.main {

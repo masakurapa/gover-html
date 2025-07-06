@@ -2,74 +2,178 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Coverage Report</title>
 		<style>
+			* {
+				box-sizing: border-box;
+			}
 			body {
 				margin: 0;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+				font-size: 14px;
+				line-height: 1.6;
+			}
+			
+			 
+			::-webkit-scrollbar {
+				width: 8px;
+				height: 8px;
+			}
+			::-webkit-scrollbar-track {
+				background: transparent;
+			}
+			::-webkit-scrollbar-thumb {
+				background: rgba(156, 163, 175, 0.3);
+				border-radius: 4px;
+			}
+			::-webkit-scrollbar-thumb:hover {
+				background: rgba(156, 163, 175, 0.5);
+			}
+			.dark ::-webkit-scrollbar-thumb {
+				background: rgba(71, 85, 105, 0.5);
+			}
+			.dark ::-webkit-scrollbar-thumb:hover {
+				background: rgba(71, 85, 105, 0.7);
 			}
 			.main {
 				width: 100%;
+				min-height: 100vh;
 				display: flex;
 			}
 			.light {
-				background: #FFFFFF;
-				color: rgb(80, 80, 80);
+				background: #f8fafc;
+				color: #1e293b;
 			}
 			.dark {
-				background: #000000;
-				color: rgb(160, 160, 160);
+				background: #0f172a;
+				color: #e2e8f0;
 			}
 
 			#tree {
-				width: 25%;
+				width: 280px;
+				min-width: 280px;
 				height: 100vh;
-				padding: 8px 0;
+				padding: 24px 16px;
 				white-space: nowrap;
-				overflow: scroll;
+				overflow-x: hidden;
+				overflow-y: auto;
 				position: sticky;
-				position: -webkit-sticky;
 				top: 0;
 				left: 0;
-				border-right: 1px solid rgb(160, 160, 160);
+				background: #ffffff;
+				box-shadow: 1px 0 0 rgba(0, 0, 0, 0.05);
 			}
-			#tree div {
-				padding: 4px 0;
+			.dark #tree {
+				background: #1e293b;
+				box-shadow: 1px 0 0 rgba(255, 255, 255, 0.05);
+			}
+			#tree > div {
+				padding: 0;
+				position: relative;
+				margin: 4px 0;
+			}
+			.tree-item {
+				position: relative;
+				padding: 8px 12px;
+				border-radius: 6px;
+				transition: all 0.2s ease;
+				background: transparent;
+			}
+			.tree-item:hover {
+				background-color: rgba(59, 130, 246, 0.05);
+			}
+			.dark .tree-item:hover {
+				background-color: rgba(96, 165, 250, 0.1);
+			}
+			.tree-item-bg {
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				z-index: 0;
+				border-radius: 6px;
+			}
+			.tree-item-content {
+				position: relative;
+				z-index: 1;
+				font-weight: 500;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.tree-name {
+				flex: 1;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.tree-coverage {
+				margin-left: 12px;
+				font-size: 12px;
+				font-weight: 600;
+				color: #64748b;
+			}
+			.dark .tree-coverage {
+				color: #94a3b8;
 			}
 			.clickable {
 				cursor: pointer;
-				color: #3EA6FF;
-				text-decoration: underline;
+			}
+			.clickable .tree-item-content {
+				color: inherit;
+				text-decoration: none;
 			}
 
-			.current {
-				font-weight: bold;
+			.current .tree-item {
+				background-color: rgba(59, 130, 246, 0.1);
+				box-shadow: inset 3px 0 0 #3b82f6;
 			}
-			.light .current {
-				background-color: #E6F0FF;
-			}
-			.dark .current {
-				background-color: #555555;
+			.dark .current .tree-item {
+				background-color: rgba(96, 165, 250, 0.15);
+				box-shadow: inset 3px 0 0 #60a5fa;
 			}
 
 			#coverage {
-				width: 70%;
-				margin-left: 16px;
-				margin-right: 32px;
+				flex: 1;
+				padding: 24px;
+				overflow-y: auto;
 			}
 
 			.source {
 				white-space: nowrap;
+				background: #ffffff;
+				border-radius: 8px;
+				padding: 24px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+				overflow-x: auto;
+				margin-top: 24px;
+			}
+			.dark .source {
+				background: #1e293b;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 			}
 			pre {
 				counter-reset: line;
-				font-family: Menlo, monospace;
-				font-weight: bold;
+				font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+				font-size: 13px;
+				line-height: 1.6;
+				margin: 0;
 			}
 			ol {
 				list-style: none;
 				counter-reset: number;
 				margin: 0;
 				padding: 0;
+			}
+			li {
+				padding: 2px 0;
+				transition: background-color 0.2s ease;
+			}
+			li:hover {
+				background-color: rgba(59, 130, 246, 0.05);
+			}
+			.dark li:hover {
+				background-color: rgba(96, 165, 250, 0.05);
 			}
 			li:before {
 				counter-increment: number;
@@ -78,41 +182,116 @@
 				display: inline-block;
 				width: 50px;
 				text-align: right;
+				color: #94a3b8;
+				font-weight: normal;
+				cursor: pointer;
+				transition: color 0.2s ease;
 			}
-			.light li:before {
-				color: rgb(200, 200, 200);
+			li:hover:before {
+				color: #3b82f6;
+			}
+			.dark li:hover:before {
+				color: #60a5fa;
 			}
 			.dark li:before {
-				color: rgb(80, 80, 80);
+				color: #64748b;
+			}
+			.range-highlight {
+				background-color: rgba(59, 130, 246, 0.15) !important;
+			}
+			.dark .range-highlight {
+				background-color: rgba(96, 165, 250, 0.15) !important;
 			}
 
 			.cov0 {
-				color: rgb(192, 0, 0);
+				background-color: rgba(239, 68, 68, 0.1);
+				font-weight: 600;
 			}
 			.cov1 {
-				color: rgb(44, 212, 149);
-			}
-			table, tr, td, th {
-				border-collapse: collapse;
-				border:1px solid #BBBBBB;
+				background-color: rgba(34, 197, 94, 0.1);
+				font-weight: normal;
 			}
 			table {
-				margin: 16px 0 32px 74px;
+				width: 100%;
+				background: #ffffff;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+			.dark table {
+				background: #1e293b;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+			}
+			tr {
+				border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+			}
+			.dark tr {
+				border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+			}
+			tr:last-child {
+				border-bottom: none;
+			}
+			th {
+				background: #f1f5f9;
+				font-weight: 600;
+				text-align: left;
+				padding: 10px 16px;
+				font-size: 13px;
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				color: #64748b;
+			}
+			.dark th {
+				background: #0f172a;
+				color: #94a3b8;
+			}
+			td {
+				padding: 8px 16px;
 			}
 			table .total {
-				min-width: 300px;
-				text-align: left;
-				padding-left: 8px;
+				font-weight: 600;
 			}
 			table .fnc {
-				min-width: 300px;
-				text-align: left;
-				padding: 0 20px 0 20px;
+				font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+				font-size: 13px;
+			}
+			table .fnc .clickable {
+				color: #3b82f6;
+				text-decoration: none;
+				transition: color 0.2s ease;
+			}
+			table .fnc .clickable:hover {
+				color: #2563eb;
+				text-decoration: underline;
+			}
+			.dark table .fnc .clickable {
+				color: #60a5fa;
+			}
+			.dark table .fnc .clickable:hover {
+				color: #93bbfc;
 			}
 			table .cov {
-				width: 70px;
+				width: 120px;
 				text-align: right;
-				padding-right: 8px;
+				padding: 0;
+			}
+			.cov-cell {
+				position: relative;
+				padding: 8px 16px;
+				background-color: transparent;
+			}
+			.cov-text {
+				position: relative;
+				z-index: 1;
+				font-weight: 600;
+				font-size: 13px;
+			}
+			.cov-bg {
+				position: absolute;
+				left: 0;
+				top: 0;
+				bottom: 0;
+				z-index: 0;
 			}
 		</style>
 	</head>
@@ -121,104 +300,242 @@
 			<div id="tree">
 			
 				
-				<div style="padding-inline-start: 8px">github.com/masakurapa/gover-html/ (91.6%)</div>
-				
-			
-				
-				<div style="padding-inline-start: 38px">internal/ (91.6%)</div>
-				
-			
-				
-				<div style="padding-inline-start: 68px">cover/ (89.6%)</div>
-				
-			
-				
-				<div style="padding-inline-start: 98px">filter/ (100%)</div>
-				
-			
-				
-				<div class="file clickable" style="padding-inline-start: 128px;" id="tree1" onclick="change( 1 ,  4 );">
-					filter.go (100%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 12px">
+						<div class="tree-item-bg" style="width: 91.6%; background-color: hsla(95, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">github.com/masakurapa/gover-html/</span>
+							<span class="tree-coverage">91.6%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree3" onclick="change( 3 ,  3 );">
-					cover.go (90.6%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 36px">
+						<div class="tree-item-bg" style="width: 91.6%; background-color: hsla(95, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">internal/</span>
+							<span class="tree-coverage">91.6%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree4" onclick="change( 4 ,  3 );">
-					func.go (82.5%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 60px">
+						<div class="tree-item-bg" style="width: 89.6%; background-color: hsla(89, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">cover/</span>
+							<span class="tree-coverage">89.6%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div style="padding-inline-start: 68px">html/ (97.2%)</div>
-				
-			
-				
-				<div style="padding-inline-start: 98px">tree/ (100%)</div>
-				
-			
-				
-				<div class="file clickable" style="padding-inline-start: 128px;" id="tree5" onclick="change( 5 ,  4 );">
-					tree.go (100%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 84px">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">filter/</span>
+							<span class="tree-coverage">100%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree6" onclick="change( 6 ,  3 );">
-					html.go (95.4%)
+				<div class="file" id="tree1" onclick="change( 1 ,  4 );">
+					<div class="tree-item clickable" style="margin-inline-start: 108px;">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">filter.go</span>
+							<span class="tree-coverage">100%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree7" onclick="change( 7 ,  3 );">
-					template.go (0%)
+				<div class="file" id="tree3" onclick="change( 3 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 90.6%; background-color: hsla(92, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">cover.go</span>
+							<span class="tree-coverage">90.6%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div style="padding-inline-start: 68px">option/ (93.4%)</div>
-				
-			
-				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree8" onclick="change( 8 ,  3 );">
-					error.go (0%)
+				<div class="file" id="tree4" onclick="change( 4 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 82.5%; background-color: hsla(68, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">func.go</span>
+							<span class="tree-coverage">82.5%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree9" onclick="change( 9 ,  3 );">
-					option.go (96.6%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 60px">
+						<div class="tree-item-bg" style="width: 97.2%; background-color: hsla(112, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">html/</span>
+							<span class="tree-coverage">97.2%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div style="padding-inline-start: 68px">profile/ (89.2%)</div>
-				
-			
-				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree10" onclick="change( 10 ,  3 );">
-					profile.go (92.3%)
+				<div>
+					<div class="tree-item" style="margin-inline-start: 84px">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">tree/</span>
+							<span class="tree-coverage">100%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree11" onclick="change( 11 ,  3 );">
-					reader.go (87.5%)
+				<div class="file" id="tree5" onclick="change( 5 ,  4 );">
+					<div class="tree-item clickable" style="margin-inline-start: 108px;">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">tree.go</span>
+							<span class="tree-coverage">100%</span>
+						</div>
+					</div>
 				</div>
 				
 			
 				
-				<div style="padding-inline-start: 68px">reader/ (0%)</div>
+				<div class="file" id="tree6" onclick="change( 6 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 95.4%; background-color: hsla(106, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">html.go</span>
+							<span class="tree-coverage">95.4%</span>
+						</div>
+					</div>
+				</div>
 				
 			
 				
-				<div class="file clickable" style="padding-inline-start: 98px;" id="tree2" onclick="change( 2 ,  3 );">
-					reader.go (0%)
+				<div class="file" id="tree7" onclick="change( 7 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">template.go</span>
+							<span class="tree-coverage">0%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div>
+					<div class="tree-item" style="margin-inline-start: 60px">
+						<div class="tree-item-bg" style="width: 93.4%; background-color: hsla(100, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">option/</span>
+							<span class="tree-coverage">93.4%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div class="file" id="tree10" onclick="change( 10 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">error.go</span>
+							<span class="tree-coverage">0%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div class="file" id="tree11" onclick="change( 11 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 96.6%; background-color: hsla(110, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">option.go</span>
+							<span class="tree-coverage">96.6%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div>
+					<div class="tree-item" style="margin-inline-start: 60px">
+						<div class="tree-item-bg" style="width: 89.2%; background-color: hsla(88, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">profile/</span>
+							<span class="tree-coverage">89.2%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div class="file" id="tree8" onclick="change( 8 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 92.3%; background-color: hsla(97, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">profile.go</span>
+							<span class="tree-coverage">92.3%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div class="file" id="tree9" onclick="change( 9 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 87.5%; background-color: hsla(82, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">reader.go</span>
+							<span class="tree-coverage">87.5%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div>
+					<div class="tree-item" style="margin-inline-start: 60px">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">reader/</span>
+							<span class="tree-coverage">0%</span>
+						</div>
+					</div>
+				</div>
+				
+			
+				
+				<div class="file" id="tree2" onclick="change( 2 ,  3 );">
+					<div class="tree-item clickable" style="margin-inline-start: 84px;">
+						<div class="tree-item-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+						<div class="tree-item-content">
+							<span class="tree-name">reader.go</span>
+							<span class="tree-coverage">0%</span>
+						</div>
+					</div>
 				</div>
 				
 			
@@ -227,37 +544,75 @@
 				
 				<div id="file3"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">90.6%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-31');">func ReadProfile(r io.Reader, f filter.Filter) (profile.Profiles, error)</span></td>
-							<td class="cov">100%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 90.6%; background-color: hsla(92, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">90.6%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-77');">func toInt(s string) int</span></td>
-							<td class="cov">75%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  31 );">func ReadProfile(r io.Reader, f filter.Filter) (profile.Profiles, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-85');">func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Profiles, error)</span></td>
-							<td class="cov">90.5%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  77 );">func toInt(s string) int</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 75%; background-color: hsla(55, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">75%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-121');">func filterBlocks(blocks []profile.Block) []profile.Block</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  85 );">func toProfiles(files map[string]*profile.Profile, f filter.Filter) (profile.Profiles, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 90.5%; background-color: hsla(92, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">90.5%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-149');">func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, error)</span></td>
-							<td class="cov">78.9%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  121 );">func filterBlocks(blocks []profile.Block) []profile.Block</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file3-197');">func execGoList(files map[string]*profile.Profile) ([]byte, error)</span></td>
-							<td class="cov">86.7%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  149 );">func makeImportDirMap(files map[string]*profile.Profile) (map[string]importDir, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 78.9%; background-color: hsla(59, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">78.9%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 3 ,  197 );">func execGoList(files map[string]*profile.Profile) ([]byte, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 86.7%; background-color: hsla(80, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">86.7%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -490,32 +845,65 @@
 				
 				<div id="file1"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">100%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file1-21');">func New(opt option.Option) Filter</span></td>
-							<td class="cov">100%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file1-27');">func (f *filter) IsOutputTarget(relativePath, fileName string) bool</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 1 ,  21 );">func New(opt option.Option) Filter</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file1-53');">func (f *filter) IsOutputTargetFunc(relativePath, structName, funcName string) bool</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 1 ,  27 );">func (f *filter) IsOutputTarget(relativePath, fileName string) bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file1-72');">func (f *filter) hasPrefix(path, fileName, prefix string) bool</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 1 ,  53 );">func (f *filter) IsOutputTargetFunc(relativePath, structName, funcName string) bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file1-79');">func (f *filter) convertPathForValidate(relativePath string) string</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 1 ,  72 );">func (f *filter) hasPrefix(path, fileName, prefix string) bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 1 ,  79 );">func (f *filter) convertPathForValidate(relativePath string) string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -609,27 +997,55 @@
 				
 				<div id="file4"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">82.5%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-31');">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor</span></td>
-							<td class="cov">85.7%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 82.5%; background-color: hsla(68, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">82.5%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-78');">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error)</span></td>
-							<td class="cov">75%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 4 ,  31 );">func (v *funcVisitor) Visit(node ast.Node) ast.Visitor</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 85.7%; background-color: hsla(77, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">85.7%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-87');">func findFuncs(name string) ([]*funcExtent, error)</span></td>
-							<td class="cov">85.7%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 4 ,  78 );">func makeNewProfile(prof *profile.Profile, f filter.Filter) (*profile.Profile, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 75%; background-color: hsla(55, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">75%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file4-102');">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile</span></td>
-							<td class="cov">80%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 4 ,  87 );">func findFuncs(name string) ([]*funcExtent, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 85.7%; background-color: hsla(77, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">85.7%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 4 ,  102 );">func newProfile(prof *profile.Profile, exts []*funcExtent, f filter.Filter) *profile.Profile</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 80%; background-color: hsla(60, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">80%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -788,27 +1204,55 @@
 				
 				<div id="file6"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">95.4%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-54');">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error</span></td>
-							<td class="cov">87.5%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 95.4%; background-color: hsla(106, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">95.4%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-96');">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 6 ,  54 );">func WriteTreeView(out io.Writer, profiles profile.Profiles, opt option.Option) error</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 87.5%; background-color: hsla(82, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">87.5%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-119');">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
-							<td class="cov">97.4%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 6 ,  96 );">func makeTemplateTree(tree *[]templateTree, nodes []tree.Node, indent int)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file6-179');">func writeChar(buf *bytes.Buffer, b byte)</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 6 ,  119 );">func writeSource(buf *bytes.Buffer, src []byte, prof *profile.Profile)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 97.4%; background-color: hsla(112, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">97.4%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 6 ,  179 );">func writeChar(buf *bytes.Buffer, b byte)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -1005,281 +1449,685 @@
 				
 				<div id="file7"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">0%</td></tr>
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
+						<tr>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
+						</tr>
 						
 					</table>
 
 					<div class="source">
 						<pre><ol><li id="file7-1">package html
 </li><li id="file7-2">
-</li><li id="file7-3">import "html/template"
-</li><li id="file7-4">
-</li><li id="file7-5">var parsedTreeTemplate = template.
-</li><li id="file7-6">        Must(template.New("html").
-</li><li id="file7-7">                Funcs(template.FuncMap{
-</li><li id="file7-8">                        "indent": func(i int) int { return i*30 + 8 },
-</li><li id="file7-9">                }).
-</li><li id="file7-10">                Parse(treeTemplate))
-</li><li id="file7-11">
-</li><li id="file7-12">const treeTemplate = `&lt;!DOCTYPE html&gt;
-</li><li id="file7-13">&lt;html&gt;
-</li><li id="file7-14">        &lt;head&gt;
-</li><li id="file7-15">                &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
-</li><li id="file7-16">                &lt;title&gt;Coverage Report&lt;/title&gt;
-</li><li id="file7-17">                &lt;style&gt;
-</li><li id="file7-18">                        body {
-</li><li id="file7-19">                                margin: 0;
-</li><li id="file7-20">                        }
-</li><li id="file7-21">                        .main {
-</li><li id="file7-22">                                width: 100%;
-</li><li id="file7-23">                                display: flex;
-</li><li id="file7-24">                        }
-</li><li id="file7-25">                        .light {
-</li><li id="file7-26">                                background: #FFFFFF;
-</li><li id="file7-27">                                color: rgb(80, 80, 80);
-</li><li id="file7-28">                        }
-</li><li id="file7-29">                        .dark {
-</li><li id="file7-30">                                background: #000000;
-</li><li id="file7-31">                                color: rgb(160, 160, 160);
-</li><li id="file7-32">                        }
-</li><li id="file7-33">
-</li><li id="file7-34">                        #tree {
-</li><li id="file7-35">                                width: 25%;
-</li><li id="file7-36">                                height: 100vh;
-</li><li id="file7-37">                                padding: 8px 0;
-</li><li id="file7-38">                                white-space: nowrap;
-</li><li id="file7-39">                                overflow: scroll;
-</li><li id="file7-40">                                position: sticky;
-</li><li id="file7-41">                                position: -webkit-sticky;
-</li><li id="file7-42">                                top: 0;
-</li><li id="file7-43">                                left: 0;
-</li><li id="file7-44">                                border-right: 1px solid rgb(160, 160, 160);
+</li><li id="file7-3">import (
+</li><li id="file7-4">        "fmt"
+</li><li id="file7-5">        "html/template"
+</li><li id="file7-6">)
+</li><li id="file7-7">
+</li><li id="file7-8">var parsedTreeTemplate = template.
+</li><li id="file7-9">        Must(template.New("html").
+</li><li id="file7-10">                Funcs(template.FuncMap{
+</li><li id="file7-11">                        "indent": func(i int) int { return i*24 + 12 },
+</li><li id="file7-12">                        "coverageColor": func(coverage float64) template.CSS {
+</li><li id="file7-13">                                // Professional color gradient with proper opacity
+</li><li id="file7-14">                                var h float64
+</li><li id="file7-15">                                if coverage &lt; 50 {
+</li><li id="file7-16">                                        // Red to orange gradient
+</li><li id="file7-17">                                        h = coverage * 0.6 // 0-30 degrees (red to orange)
+</li><li id="file7-18">                                } else if coverage &lt; 80 {
+</li><li id="file7-19">                                        // Orange to yellow gradient
+</li><li id="file7-20">                                        h = 30 + ((coverage - 50) / 30 * 30) // 30-60 degrees
+</li><li id="file7-21">                                } else {
+</li><li id="file7-22">                                        // Yellow to green gradient
+</li><li id="file7-23">                                        h = 60 + ((coverage - 80) / 20 * 60) // 60-120 degrees
+</li><li id="file7-24">                                }
+</li><li id="file7-25">                                return template.CSS(fmt.Sprintf("hsla(%.0f, 70%%, 50%%, 0.4)", h))
+</li><li id="file7-26">                        },
+</li><li id="file7-27">                }).
+</li><li id="file7-28">                Parse(treeTemplate))
+</li><li id="file7-29">
+</li><li id="file7-30">const treeTemplate = `&lt;!DOCTYPE html&gt;
+</li><li id="file7-31">&lt;html&gt;
+</li><li id="file7-32">        &lt;head&gt;
+</li><li id="file7-33">                &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt;
+</li><li id="file7-34">                &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+</li><li id="file7-35">                &lt;title&gt;Coverage Report&lt;/title&gt;
+</li><li id="file7-36">                &lt;style&gt;
+</li><li id="file7-37">                        * {
+</li><li id="file7-38">                                box-sizing: border-box;
+</li><li id="file7-39">                        }
+</li><li id="file7-40">                        body {
+</li><li id="file7-41">                                margin: 0;
+</li><li id="file7-42">                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+</li><li id="file7-43">                                font-size: 14px;
+</li><li id="file7-44">                                line-height: 1.6;
 </li><li id="file7-45">                        }
-</li><li id="file7-46">                        #tree div {
-</li><li id="file7-47">                                padding: 4px 0;
-</li><li id="file7-48">                        }
-</li><li id="file7-49">                        .clickable {
-</li><li id="file7-50">                                cursor: pointer;
-</li><li id="file7-51">                                color: #3EA6FF;
-</li><li id="file7-52">                                text-decoration: underline;
-</li><li id="file7-53">                        }
-</li><li id="file7-54">
-</li><li id="file7-55">                        .current {
-</li><li id="file7-56">                                font-weight: bold;
-</li><li id="file7-57">                        }
-</li><li id="file7-58">                        .light .current {
-</li><li id="file7-59">                                background-color: #E6F0FF;
-</li><li id="file7-60">                        }
-</li><li id="file7-61">                        .dark .current {
-</li><li id="file7-62">                                background-color: #555555;
-</li><li id="file7-63">                        }
-</li><li id="file7-64">
-</li><li id="file7-65">                        #coverage {
-</li><li id="file7-66">                                width: 70%;
-</li><li id="file7-67">                                margin-left: 16px;
-</li><li id="file7-68">                                margin-right: 32px;
-</li><li id="file7-69">                        }
-</li><li id="file7-70">
-</li><li id="file7-71">                        .source {
-</li><li id="file7-72">                                white-space: nowrap;
-</li><li id="file7-73">                        }
-</li><li id="file7-74">                        pre {
-</li><li id="file7-75">                                counter-reset: line;
-</li><li id="file7-76">                                font-family: Menlo, monospace;
-</li><li id="file7-77">                                font-weight: bold;
-</li><li id="file7-78">                        }
-</li><li id="file7-79">                        ol {
-</li><li id="file7-80">                                list-style: none;
-</li><li id="file7-81">                                counter-reset: number;
-</li><li id="file7-82">                                margin: 0;
-</li><li id="file7-83">                                padding: 0;
-</li><li id="file7-84">                        }
-</li><li id="file7-85">                        li:before {
-</li><li id="file7-86">                                counter-increment: number;
-</li><li id="file7-87">                                content: counter(number);
-</li><li id="file7-88">                                margin-right: 24px;
-</li><li id="file7-89">                                display: inline-block;
-</li><li id="file7-90">                                width: 50px;
-</li><li id="file7-91">                                text-align: right;
-</li><li id="file7-92">                        }
-</li><li id="file7-93">                        .light li:before {
-</li><li id="file7-94">                                color: rgb(200, 200, 200);
+</li><li id="file7-46">                        
+</li><li id="file7-47">                        /* Custom scrollbar */
+</li><li id="file7-48">                        ::-webkit-scrollbar {
+</li><li id="file7-49">                                width: 8px;
+</li><li id="file7-50">                                height: 8px;
+</li><li id="file7-51">                        }
+</li><li id="file7-52">                        ::-webkit-scrollbar-track {
+</li><li id="file7-53">                                background: transparent;
+</li><li id="file7-54">                        }
+</li><li id="file7-55">                        ::-webkit-scrollbar-thumb {
+</li><li id="file7-56">                                background: rgba(156, 163, 175, 0.3);
+</li><li id="file7-57">                                border-radius: 4px;
+</li><li id="file7-58">                        }
+</li><li id="file7-59">                        ::-webkit-scrollbar-thumb:hover {
+</li><li id="file7-60">                                background: rgba(156, 163, 175, 0.5);
+</li><li id="file7-61">                        }
+</li><li id="file7-62">                        .dark ::-webkit-scrollbar-thumb {
+</li><li id="file7-63">                                background: rgba(71, 85, 105, 0.5);
+</li><li id="file7-64">                        }
+</li><li id="file7-65">                        .dark ::-webkit-scrollbar-thumb:hover {
+</li><li id="file7-66">                                background: rgba(71, 85, 105, 0.7);
+</li><li id="file7-67">                        }
+</li><li id="file7-68">                        .main {
+</li><li id="file7-69">                                width: 100%;
+</li><li id="file7-70">                                min-height: 100vh;
+</li><li id="file7-71">                                display: flex;
+</li><li id="file7-72">                        }
+</li><li id="file7-73">                        .light {
+</li><li id="file7-74">                                background: #f8fafc;
+</li><li id="file7-75">                                color: #1e293b;
+</li><li id="file7-76">                        }
+</li><li id="file7-77">                        .dark {
+</li><li id="file7-78">                                background: #0f172a;
+</li><li id="file7-79">                                color: #e2e8f0;
+</li><li id="file7-80">                        }
+</li><li id="file7-81">
+</li><li id="file7-82">                        #tree {
+</li><li id="file7-83">                                width: 280px;
+</li><li id="file7-84">                                min-width: 280px;
+</li><li id="file7-85">                                height: 100vh;
+</li><li id="file7-86">                                padding: 24px 16px;
+</li><li id="file7-87">                                white-space: nowrap;
+</li><li id="file7-88">                                overflow-x: hidden;
+</li><li id="file7-89">                                overflow-y: auto;
+</li><li id="file7-90">                                position: sticky;
+</li><li id="file7-91">                                top: 0;
+</li><li id="file7-92">                                left: 0;
+</li><li id="file7-93">                                background: #ffffff;
+</li><li id="file7-94">                                box-shadow: 1px 0 0 rgba(0, 0, 0, 0.05);
 </li><li id="file7-95">                        }
-</li><li id="file7-96">                        .dark li:before {
-</li><li id="file7-97">                                color: rgb(80, 80, 80);
-</li><li id="file7-98">                        }
-</li><li id="file7-99">
-</li><li id="file7-100">                        .cov0 {
-</li><li id="file7-101">                                color: rgb(192, 0, 0);
-</li><li id="file7-102">                        }
-</li><li id="file7-103">                        .cov1 {
-</li><li id="file7-104">                                color: rgb(44, 212, 149);
-</li><li id="file7-105">                        }
-</li><li id="file7-106">                        table, tr, td, th {
-</li><li id="file7-107">                                border-collapse: collapse;
-</li><li id="file7-108">                                border:1px solid #BBBBBB;
-</li><li id="file7-109">                        }
-</li><li id="file7-110">                        table {
-</li><li id="file7-111">                                margin: 16px 0 32px 74px;
-</li><li id="file7-112">                        }
-</li><li id="file7-113">                        table .total {
-</li><li id="file7-114">                                min-width: 300px;
-</li><li id="file7-115">                                text-align: left;
-</li><li id="file7-116">                                padding-left: 8px;
+</li><li id="file7-96">                        .dark #tree {
+</li><li id="file7-97">                                background: #1e293b;
+</li><li id="file7-98">                                box-shadow: 1px 0 0 rgba(255, 255, 255, 0.05);
+</li><li id="file7-99">                        }
+</li><li id="file7-100">                        #tree &gt; div {
+</li><li id="file7-101">                                padding: 0;
+</li><li id="file7-102">                                position: relative;
+</li><li id="file7-103">                                margin: 4px 0;
+</li><li id="file7-104">                        }
+</li><li id="file7-105">                        .tree-item {
+</li><li id="file7-106">                                position: relative;
+</li><li id="file7-107">                                padding: 8px 12px;
+</li><li id="file7-108">                                border-radius: 6px;
+</li><li id="file7-109">                                transition: all 0.2s ease;
+</li><li id="file7-110">                                background: transparent;
+</li><li id="file7-111">                        }
+</li><li id="file7-112">                        .tree-item:hover {
+</li><li id="file7-113">                                background-color: rgba(59, 130, 246, 0.05);
+</li><li id="file7-114">                        }
+</li><li id="file7-115">                        .dark .tree-item:hover {
+</li><li id="file7-116">                                background-color: rgba(96, 165, 250, 0.1);
 </li><li id="file7-117">                        }
-</li><li id="file7-118">                        table .fnc {
-</li><li id="file7-119">                                min-width: 300px;
-</li><li id="file7-120">                                text-align: left;
-</li><li id="file7-121">                                padding: 0 20px 0 20px;
-</li><li id="file7-122">                        }
-</li><li id="file7-123">                        table .cov {
-</li><li id="file7-124">                                width: 70px;
-</li><li id="file7-125">                                text-align: right;
-</li><li id="file7-126">                                padding-right: 8px;
-</li><li id="file7-127">                        }
-</li><li id="file7-128">                &lt;/style&gt;
-</li><li id="file7-129">        &lt;/head&gt;
-</li><li id="file7-130">        &lt;body&gt;
-</li><li id="file7-131">                &lt;div class="main {{.Theme}}"&gt;
-</li><li id="file7-132">                        &lt;div id="tree"&gt;
-</li><li id="file7-133">                        {{range $i, $t := .Tree}}
-</li><li id="file7-134">                                {{if $t.IsFile}}
-</li><li id="file7-135">                                &lt;div class="file clickable" style="padding-inline-start: {{indent $t.Indent}}px;" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
-</li><li id="file7-136">                                        {{$t.Name}} ({{$t.Coverage}}%)
-</li><li id="file7-137">                                &lt;/div&gt;
-</li><li id="file7-138">                                {{else}}
-</li><li id="file7-139">                                &lt;div style="padding-inline-start: {{indent $t.Indent}}px"&gt;{{$t.Name}}/ ({{$t.Coverage}}%)&lt;/div&gt;
-</li><li id="file7-140">                                {{end}}
-</li><li id="file7-141">                        {{end}}
-</li><li id="file7-142">                        &lt;/div&gt;
-</li><li id="file7-143">                        &lt;div id="coverage"&gt;
-</li><li id="file7-144">                                {{range $i, $f := .Files}}
-</li><li id="file7-145">                                &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
-</li><li id="file7-146">                                        &lt;table&gt;
-</li><li id="file7-147">                                                &lt;tr&gt;&lt;th colspan="2"&gt;Coverages&lt;/th&gt;&lt;/tr&gt;
-</li><li id="file7-148">                                                &lt;tr&gt;&lt;td class="total"&gt;Total&lt;/td&gt;&lt;td class="cov"&gt;{{$f.Coverage}}%&lt;/td&gt;&lt;/tr&gt;
-</li><li id="file7-149">                                                {{range $j, $fn := .Functions}}
-</li><li id="file7-150">                                                &lt;tr&gt;
-</li><li id="file7-151">                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="scrollById('file{{$f.ID}}-{{$fn.Line}}');"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
-</li><li id="file7-152">                                                        &lt;td class="cov"&gt;{{$fn.Coverage}}%&lt;/td&gt;
-</li><li id="file7-153">                                                &lt;/tr&gt;
-</li><li id="file7-154">                                                {{end}}
-</li><li id="file7-155">                                        &lt;/table&gt;
-</li><li id="file7-156">
-</li><li id="file7-157">                                        &lt;div class="source"&gt;
-</li><li id="file7-158">                                                &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
-</li><li id="file7-159">                                        &lt;/div&gt;
-</li><li id="file7-160">                                &lt;/div&gt;
-</li><li id="file7-161">                                {{end}}
-</li><li id="file7-162">                        &lt;/div&gt;
-</li><li id="file7-163">                &lt;/div&gt;
+</li><li id="file7-118">                        .tree-item-bg {
+</li><li id="file7-119">                                position: absolute;
+</li><li id="file7-120">                                left: 0;
+</li><li id="file7-121">                                top: 0;
+</li><li id="file7-122">                                bottom: 0;
+</li><li id="file7-123">                                z-index: 0;
+</li><li id="file7-124">                                border-radius: 6px;
+</li><li id="file7-125">                        }
+</li><li id="file7-126">                        .tree-item-content {
+</li><li id="file7-127">                                position: relative;
+</li><li id="file7-128">                                z-index: 1;
+</li><li id="file7-129">                                font-weight: 500;
+</li><li id="file7-130">                                display: flex;
+</li><li id="file7-131">                                justify-content: space-between;
+</li><li id="file7-132">                                align-items: center;
+</li><li id="file7-133">                        }
+</li><li id="file7-134">                        .tree-name {
+</li><li id="file7-135">                                flex: 1;
+</li><li id="file7-136">                                overflow: hidden;
+</li><li id="file7-137">                                text-overflow: ellipsis;
+</li><li id="file7-138">                        }
+</li><li id="file7-139">                        .tree-coverage {
+</li><li id="file7-140">                                margin-left: 12px;
+</li><li id="file7-141">                                font-size: 12px;
+</li><li id="file7-142">                                font-weight: 600;
+</li><li id="file7-143">                                color: #64748b;
+</li><li id="file7-144">                        }
+</li><li id="file7-145">                        .dark .tree-coverage {
+</li><li id="file7-146">                                color: #94a3b8;
+</li><li id="file7-147">                        }
+</li><li id="file7-148">                        .clickable {
+</li><li id="file7-149">                                cursor: pointer;
+</li><li id="file7-150">                        }
+</li><li id="file7-151">                        .clickable .tree-item-content {
+</li><li id="file7-152">                                color: inherit;
+</li><li id="file7-153">                                text-decoration: none;
+</li><li id="file7-154">                        }
+</li><li id="file7-155">
+</li><li id="file7-156">                        .current .tree-item {
+</li><li id="file7-157">                                background-color: rgba(59, 130, 246, 0.1);
+</li><li id="file7-158">                                box-shadow: inset 3px 0 0 #3b82f6;
+</li><li id="file7-159">                        }
+</li><li id="file7-160">                        .dark .current .tree-item {
+</li><li id="file7-161">                                background-color: rgba(96, 165, 250, 0.15);
+</li><li id="file7-162">                                box-shadow: inset 3px 0 0 #60a5fa;
+</li><li id="file7-163">                        }
 </li><li id="file7-164">
-</li><li id="file7-165">                &lt;script&gt;
-</li><li id="file7-166">                        // tree max width
-</li><li id="file7-167">                        const scrollWidth = document.getElementById('tree').scrollWidth;
-</li><li id="file7-168">
-</li><li id="file7-169">                        let current;
-</li><li id="file7-170">                        let currentTree;
-</li><li id="file7-171">                        updateByQuery();
-</li><li id="file7-172">
-</li><li id="file7-173">                        window.addEventListener('popstate', function(e) {
-</li><li id="file7-174">                                updateByQuery();
-</li><li id="file7-175">                        })
-</li><li id="file7-176">
-</li><li id="file7-177">                        function updateByQuery() {
-</li><li id="file7-178">                                const searchParams = new URLSearchParams(window.location.search);
-</li><li id="file7-179">                                const n = searchParams.get('n');
-</li><li id="file7-180">                                const i = searchParams.get('i');
-</li><li id="file7-181">                                if (n &amp;&amp; i) {
-</li><li id="file7-182">                                        change(n, i);
-</li><li id="file7-183">                                } 
-</li><li id="file7-184">                        }
-</li><li id="file7-185">
-</li><li id="file7-186">                        function select(n) {
-</li><li id="file7-187">                                if (current) {
-</li><li id="file7-188">                                        current.style.display = 'none';
-</li><li id="file7-189">                                }
-</li><li id="file7-190">
-</li><li id="file7-191">                                current = document.getElementById('file' + n);
-</li><li id="file7-192">                                if (!current) {
-</li><li id="file7-193">                                        return;
-</li><li id="file7-194">                                }
-</li><li id="file7-195">                                current.style.display = 'block';
-</li><li id="file7-196">                                scrollById('coverage');
-</li><li id="file7-197">                        }
-</li><li id="file7-198">                        function selectTree(n, indent) {
-</li><li id="file7-199">                                if (currentTree) {
-</li><li id="file7-200">                                        currentTree.classList.remove('current');
-</li><li id="file7-201">                                }
-</li><li id="file7-202">
-</li><li id="file7-203">                                currentTree = document.getElementById('tree' + n);
-</li><li id="file7-204">                                if (!current) {
-</li><li id="file7-205">                                        return;
-</li><li id="file7-206">                                }
-</li><li id="file7-207">                                currentTree.classList.add('current');
-</li><li id="file7-208">                                currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
-</li><li id="file7-209">                        }
-</li><li id="file7-210">                        function scrollById(id) {
-</li><li id="file7-211">                                const elm = document.getElementById(id);
-</li><li id="file7-212">                                const rect = elm.getBoundingClientRect();
-</li><li id="file7-213">                                document.documentElement.scrollTop = rect.top + window.pageYOffset;
-</li><li id="file7-214">                        }
-</li><li id="file7-215">                        function change(n, i) {
-</li><li id="file7-216">                                select(n);
-</li><li id="file7-217">                                selectTree(n, i);
-</li><li id="file7-218">                                updateUrl(n, i)
-</li><li id="file7-219">                        }
-</li><li id="file7-220">                        function updateUrl(n, i) {
-</li><li id="file7-221">                                const url = new URL(window.location.href);
-</li><li id="file7-222">                                if( !url.searchParams.get('n') ) {
-</li><li id="file7-223">                                        url.searchParams.append('n',n);
-</li><li id="file7-224">                                        url.searchParams.append('i',i);
-</li><li id="file7-225">                                        location.href = url;
-</li><li id="file7-226">                                } else {
-</li><li id="file7-227">                                        if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
-</li><li id="file7-228">                                                url.searchParams.set('n',n);
-</li><li id="file7-229">                                                url.searchParams.set('i',i);
-</li><li id="file7-230">                                                history.pushState("", "", url);
-</li><li id="file7-231">                                        }
-</li><li id="file7-232">                                }
+</li><li id="file7-165">                        #coverage {
+</li><li id="file7-166">                                flex: 1;
+</li><li id="file7-167">                                padding: 24px;
+</li><li id="file7-168">                                overflow-y: auto;
+</li><li id="file7-169">                        }
+</li><li id="file7-170">
+</li><li id="file7-171">                        .source {
+</li><li id="file7-172">                                white-space: nowrap;
+</li><li id="file7-173">                                background: #ffffff;
+</li><li id="file7-174">                                border-radius: 8px;
+</li><li id="file7-175">                                padding: 24px;
+</li><li id="file7-176">                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+</li><li id="file7-177">                                overflow-x: auto;
+</li><li id="file7-178">                                margin-top: 24px;
+</li><li id="file7-179">                        }
+</li><li id="file7-180">                        .dark .source {
+</li><li id="file7-181">                                background: #1e293b;
+</li><li id="file7-182">                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+</li><li id="file7-183">                        }
+</li><li id="file7-184">                        pre {
+</li><li id="file7-185">                                counter-reset: line;
+</li><li id="file7-186">                                font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+</li><li id="file7-187">                                font-size: 13px;
+</li><li id="file7-188">                                line-height: 1.6;
+</li><li id="file7-189">                                margin: 0;
+</li><li id="file7-190">                        }
+</li><li id="file7-191">                        ol {
+</li><li id="file7-192">                                list-style: none;
+</li><li id="file7-193">                                counter-reset: number;
+</li><li id="file7-194">                                margin: 0;
+</li><li id="file7-195">                                padding: 0;
+</li><li id="file7-196">                        }
+</li><li id="file7-197">                        li {
+</li><li id="file7-198">                                padding: 2px 0;
+</li><li id="file7-199">                                transition: background-color 0.2s ease;
+</li><li id="file7-200">                        }
+</li><li id="file7-201">                        li:hover {
+</li><li id="file7-202">                                background-color: rgba(59, 130, 246, 0.05);
+</li><li id="file7-203">                        }
+</li><li id="file7-204">                        .dark li:hover {
+</li><li id="file7-205">                                background-color: rgba(96, 165, 250, 0.05);
+</li><li id="file7-206">                        }
+</li><li id="file7-207">                        li:before {
+</li><li id="file7-208">                                counter-increment: number;
+</li><li id="file7-209">                                content: counter(number);
+</li><li id="file7-210">                                margin-right: 24px;
+</li><li id="file7-211">                                display: inline-block;
+</li><li id="file7-212">                                width: 50px;
+</li><li id="file7-213">                                text-align: right;
+</li><li id="file7-214">                                color: #94a3b8;
+</li><li id="file7-215">                                font-weight: normal;
+</li><li id="file7-216">                                cursor: pointer;
+</li><li id="file7-217">                                transition: color 0.2s ease;
+</li><li id="file7-218">                        }
+</li><li id="file7-219">                        li:hover:before {
+</li><li id="file7-220">                                color: #3b82f6;
+</li><li id="file7-221">                        }
+</li><li id="file7-222">                        .dark li:hover:before {
+</li><li id="file7-223">                                color: #60a5fa;
+</li><li id="file7-224">                        }
+</li><li id="file7-225">                        .dark li:before {
+</li><li id="file7-226">                                color: #64748b;
+</li><li id="file7-227">                        }
+</li><li id="file7-228">                        .range-highlight {
+</li><li id="file7-229">                                background-color: rgba(59, 130, 246, 0.15) !important;
+</li><li id="file7-230">                        }
+</li><li id="file7-231">                        .dark .range-highlight {
+</li><li id="file7-232">                                background-color: rgba(96, 165, 250, 0.15) !important;
 </li><li id="file7-233">                        }
-</li><li id="file7-234">                &lt;/script&gt;
-</li><li id="file7-235">        &lt;/body&gt;
-</li><li id="file7-236">&lt;/html&gt;
-</li><li id="file7-237">`
+</li><li id="file7-234">
+</li><li id="file7-235">                        .cov0 {
+</li><li id="file7-236">                                background-color: rgba(239, 68, 68, 0.1);
+</li><li id="file7-237">                                font-weight: 600;
+</li><li id="file7-238">                        }
+</li><li id="file7-239">                        .cov1 {
+</li><li id="file7-240">                                background-color: rgba(34, 197, 94, 0.1);
+</li><li id="file7-241">                                font-weight: normal;
+</li><li id="file7-242">                        }
+</li><li id="file7-243">                        table {
+</li><li id="file7-244">                                width: 100%;
+</li><li id="file7-245">                                background: #ffffff;
+</li><li id="file7-246">                                border-radius: 8px;
+</li><li id="file7-247">                                overflow: hidden;
+</li><li id="file7-248">                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+</li><li id="file7-249">                        }
+</li><li id="file7-250">                        .dark table {
+</li><li id="file7-251">                                background: #1e293b;
+</li><li id="file7-252">                                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+</li><li id="file7-253">                        }
+</li><li id="file7-254">                        tr {
+</li><li id="file7-255">                                border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+</li><li id="file7-256">                        }
+</li><li id="file7-257">                        .dark tr {
+</li><li id="file7-258">                                border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+</li><li id="file7-259">                        }
+</li><li id="file7-260">                        tr:last-child {
+</li><li id="file7-261">                                border-bottom: none;
+</li><li id="file7-262">                        }
+</li><li id="file7-263">                        th {
+</li><li id="file7-264">                                background: #f1f5f9;
+</li><li id="file7-265">                                font-weight: 600;
+</li><li id="file7-266">                                text-align: left;
+</li><li id="file7-267">                                padding: 10px 16px;
+</li><li id="file7-268">                                font-size: 13px;
+</li><li id="file7-269">                                text-transform: uppercase;
+</li><li id="file7-270">                                letter-spacing: 0.05em;
+</li><li id="file7-271">                                color: #64748b;
+</li><li id="file7-272">                        }
+</li><li id="file7-273">                        .dark th {
+</li><li id="file7-274">                                background: #0f172a;
+</li><li id="file7-275">                                color: #94a3b8;
+</li><li id="file7-276">                        }
+</li><li id="file7-277">                        td {
+</li><li id="file7-278">                                padding: 8px 16px;
+</li><li id="file7-279">                        }
+</li><li id="file7-280">                        table .total {
+</li><li id="file7-281">                                font-weight: 600;
+</li><li id="file7-282">                        }
+</li><li id="file7-283">                        table .fnc {
+</li><li id="file7-284">                                font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+</li><li id="file7-285">                                font-size: 13px;
+</li><li id="file7-286">                        }
+</li><li id="file7-287">                        table .fnc .clickable {
+</li><li id="file7-288">                                color: #3b82f6;
+</li><li id="file7-289">                                text-decoration: none;
+</li><li id="file7-290">                                transition: color 0.2s ease;
+</li><li id="file7-291">                        }
+</li><li id="file7-292">                        table .fnc .clickable:hover {
+</li><li id="file7-293">                                color: #2563eb;
+</li><li id="file7-294">                                text-decoration: underline;
+</li><li id="file7-295">                        }
+</li><li id="file7-296">                        .dark table .fnc .clickable {
+</li><li id="file7-297">                                color: #60a5fa;
+</li><li id="file7-298">                        }
+</li><li id="file7-299">                        .dark table .fnc .clickable:hover {
+</li><li id="file7-300">                                color: #93bbfc;
+</li><li id="file7-301">                        }
+</li><li id="file7-302">                        table .cov {
+</li><li id="file7-303">                                width: 120px;
+</li><li id="file7-304">                                text-align: right;
+</li><li id="file7-305">                                padding: 0;
+</li><li id="file7-306">                        }
+</li><li id="file7-307">                        .cov-cell {
+</li><li id="file7-308">                                position: relative;
+</li><li id="file7-309">                                padding: 8px 16px;
+</li><li id="file7-310">                                background-color: transparent;
+</li><li id="file7-311">                        }
+</li><li id="file7-312">                        .cov-text {
+</li><li id="file7-313">                                position: relative;
+</li><li id="file7-314">                                z-index: 1;
+</li><li id="file7-315">                                font-weight: 600;
+</li><li id="file7-316">                                font-size: 13px;
+</li><li id="file7-317">                        }
+</li><li id="file7-318">                        .cov-bg {
+</li><li id="file7-319">                                position: absolute;
+</li><li id="file7-320">                                left: 0;
+</li><li id="file7-321">                                top: 0;
+</li><li id="file7-322">                                bottom: 0;
+</li><li id="file7-323">                                z-index: 0;
+</li><li id="file7-324">                        }
+</li><li id="file7-325">                &lt;/style&gt;
+</li><li id="file7-326">        &lt;/head&gt;
+</li><li id="file7-327">        &lt;body&gt;
+</li><li id="file7-328">                &lt;div class="main {{.Theme}}"&gt;
+</li><li id="file7-329">                        &lt;div id="tree"&gt;
+</li><li id="file7-330">                        {{range $i, $t := .Tree}}
+</li><li id="file7-331">                                {{if $t.IsFile}}
+</li><li id="file7-332">                                &lt;div class="file" id="tree{{$t.ID}}" onclick="change({{$t.ID}}, {{$t.Indent}});"&gt;
+</li><li id="file7-333">                                        &lt;div class="tree-item clickable" style="margin-inline-start: {{indent $t.Indent}}px;"&gt;
+</li><li id="file7-334">                                                &lt;div class="tree-item-bg" style="width: {{if eq $t.Coverage 0.0}}100{{else}}{{$t.Coverage}}{{end}}%; background-color: {{coverageColor $t.Coverage}}"&gt;&lt;/div&gt;
+</li><li id="file7-335">                                                &lt;div class="tree-item-content"&gt;
+</li><li id="file7-336">                                                        &lt;span class="tree-name"&gt;{{$t.Name}}&lt;/span&gt;
+</li><li id="file7-337">                                                        &lt;span class="tree-coverage"&gt;{{$t.Coverage}}%&lt;/span&gt;
+</li><li id="file7-338">                                                &lt;/div&gt;
+</li><li id="file7-339">                                        &lt;/div&gt;
+</li><li id="file7-340">                                &lt;/div&gt;
+</li><li id="file7-341">                                {{else}}
+</li><li id="file7-342">                                &lt;div&gt;
+</li><li id="file7-343">                                        &lt;div class="tree-item" style="margin-inline-start: {{indent $t.Indent}}px"&gt;
+</li><li id="file7-344">                                                &lt;div class="tree-item-bg" style="width: {{if eq $t.Coverage 0.0}}100{{else}}{{$t.Coverage}}{{end}}%; background-color: {{coverageColor $t.Coverage}}"&gt;&lt;/div&gt;
+</li><li id="file7-345">                                                &lt;div class="tree-item-content"&gt;
+</li><li id="file7-346">                                                        &lt;span class="tree-name"&gt;{{$t.Name}}/&lt;/span&gt;
+</li><li id="file7-347">                                                        &lt;span class="tree-coverage"&gt;{{$t.Coverage}}%&lt;/span&gt;
+</li><li id="file7-348">                                                &lt;/div&gt;
+</li><li id="file7-349">                                        &lt;/div&gt;
+</li><li id="file7-350">                                &lt;/div&gt;
+</li><li id="file7-351">                                {{end}}
+</li><li id="file7-352">                        {{end}}
+</li><li id="file7-353">                        &lt;/div&gt;
+</li><li id="file7-354">                        &lt;div id="coverage"&gt;
+</li><li id="file7-355">                                {{range $i, $f := .Files}}
+</li><li id="file7-356">                                &lt;div id="file{{$f.ID}}"  style="display: none"&gt;
+</li><li id="file7-357">                                        &lt;table&gt;
+</li><li id="file7-358">                                                &lt;tr&gt;&lt;th&gt;Function&lt;/th&gt;&lt;th style="text-align: right"&gt;Coverage&lt;/th&gt;&lt;/tr&gt;
+</li><li id="file7-359">                                                &lt;tr&gt;
+</li><li id="file7-360">                                                        &lt;td class="total"&gt;Total Coverage&lt;/td&gt;
+</li><li id="file7-361">                                                        &lt;td class="cov"&gt;
+</li><li id="file7-362">                                                                &lt;div class="cov-cell"&gt;
+</li><li id="file7-363">                                                                        &lt;div class="cov-bg" style="width: {{if eq $f.Coverage 0.0}}100{{else}}{{$f.Coverage}}{{end}}%; background-color: {{coverageColor $f.Coverage}}"&gt;&lt;/div&gt;
+</li><li id="file7-364">                                                                        &lt;div class="cov-text"&gt;{{$f.Coverage}}%&lt;/div&gt;
+</li><li id="file7-365">                                                                &lt;/div&gt;
+</li><li id="file7-366">                                                        &lt;/td&gt;
+</li><li id="file7-367">                                                &lt;/tr&gt;
+</li><li id="file7-368">                                                {{range $j, $fn := .Functions}}
+</li><li id="file7-369">                                                &lt;tr&gt;
+</li><li id="file7-370">                                                        &lt;td class="fnc"&gt;&lt;span class="clickable" onclick="scrollToLine({{$f.ID}}, {{$fn.Line}});"&gt;{{$fn.Name}}&lt;/span&gt;&lt;/td&gt;
+</li><li id="file7-371">                                                        &lt;td class="cov"&gt;
+</li><li id="file7-372">                                                                &lt;div class="cov-cell"&gt;
+</li><li id="file7-373">                                                                        &lt;div class="cov-bg" style="width: {{if eq $fn.Coverage 0.0}}100{{else}}{{$fn.Coverage}}{{end}}%; background-color: {{coverageColor $fn.Coverage}}"&gt;&lt;/div&gt;
+</li><li id="file7-374">                                                                        &lt;div class="cov-text"&gt;{{$fn.Coverage}}%&lt;/div&gt;
+</li><li id="file7-375">                                                                &lt;/div&gt;
+</li><li id="file7-376">                                                        &lt;/td&gt;
+</li><li id="file7-377">                                                &lt;/tr&gt;
+</li><li id="file7-378">                                                {{end}}
+</li><li id="file7-379">                                        &lt;/table&gt;
+</li><li id="file7-380">
+</li><li id="file7-381">                                        &lt;div class="source"&gt;
+</li><li id="file7-382">                                                &lt;pre&gt;{{$f.Body}}&lt;/pre&gt;
+</li><li id="file7-383">                                        &lt;/div&gt;
+</li><li id="file7-384">                                &lt;/div&gt;
+</li><li id="file7-385">                                {{end}}
+</li><li id="file7-386">                        &lt;/div&gt;
+</li><li id="file7-387">                &lt;/div&gt;
+</li><li id="file7-388">
+</li><li id="file7-389">                &lt;script&gt;
+</li><li id="file7-390">                        let current;
+</li><li id="file7-391">                        let currentTree;
+</li><li id="file7-392">                        updateByQuery();
+</li><li id="file7-393">
+</li><li id="file7-394">                        window.addEventListener('popstate', function(e) {
+</li><li id="file7-395">                                updateByQuery();
+</li><li id="file7-396">                        })
+</li><li id="file7-397">
+</li><li id="file7-398">                        window.addEventListener('hashchange', function(e) {
+</li><li id="file7-399">                                handleHashChange();
+</li><li id="file7-400">                        })
+</li><li id="file7-401">
+</li><li id="file7-402">                        window.addEventListener('load', function() {
+</li><li id="file7-403">                                handleHashChange();
+</li><li id="file7-404">                                setupLineNumberClicks();
+</li><li id="file7-405">                        })
+</li><li id="file7-406">
+</li><li id="file7-407">                        function updateByQuery() {
+</li><li id="file7-408">                                const searchParams = new URLSearchParams(window.location.search);
+</li><li id="file7-409">                                const n = searchParams.get('n');
+</li><li id="file7-410">                                const i = searchParams.get('i');
+</li><li id="file7-411">                                if (n &amp;&amp; i) {
+</li><li id="file7-412">                                        change(n, i);
+</li><li id="file7-413">                                }
+</li><li id="file7-414">                                // Check for hash after loading the file
+</li><li id="file7-415">                                setTimeout(handleHashChange, 100);
+</li><li id="file7-416">                        }
+</li><li id="file7-417">
+</li><li id="file7-418">                        function handleHashChange() {
+</li><li id="file7-419">                                const hash = window.location.hash;
+</li><li id="file7-420">                                if (hash) {
+</li><li id="file7-421">                                        // Check if it's a range (e.g., #file1-L10-L20)
+</li><li id="file7-422">                                        const rangeMatch = hash.match(/#file(\d+)-L(\d+)-L(\d+)/);
+</li><li id="file7-423">                                        if (rangeMatch) {
+</li><li id="file7-424">                                                const fileId = rangeMatch[1];
+</li><li id="file7-425">                                                const startLine = parseInt(rangeMatch[2]);
+</li><li id="file7-426">                                                const endLine = parseInt(rangeMatch[3]);
+</li><li id="file7-427">                                                
+</li><li id="file7-428">                                                // Highlight the range
+</li><li id="file7-429">                                                highlightLineRange(fileId, startLine, endLine);
+</li><li id="file7-430">                                                
+</li><li id="file7-431">                                                // Scroll to start of range
+</li><li id="file7-432">                                                const startElm = document.getElementById('file' + fileId + '-' + startLine);
+</li><li id="file7-433">                                                if (startElm) {
+</li><li id="file7-434">                                                        startElm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+</li><li id="file7-435">                                                }
+</li><li id="file7-436">                                        } else {
+</li><li id="file7-437">                                                // Single line
+</li><li id="file7-438">                                                const elm = document.getElementById(hash.substring(1));
+</li><li id="file7-439">                                                if (elm) {
+</li><li id="file7-440">                                                        elm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+</li><li id="file7-441">                                                        // Clear previous highlights
+</li><li id="file7-442">                                                        clearHighlights();
+</li><li id="file7-443">                                                        // Highlight the line briefly
+</li><li id="file7-444">                                                        elm.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+</li><li id="file7-445">                                                        setTimeout(() =&gt; {
+</li><li id="file7-446">                                                                elm.style.backgroundColor = '';
+</li><li id="file7-447">                                                        }, 1500);
+</li><li id="file7-448">                                                }
+</li><li id="file7-449">                                        }
+</li><li id="file7-450">                                }
+</li><li id="file7-451">                        }
+</li><li id="file7-452">
+</li><li id="file7-453">                        function select(n) {
+</li><li id="file7-454">                                if (current) {
+</li><li id="file7-455">                                        current.style.display = 'none';
+</li><li id="file7-456">                                }
+</li><li id="file7-457">
+</li><li id="file7-458">                                current = document.getElementById('file' + n);
+</li><li id="file7-459">                                if (!current) {
+</li><li id="file7-460">                                        return;
+</li><li id="file7-461">                                }
+</li><li id="file7-462">                                current.style.display = 'block';
+</li><li id="file7-463">                                // Setup line number clicks for the newly displayed file
+</li><li id="file7-464">                                setTimeout(setupLineNumberClicks, 100);
+</li><li id="file7-465">                        }
+</li><li id="file7-466">
+</li><li id="file7-467">                        function selectTree(n, indent) {
+</li><li id="file7-468">                                if (currentTree) {
+</li><li id="file7-469">                                        currentTree.classList.remove('current');
+</li><li id="file7-470">                                }
+</li><li id="file7-471">
+</li><li id="file7-472">                                currentTree = document.getElementById('tree' + n);
+</li><li id="file7-473">                                if (!currentTree) {
+</li><li id="file7-474">                                        return;
+</li><li id="file7-475">                                }
+</li><li id="file7-476">                                currentTree.classList.add('current');
+</li><li id="file7-477">                        }
+</li><li id="file7-478">
+</li><li id="file7-479">                        function scrollById(id) {
+</li><li id="file7-480">                                const elm = document.getElementById(id);
+</li><li id="file7-481">                                if (elm) {
+</li><li id="file7-482">                                        elm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+</li><li id="file7-483">                                }
+</li><li id="file7-484">                        }
+</li><li id="file7-485">
+</li><li id="file7-486">                        function scrollToLine(fileId, lineNum) {
+</li><li id="file7-487">                                const lineId = 'file' + fileId + '-' + lineNum;
+</li><li id="file7-488">                                // Update URL with hash
+</li><li id="file7-489">                                const url = new URL(window.location.href);
+</li><li id="file7-490">                                url.hash = lineId;
+</li><li id="file7-491">                                history.pushState("", "", url);
+</li><li id="file7-492">                                
+</li><li id="file7-493">                                // Scroll to the line
+</li><li id="file7-494">                                scrollById(lineId);
+</li><li id="file7-495">                                
+</li><li id="file7-496">                                // Highlight the line
+</li><li id="file7-497">                                const elm = document.getElementById(lineId);
+</li><li id="file7-498">                                if (elm) {
+</li><li id="file7-499">                                        elm.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+</li><li id="file7-500">                                        setTimeout(() =&gt; {
+</li><li id="file7-501">                                                elm.style.backgroundColor = '';
+</li><li id="file7-502">                                        }, 1500);
+</li><li id="file7-503">                                }
+</li><li id="file7-504">                        }
+</li><li id="file7-505">
+</li><li id="file7-506">                        function change(n, i) {
+</li><li id="file7-507">                                select(n);
+</li><li id="file7-508">                                selectTree(n, i);
+</li><li id="file7-509">                                updateUrl(n, i)
+</li><li id="file7-510">                        }
+</li><li id="file7-511">
+</li><li id="file7-512">                        function updateUrl(n, i) {
+</li><li id="file7-513">                                const url = new URL(window.location.href);
+</li><li id="file7-514">                                if( !url.searchParams.get('n') ) {
+</li><li id="file7-515">                                        url.searchParams.append('n',n);
+</li><li id="file7-516">                                        url.searchParams.append('i',i);
+</li><li id="file7-517">                                        location.href = url;
+</li><li id="file7-518">                                } else {
+</li><li id="file7-519">                                        if (url.searchParams.get('n') != n || url.searchParams.get('i') != i) {
+</li><li id="file7-520">                                                url.searchParams.set('n',n);
+</li><li id="file7-521">                                                url.searchParams.set('i',i);
+</li><li id="file7-522">                                                history.pushState("", "", url);
+</li><li id="file7-523">                                        }
+</li><li id="file7-524">                                }
+</li><li id="file7-525">                        }
+</li><li id="file7-526">
+</li><li id="file7-527">                        let lastClickedLine = null;
+</li><li id="file7-528">
+</li><li id="file7-529">                        function setupLineNumberClicks() {
+</li><li id="file7-530">                                // Wait for content to be loaded
+</li><li id="file7-531">                                setTimeout(() =&gt; {
+</li><li id="file7-532">                                        document.querySelectorAll('li').forEach(li =&gt; {
+</li><li id="file7-533">                                                const id = li.id;
+</li><li id="file7-534">                                                if (id &amp;&amp; id.includes('-')) {
+</li><li id="file7-535">                                                        // Create clickable line number
+</li><li id="file7-536">                                                        li.addEventListener('click', function(e) {
+</li><li id="file7-537">                                                                if (e.target === li || window.getComputedStyle(e.target, ':before').getPropertyValue('content')) {
+</li><li id="file7-538">                                                                        const parts = id.split('-');
+</li><li id="file7-539">                                                                        const fileId = parts[0].replace('file', '');
+</li><li id="file7-540">                                                                        const lineNum = parseInt(parts[1]);
+</li><li id="file7-541">                                                                        
+</li><li id="file7-542">                                                                        if (e.shiftKey &amp;&amp; lastClickedLine &amp;&amp; lastClickedLine.fileId === fileId) {
+</li><li id="file7-543">                                                                                // Range selection
+</li><li id="file7-544">                                                                                const startLine = Math.min(lastClickedLine.lineNum, lineNum);
+</li><li id="file7-545">                                                                                const endLine = Math.max(lastClickedLine.lineNum, lineNum);
+</li><li id="file7-546">                                                                                
+</li><li id="file7-547">                                                                                // Update URL with range
+</li><li id="file7-548">                                                                                const url = new URL(window.location.href);
+</li><li id="file7-549">                                                                                url.hash = 'file' + fileId + '-L' + startLine + '-L' + endLine;
+</li><li id="file7-550">                                                                                history.pushState("", "", url);
+</li><li id="file7-551">                                                                                
+</li><li id="file7-552">                                                                                // Highlight range
+</li><li id="file7-553">                                                                                highlightLineRange(fileId, startLine, endLine);
+</li><li id="file7-554">                                                                        } else {
+</li><li id="file7-555">                                                                                // Single line selection
+</li><li id="file7-556">                                                                                const url = new URL(window.location.href);
+</li><li id="file7-557">                                                                                url.hash = id;
+</li><li id="file7-558">                                                                                history.pushState("", "", url);
+</li><li id="file7-559">                                                                                
+</li><li id="file7-560">                                                                                // Clear previous highlights
+</li><li id="file7-561">                                                                                clearHighlights();
+</li><li id="file7-562">                                                                                
+</li><li id="file7-563">                                                                                // Highlight the line
+</li><li id="file7-564">                                                                                li.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+</li><li id="file7-565">                                                                                setTimeout(() =&gt; {
+</li><li id="file7-566">                                                                                        if (!li.classList.contains('range-highlight')) {
+</li><li id="file7-567">                                                                                                li.style.backgroundColor = '';
+</li><li id="file7-568">                                                                                        }
+</li><li id="file7-569">                                                                                }, 1500);
+</li><li id="file7-570">                                                                                
+</li><li id="file7-571">                                                                                lastClickedLine = { fileId, lineNum };
+</li><li id="file7-572">                                                                        }
+</li><li id="file7-573">                                                                }
+</li><li id="file7-574">                                                        });
+</li><li id="file7-575">                                                }
+</li><li id="file7-576">                                        });
+</li><li id="file7-577">                                }, 100);
+</li><li id="file7-578">                        }
+</li><li id="file7-579">
+</li><li id="file7-580">                        function highlightLineRange(fileId, startLine, endLine) {
+</li><li id="file7-581">                                clearHighlights();
+</li><li id="file7-582">                                for (let i = startLine; i &lt;= endLine; i++) {
+</li><li id="file7-583">                                        const li = document.getElementById('file' + fileId + '-' + i);
+</li><li id="file7-584">                                        if (li) {
+</li><li id="file7-585">                                                li.classList.add('range-highlight');
+</li><li id="file7-586">                                                li.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+</li><li id="file7-587">                                        }
+</li><li id="file7-588">                                }
+</li><li id="file7-589">                        }
+</li><li id="file7-590">
+</li><li id="file7-591">                        function clearHighlights() {
+</li><li id="file7-592">                                document.querySelectorAll('.range-highlight').forEach(li =&gt; {
+</li><li id="file7-593">                                        li.classList.remove('range-highlight');
+</li><li id="file7-594">                                        li.style.backgroundColor = '';
+</li><li id="file7-595">                                });
+</li><li id="file7-596">                        }
+</li><li id="file7-597">                &lt;/script&gt;
+</li><li id="file7-598">        &lt;/body&gt;
+</li><li id="file7-599">&lt;/html&gt;
+</li><li id="file7-600">`
 </li></ol></pre>
 					</div>
 				</div>
 				
 				<div id="file5"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">100%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file5-18');">func (n *Node) ChildBlocks() profile.Blocks</span></td>
-							<td class="cov">100%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file5-30');">func Create(profiles profile.Profiles) []Node</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 5 ,  18 );">func (n *Node) ChildBlocks() profile.Blocks</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file5-48');">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 5 ,  30 );">func Create(profiles profile.Profiles) []Node</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file5-67');">func index(nodes []Node, name string) int</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 5 ,  48 );">func addNode(nodes *[]Node, paths []string, p *profile.Profile)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file5-86');">func mergeSingreDir(nodes []Node) []Node</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 5 ,  67 );">func index(nodes []Node, name string) int</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 5 ,  86 );">func mergeSingreDir(nodes []Node) []Node</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -1392,628 +2240,788 @@
 					</div>
 				</div>
 				
-				<div id="file8"  style="display: none">
-					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">0%</td></tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file8-7');">func (e *optionErrors) Error() string</span></td>
-							<td class="cov">0%</td>
-						</tr>
-						
-					</table>
-
-					<div class="source">
-						<pre><ol><li id="file8-1">package option
-</li><li id="file8-2">
-</li><li id="file8-3">import "strings"
-</li><li id="file8-4">
-</li><li id="file8-5">type optionErrors []error
-</li><li id="file8-6">
-</li><li id="file8-7">func (e *optionErrors) Error() string <span class="cov0">{
-</span></li><li id="file8-8"><span class="cov0">        messages := make([]string, 0, len(*e))
-</span></li><li id="file8-9"><span class="cov0">        for _, err := range *e </span><span class="cov0">{
-</span></li><li id="file8-10"><span class="cov0">                messages = append(messages, err.Error())
-</span></li><li id="file8-11"><span class="cov0">        }</span>
-</li><li id="file8-12">        <span class="cov0">return strings.Join(messages, "\n")</span>
-</li><li id="file8-13">}
-</li></ol></pre>
-					</div>
-				</div>
-				
-				<div id="file9"  style="display: none">
-					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">96.6%</td></tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-62');">func New(r reader.Reader) *Generator</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-66');">func (g *Generator) Generate(input *string, inputFiles *string, output *string, theme *string, include *string, exclude *string, excludeFunc *string) (*Option, error)</span></td>
-							<td class="cov">92.9%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-94');">func (g *Generator) readOptionFile() (*optionConfig, error)</span></td>
-							<td class="cov">70%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-113');">func (g *Generator) stringValue(arg *string, opt string) string</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-120');">func (g *Generator) stringsValue(arg *string, opt []string) []string</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-127');">func (g *Generator) getValidatedOption(opt *optionConfig) (*Option, error)</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-134');">func (g *Generator) validate(opt *optionConfig) error</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-157');">func (g *Generator) validateFilter(f string, values []string) optionErrors</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-171');">func (g *Generator) validateExcludeFunc(values []string) optionErrors</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-195');">func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-221');">func (g *Generator) isEmpty(s string) bool</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-225');">func (g *Generator) convertInputFilesOption(values []string) []string</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-237');">func (g *Generator) convertFilterValue(values []string) []string</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file9-252');">func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOption</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-					</table>
-
-					<div class="source">
-						<pre><ol><li id="file9-1">package option
-</li><li id="file9-2">
-</li><li id="file9-3">import (
-</li><li id="file9-4">        "fmt"
-</li><li id="file9-5">        "io"
-</li><li id="file9-6">        "regexp"
-</li><li id="file9-7">        "strings"
-</li><li id="file9-8">
-</li><li id="file9-9">        "github.com/masakurapa/gover-html/internal/reader"
-</li><li id="file9-10">
-</li><li id="file9-11">        "gopkg.in/yaml.v2"
-</li><li id="file9-12">)
-</li><li id="file9-13">
-</li><li id="file9-14">const (
-</li><li id="file9-15">        fileName = ".gover.yml"
-</li><li id="file9-16">
-</li><li id="file9-17">        optionSeparator = ","
-</li><li id="file9-18">
-</li><li id="file9-19">        inputDefault  = "coverage.out"
-</li><li id="file9-20">        outputDefault = "coverage.html"
-</li><li id="file9-21">
-</li><li id="file9-22">        themeDark    = "dark"
-</li><li id="file9-23">        themeLight   = "light"
-</li><li id="file9-24">        themeDefault = themeDark
-</li><li id="file9-25">)
-</li><li id="file9-26">
-</li><li id="file9-27">var (
-</li><li id="file9-28">        // 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
-</li><li id="file9-29">        excludeFuncFormat = regexp.MustCompile(`^\((.+)\)\.([a-zA-Z].+)$`)
-</li><li id="file9-30">)
-</li><li id="file9-31">
-</li><li id="file9-32">type optionConfig struct {
-</li><li id="file9-33">        Input       string
-</li><li id="file9-34">        InputFiles  []string `yaml:"input-files"`
-</li><li id="file9-35">        Output      string
-</li><li id="file9-36">        Theme       string
-</li><li id="file9-37">        Include     []string // include fire or directories
-</li><li id="file9-38">        Exclude     []string // exclude fire or directories
-</li><li id="file9-39">        ExcludeFunc []string `yaml:"exclude-func"` // exclude functions
-</li><li id="file9-40">}
-</li><li id="file9-41">
-</li><li id="file9-42">type Option struct {
-</li><li id="file9-43">        Input       string
-</li><li id="file9-44">        InputFiles  []string
-</li><li id="file9-45">        Output      string
-</li><li id="file9-46">        Theme       string
-</li><li id="file9-47">        Include     []string            // include fire or directories
-</li><li id="file9-48">        Exclude     []string            // exclude fire or directories
-</li><li id="file9-49">        ExcludeFunc []ExcludeFuncOption // exclude functions
-</li><li id="file9-50">}
-</li><li id="file9-51">
-</li><li id="file9-52">type ExcludeFuncOption struct {
-</li><li id="file9-53">        Path   string
-</li><li id="file9-54">        Struct string
-</li><li id="file9-55">        Func   string
-</li><li id="file9-56">}
-</li><li id="file9-57">
-</li><li id="file9-58">type Generator struct {
-</li><li id="file9-59">        r reader.Reader
-</li><li id="file9-60">}
-</li><li id="file9-61">
-</li><li id="file9-62">func New(r reader.Reader) *Generator <span class="cov1">{
-</span></li><li id="file9-63"><span class="cov1">        return &amp;Generator{r: r}
-</span></li><li id="file9-64"><span class="cov1">}</span>
-</li><li id="file9-65">
-</li><li id="file9-66">func (g *Generator) Generate(
-</li><li id="file9-67">        input *string,
-</li><li id="file9-68">        inputFiles *string,
-</li><li id="file9-69">        output *string,
-</li><li id="file9-70">        theme *string,
-</li><li id="file9-71">        include *string,
-</li><li id="file9-72">        exclude *string,
-</li><li id="file9-73">        excludeFunc *string,
-</li><li id="file9-74">) (*Option, error) <span class="cov1">{
-</span></li><li id="file9-75"><span class="cov1">        opt := &amp;optionConfig{}
-</span></li><li id="file9-76"><span class="cov1">        if g.r.Exists(fileName) </span><span class="cov1">{
-</span></li><li id="file9-77"><span class="cov1">                fileOpt, err := g.readOptionFile()
-</span></li><li id="file9-78"><span class="cov1">                if err != nil </span><span class="cov0">{
-</span></li><li id="file9-79"><span class="cov0">                        return nil, err
-</span></li><li id="file9-80"><span class="cov0">                }</span>
-</li><li id="file9-81">                <span class="cov1">opt = fileOpt</span>
-</li><li id="file9-82">        }
-</li><li id="file9-83">
-</li><li id="file9-84">        <span class="cov1">opt.Input = g.stringValue(input, opt.Input)
-</span></li><li id="file9-85"><span class="cov1">        opt.InputFiles = g.stringsValue(inputFiles, opt.InputFiles)
-</span></li><li id="file9-86"><span class="cov1">        opt.Output = g.stringValue(output, opt.Output)
-</span></li><li id="file9-87"><span class="cov1">        opt.Theme = g.stringValue(theme, opt.Theme)
-</span></li><li id="file9-88"><span class="cov1">        opt.Include = g.stringsValue(include, opt.Include)
-</span></li><li id="file9-89"><span class="cov1">        opt.Exclude = g.stringsValue(exclude, opt.Exclude)
-</span></li><li id="file9-90"><span class="cov1">        opt.ExcludeFunc = g.stringsValue(excludeFunc, opt.ExcludeFunc)
-</span></li><li id="file9-91"><span class="cov1">        return g.getValidatedOption(opt)</span>
-</li><li id="file9-92">}
-</li><li id="file9-93">
-</li><li id="file9-94">func (g *Generator) readOptionFile() (*optionConfig, error) <span class="cov1">{
-</span></li><li id="file9-95"><span class="cov1">        r, err := g.r.Read(fileName)
-</span></li><li id="file9-96"><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li id="file9-97"><span class="cov0">                return nil, err
-</span></li><li id="file9-98"><span class="cov0">        }</span>
-</li><li id="file9-99">
-</li><li id="file9-100">        <span class="cov1">b, err := io.ReadAll(r)
-</span></li><li id="file9-101"><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li id="file9-102"><span class="cov0">                return nil, err
-</span></li><li id="file9-103"><span class="cov0">        }</span>
-</li><li id="file9-104">
-</li><li id="file9-105">        <span class="cov1">opt := optionConfig{}
-</span></li><li id="file9-106"><span class="cov1">        if err := yaml.Unmarshal(b, &amp;opt); err != nil </span><span class="cov0">{
-</span></li><li id="file9-107"><span class="cov0">                return nil, err
-</span></li><li id="file9-108"><span class="cov0">        }</span>
-</li><li id="file9-109">
-</li><li id="file9-110">        <span class="cov1">return &amp;opt, nil</span>
-</li><li id="file9-111">}
-</li><li id="file9-112">
-</li><li id="file9-113">func (g *Generator) stringValue(arg *string, opt string) string <span class="cov1">{
-</span></li><li id="file9-114"><span class="cov1">        if arg == nil </span><span class="cov1">{
-</span></li><li id="file9-115"><span class="cov1">                return opt
-</span></li><li id="file9-116"><span class="cov1">        }</span>
-</li><li id="file9-117">        <span class="cov1">return *arg</span>
-</li><li id="file9-118">}
-</li><li id="file9-119">
-</li><li id="file9-120">func (g *Generator) stringsValue(arg *string, opt []string) []string <span class="cov1">{
-</span></li><li id="file9-121"><span class="cov1">        if arg == nil </span><span class="cov1">{
-</span></li><li id="file9-122"><span class="cov1">                return opt
-</span></li><li id="file9-123"><span class="cov1">        }</span>
-</li><li id="file9-124">        <span class="cov1">return strings.Split(*arg, optionSeparator)</span>
-</li><li id="file9-125">}
-</li><li id="file9-126">
-</li><li id="file9-127">func (g *Generator) getValidatedOption(opt *optionConfig) (*Option, error) <span class="cov1">{
-</span></li><li id="file9-128"><span class="cov1">        if err := g.validate(opt); err != nil </span><span class="cov1">{
-</span></li><li id="file9-129"><span class="cov1">                return nil, err
-</span></li><li id="file9-130"><span class="cov1">        }</span>
-</li><li id="file9-131">        <span class="cov1">return g.getOptionWithDefaultValue(opt), nil</span>
-</li><li id="file9-132">}
-</li><li id="file9-133">
-</li><li id="file9-134">func (g *Generator) validate(opt *optionConfig) error <span class="cov1">{
-</span></li><li id="file9-135"><span class="cov1">        errs := make(optionErrors, 0)
-</span></li><li id="file9-136"><span class="cov1">
-</span></li><li id="file9-137"><span class="cov1">        if !g.isEmpty(opt.Theme) &amp;&amp; opt.Theme != themeDark &amp;&amp; opt.Theme != themeLight </span><span class="cov1">{
-</span></li><li id="file9-138"><span class="cov1">                errs = append(errs, fmt.Errorf("theme must be %q or %q", themeDark, themeLight))
-</span></li><li id="file9-139"><span class="cov1">        }</span>
-</li><li id="file9-140">
-</li><li id="file9-141">        <span class="cov1">if es := g.validateFilter("include", opt.Include); len(es) &gt; 0 </span><span class="cov1">{
-</span></li><li id="file9-142"><span class="cov1">                errs = append(errs, es...)
-</span></li><li id="file9-143"><span class="cov1">        }</span>
-</li><li id="file9-144">        <span class="cov1">if es := g.validateFilter("exclude", opt.Exclude); len(es) &gt; 0 </span><span class="cov1">{
-</span></li><li id="file9-145"><span class="cov1">                errs = append(errs, es...)
-</span></li><li id="file9-146"><span class="cov1">        }</span>
-</li><li id="file9-147">        <span class="cov1">if es := g.validateExcludeFunc(opt.ExcludeFunc); len(es) &gt; 0 </span><span class="cov1">{
-</span></li><li id="file9-148"><span class="cov1">                errs = append(errs, es...)
-</span></li><li id="file9-149"><span class="cov1">        }</span>
-</li><li id="file9-150">
-</li><li id="file9-151">        <span class="cov1">if len(errs) &gt; 0 </span><span class="cov1">{
-</span></li><li id="file9-152"><span class="cov1">                return &amp;errs
-</span></li><li id="file9-153"><span class="cov1">        }</span>
-</li><li id="file9-154">        <span class="cov1">return nil</span>
-</li><li id="file9-155">}
-</li><li id="file9-156">
-</li><li id="file9-157">func (g *Generator) validateFilter(f string, values []string) optionErrors <span class="cov1">{
-</span></li><li id="file9-158"><span class="cov1">        errs := make(optionErrors, 0)
-</span></li><li id="file9-159"><span class="cov1">        for _, v := range values </span><span class="cov1">{
-</span></li><li id="file9-160"><span class="cov1">                if g.isEmpty(v) </span><span class="cov1">{
-</span></li><li id="file9-161"><span class="cov1">                        continue</span>
-</li><li id="file9-162">                }
-</li><li id="file9-163">
-</li><li id="file9-164">                <span class="cov1">if strings.HasPrefix(v, "/") </span><span class="cov1">{
-</span></li><li id="file9-165"><span class="cov1">                        errs = append(errs, fmt.Errorf("%s value %q must not be an absolute path", f, v))
-</span></li><li id="file9-166"><span class="cov1">                }</span>
-</li><li id="file9-167">        }
-</li><li id="file9-168">        <span class="cov1">return errs</span>
-</li><li id="file9-169">}
-</li><li id="file9-170">
-</li><li id="file9-171">func (g *Generator) validateExcludeFunc(values []string) optionErrors <span class="cov1">{
-</span></li><li id="file9-172"><span class="cov1">        errs := make(optionErrors, 0)
-</span></li><li id="file9-173"><span class="cov1">        for _, v := range values </span><span class="cov1">{
-</span></li><li id="file9-174"><span class="cov1">                if g.isEmpty(v) </span><span class="cov1">{
-</span></li><li id="file9-175"><span class="cov1">                        continue</span>
-</li><li id="file9-176">                }
-</li><li id="file9-177">
-</li><li id="file9-178">                <span class="cov1">if strings.HasPrefix(v, "(/") </span><span class="cov1">{
-</span></li><li id="file9-179"><span class="cov1">                        errs = append(errs, fmt.Errorf("exclude-func value %q must not be an absolute path", v))
-</span></li><li id="file9-180"><span class="cov1">                        continue</span>
-</li><li id="file9-181">                }
-</li><li id="file9-182">
-</li><li id="file9-183">                // ()が含まれない場合は関数名のみとみなしてOK
-</li><li id="file9-184">                <span class="cov1">if !strings.Contains(v, "(") &amp;&amp; !strings.Contains(v, ")") </span><span class="cov1">{
-</span></li><li id="file9-185"><span class="cov1">                        continue</span>
-</li><li id="file9-186">                }
-</li><li id="file9-187">
-</li><li id="file9-188">                <span class="cov1">if !excludeFuncFormat.MatchString(v) </span><span class="cov1">{
-</span></li><li id="file9-189"><span class="cov1">                        errs = append(errs, fmt.Errorf("exclude-func value %q format is invalid", v))
-</span></li><li id="file9-190"><span class="cov1">                }</span>
-</li><li id="file9-191">        }
-</li><li id="file9-192">        <span class="cov1">return errs</span>
-</li><li id="file9-193">}
-</li><li id="file9-194">
-</li><li id="file9-195">func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option <span class="cov1">{
-</span></li><li id="file9-196"><span class="cov1">        newOpt := &amp;Option{
-</span></li><li id="file9-197"><span class="cov1">                Input:   opt.Input,
-</span></li><li id="file9-198"><span class="cov1">                Output:  opt.Output,
-</span></li><li id="file9-199"><span class="cov1">                Theme:   opt.Theme,
-</span></li><li id="file9-200"><span class="cov1">                Include: opt.Include,
-</span></li><li id="file9-201"><span class="cov1">                Exclude: opt.Exclude,
-</span></li><li id="file9-202"><span class="cov1">        }
-</span></li><li id="file9-203"><span class="cov1">
-</span></li><li id="file9-204"><span class="cov1">        if g.isEmpty(newOpt.Input) </span><span class="cov1">{
-</span></li><li id="file9-205"><span class="cov1">                newOpt.Input = inputDefault
-</span></li><li id="file9-206"><span class="cov1">        }</span>
-</li><li id="file9-207">        <span class="cov1">if g.isEmpty(newOpt.Output) </span><span class="cov1">{
-</span></li><li id="file9-208"><span class="cov1">                newOpt.Output = outputDefault
-</span></li><li id="file9-209"><span class="cov1">        }</span>
-</li><li id="file9-210">        <span class="cov1">if g.isEmpty(newOpt.Theme) </span><span class="cov1">{
-</span></li><li id="file9-211"><span class="cov1">                newOpt.Theme = themeDefault
-</span></li><li id="file9-212"><span class="cov1">        }</span>
-</li><li id="file9-213">
-</li><li id="file9-214">        <span class="cov1">newOpt.InputFiles = g.convertInputFilesOption(opt.InputFiles)
-</span></li><li id="file9-215"><span class="cov1">        newOpt.Include = g.convertFilterValue(newOpt.Include)
-</span></li><li id="file9-216"><span class="cov1">        newOpt.Exclude = g.convertFilterValue(newOpt.Exclude)
-</span></li><li id="file9-217"><span class="cov1">        newOpt.ExcludeFunc = g.convertExcludeFuncOption(opt.ExcludeFunc)
-</span></li><li id="file9-218"><span class="cov1">        return newOpt</span>
-</li><li id="file9-219">}
-</li><li id="file9-220">
-</li><li id="file9-221">func (g *Generator) isEmpty(s string) bool <span class="cov1">{
-</span></li><li id="file9-222"><span class="cov1">        return s == ""
-</span></li><li id="file9-223"><span class="cov1">}</span>
-</li><li id="file9-224">
-</li><li id="file9-225">func (g *Generator) convertInputFilesOption(values []string) []string <span class="cov1">{
-</span></li><li id="file9-226"><span class="cov1">        ret := make([]string, 0, len(values))
-</span></li><li id="file9-227"><span class="cov1">        for _, v := range values </span><span class="cov1">{
-</span></li><li id="file9-228"><span class="cov1">                s := strings.TrimSpace(v)
-</span></li><li id="file9-229"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
-</span></li><li id="file9-230"><span class="cov1">                        continue</span>
-</li><li id="file9-231">                }
-</li><li id="file9-232">                <span class="cov1">ret = append(ret, s)</span>
-</li><li id="file9-233">        }
-</li><li id="file9-234">        <span class="cov1">return ret</span>
-</li><li id="file9-235">}
-</li><li id="file9-236">
-</li><li id="file9-237">func (g *Generator) convertFilterValue(values []string) []string <span class="cov1">{
-</span></li><li id="file9-238"><span class="cov1">        ret := make([]string, 0, len(values))
-</span></li><li id="file9-239"><span class="cov1">        for _, v := range values </span><span class="cov1">{
-</span></li><li id="file9-240"><span class="cov1">                s := strings.TrimSpace(v)
-</span></li><li id="file9-241"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
-</span></li><li id="file9-242"><span class="cov1">                        continue</span>
-</li><li id="file9-243">                }
-</li><li id="file9-244">
-</li><li id="file9-245">                <span class="cov1">s = strings.TrimPrefix(s, "./")
-</span></li><li id="file9-246"><span class="cov1">                s = strings.TrimSuffix(s, "/")
-</span></li><li id="file9-247"><span class="cov1">                ret = append(ret, s)</span>
-</li><li id="file9-248">        }
-</li><li id="file9-249">        <span class="cov1">return ret</span>
-</li><li id="file9-250">}
-</li><li id="file9-251">
-</li><li id="file9-252">func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOption <span class="cov1">{
-</span></li><li id="file9-253"><span class="cov1">        ret := make([]ExcludeFuncOption, 0, len(values))
-</span></li><li id="file9-254"><span class="cov1">        for _, v := range values </span><span class="cov1">{
-</span></li><li id="file9-255"><span class="cov1">                s := strings.TrimSpace(v)
-</span></li><li id="file9-256"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
-</span></li><li id="file9-257"><span class="cov1">                        continue</span>
-</li><li id="file9-258">                }
-</li><li id="file9-259">
-</li><li id="file9-260">                // ()が含まれない場合は関数名のみとみなして終了
-</li><li id="file9-261">                <span class="cov1">if !strings.Contains(s, "(") &amp;&amp; !strings.Contains(s, ")") </span><span class="cov1">{
-</span></li><li id="file9-262"><span class="cov1">                        ret = append(ret, ExcludeFuncOption{Func: s})
-</span></li><li id="file9-263"><span class="cov1">                        continue</span>
-</li><li id="file9-264">                }
-</li><li id="file9-265">
-</li><li id="file9-266">                // excludeFuncFormat = regexp.MustCompile(`^\(.+\)\.([a-zA-Z].+)$`)
-</li><li id="file9-267">
-</li><li id="file9-268">                <span class="cov1">matches := excludeFuncFormat.FindStringSubmatch(s)
-</span></li><li id="file9-269"><span class="cov1">                optPath := strings.TrimSuffix(strings.TrimPrefix(matches[1], "./"), "/")
-</span></li><li id="file9-270"><span class="cov1">
-</span></li><li id="file9-271"><span class="cov1">                var path, structName string
-</span></li><li id="file9-272"><span class="cov1">                idx := strings.LastIndex(optPath, ".")
-</span></li><li id="file9-273"><span class="cov1">
-</span></li><li id="file9-274"><span class="cov1">                if idx == -1 </span><span class="cov1">{
-</span></li><li id="file9-275"><span class="cov1">                        // ファイル名で指定していない or 構造体名未指定
-</span></li><li id="file9-276"><span class="cov1">                        path = optPath
-</span></li><li id="file9-277"><span class="cov1">                }</span> else<span class="cov1"> {
-</span></li><li id="file9-278"><span class="cov1">                        s := optPath[idx+1:]
-</span></li><li id="file9-279"><span class="cov1">                        if s == "go" </span><span class="cov1">{
-</span></li><li id="file9-280"><span class="cov1">                                // ファイル名のみ指定している
-</span></li><li id="file9-281"><span class="cov1">                                path = optPath
-</span></li><li id="file9-282"><span class="cov1">                        }</span> else<span class="cov1"> {
-</span></li><li id="file9-283"><span class="cov1">                                path = optPath[:idx]
-</span></li><li id="file9-284"><span class="cov1">                                structName = s
-</span></li><li id="file9-285"><span class="cov1">                        }</span>
-</li><li id="file9-286">                }
-</li><li id="file9-287">
-</li><li id="file9-288">                <span class="cov1">if path == "*" </span><span class="cov1">{
-</span></li><li id="file9-289"><span class="cov1">                        path = ""
-</span></li><li id="file9-290"><span class="cov1">                }</span>
-</li><li id="file9-291">
-</li><li id="file9-292">                <span class="cov1">ret = append(ret, ExcludeFuncOption{
-</span></li><li id="file9-293"><span class="cov1">                        Path:   strings.TrimSuffix(strings.TrimPrefix(path, "./"), "/"),
-</span></li><li id="file9-294"><span class="cov1">                        Struct: structName,
-</span></li><li id="file9-295"><span class="cov1">                        Func:   matches[2],
-</span></li><li id="file9-296"><span class="cov1">                })</span>
-</li><li id="file9-297">        }
-</li><li id="file9-298">        <span class="cov1">return ret</span>
-</li><li id="file9-299">}
-</li></ol></pre>
-					</div>
-				</div>
-				
 				<div id="file10"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">92.3%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file10-48');">func (prof *Profile) IsRelativeOrAbsolute() bool</span></td>
-							<td class="cov">100%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file10-53');">func (prof *Profile) RemoveModulePathFromFileName() string</span></td>
-							<td class="cov">0%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file10-58');">func (prof *Profile) FilePath() string</span></td>
-							<td class="cov">100%</td>
-						</tr>
-						
-						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file10-66');">func (blocks *Blocks) Coverage() float64</span></td>
-							<td class="cov">100%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 10 ,  7 );">func (e *optionErrors) Error() string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
 
 					<div class="source">
-						<pre><ol><li id="file10-1">package profile
+						<pre><ol><li id="file10-1">package option
 </li><li id="file10-2">
-</li><li id="file10-3">import (
-</li><li id="file10-4">        "math"
-</li><li id="file10-5">        "path"
-</li><li id="file10-6">        "path/filepath"
-</li><li id="file10-7">        "strings"
-</li><li id="file10-8">)
-</li><li id="file10-9">
-</li><li id="file10-10">// Profiles is a type that represents a slice of Profile
-</li><li id="file10-11">type Profiles []Profile
-</li><li id="file10-12">
-</li><li id="file10-13">// Profile is profiling data for each file
-</li><li id="file10-14">type Profile struct {
-</li><li id="file10-15">        ID         int
-</li><li id="file10-16">        ModulePath string
-</li><li id="file10-17">        Dir        string
-</li><li id="file10-18">        FileName   string
-</li><li id="file10-19">        Blocks     Blocks
-</li><li id="file10-20">        Functions  Functions
-</li><li id="file10-21">}
-</li><li id="file10-22">
-</li><li id="file10-23">// Functions is a type that represents a slice of Function
-</li><li id="file10-24">type Functions []Function
-</li><li id="file10-25">
-</li><li id="file10-26">// Function is single func of profiling data
-</li><li id="file10-27">type Function struct {
-</li><li id="file10-28">        Name      string
-</li><li id="file10-29">        StartLine int
-</li><li id="file10-30">        StartCol  int
-</li><li id="file10-31">        Blocks    Blocks
-</li><li id="file10-32">}
-</li><li id="file10-33">
-</li><li id="file10-34">// Blocks is a type that represents a slice of Block
-</li><li id="file10-35">type Blocks []Block
-</li><li id="file10-36">
-</li><li id="file10-37">// Block is single block of profiling data
-</li><li id="file10-38">type Block struct {
-</li><li id="file10-39">        StartLine int
-</li><li id="file10-40">        StartCol  int
-</li><li id="file10-41">        EndLine   int
-</li><li id="file10-42">        EndCol    int
-</li><li id="file10-43">        NumState  int
-</li><li id="file10-44">        Count     int
-</li><li id="file10-45">}
-</li><li id="file10-46">
-</li><li id="file10-47">// IsRelativeOrAbsolute returns true if FileName is relative path or absolute path
-</li><li id="file10-48">func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov1">{
-</span></li><li id="file10-49"><span class="cov1">        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
-</span></li><li id="file10-50"><span class="cov1">}</span>
-</li><li id="file10-51">
-</li><li id="file10-52">// RemoveModulePathFromFileName returns FileName with ModulePath removed
-</li><li id="file10-53">func (prof *Profile) RemoveModulePathFromFileName() string <span class="cov0">{
-</span></li><li id="file10-54"><span class="cov0">        return strings.TrimPrefix(strings.TrimPrefix(prof.FileName, prof.ModulePath), "/")
-</span></li><li id="file10-55"><span class="cov0">}</span>
-</li><li id="file10-56">
-</li><li id="file10-57">// FilePath returns readable file path
-</li><li id="file10-58">func (prof *Profile) FilePath() string <span class="cov1">{
-</span></li><li id="file10-59"><span class="cov1">        if prof.IsRelativeOrAbsolute() </span><span class="cov1">{
-</span></li><li id="file10-60"><span class="cov1">                return prof.FileName
-</span></li><li id="file10-61"><span class="cov1">        }</span>
-</li><li id="file10-62">        <span class="cov1">return filepath.Join(prof.Dir, path.Base(prof.FileName))</span>
-</li><li id="file10-63">}
-</li><li id="file10-64">
-</li><li id="file10-65">// Coverage returns covered ratio for file
-</li><li id="file10-66">func (blocks *Blocks) Coverage() float64 <span class="cov1">{
-</span></li><li id="file10-67"><span class="cov1">        var total, covered int64
-</span></li><li id="file10-68"><span class="cov1">        for _, b := range *blocks </span><span class="cov1">{
-</span></li><li id="file10-69"><span class="cov1">                total += int64(b.NumState)
-</span></li><li id="file10-70"><span class="cov1">                if b.Count &gt; 0 </span><span class="cov1">{
-</span></li><li id="file10-71"><span class="cov1">                        covered += int64(b.NumState)
-</span></li><li id="file10-72"><span class="cov1">                }</span>
-</li><li id="file10-73">        }
-</li><li id="file10-74">
-</li><li id="file10-75">        <span class="cov1">if total == 0 </span><span class="cov1">{
-</span></li><li id="file10-76"><span class="cov1">                return 0
-</span></li><li id="file10-77"><span class="cov1">        }</span>
-</li><li id="file10-78">
-</li><li id="file10-79">        <span class="cov1">return math.Round((float64(covered)/float64(total)*100)*10) / 10</span>
-</li><li id="file10-80">}
+</li><li id="file10-3">import "strings"
+</li><li id="file10-4">
+</li><li id="file10-5">type optionErrors []error
+</li><li id="file10-6">
+</li><li id="file10-7">func (e *optionErrors) Error() string <span class="cov0">{
+</span></li><li id="file10-8"><span class="cov0">        messages := make([]string, 0, len(*e))
+</span></li><li id="file10-9"><span class="cov0">        for _, err := range *e </span><span class="cov0">{
+</span></li><li id="file10-10"><span class="cov0">                messages = append(messages, err.Error())
+</span></li><li id="file10-11"><span class="cov0">        }</span>
+</li><li id="file10-12">        <span class="cov0">return strings.Join(messages, "\n")</span>
+</li><li id="file10-13">}
 </li></ol></pre>
 					</div>
 				</div>
 				
 				<div id="file11"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">87.5%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file11-16');">func Read(opt option.Option) (io.Reader, error)</span></td>
-							<td class="cov">81.8%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 96.6%; background-color: hsla(110, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">96.6%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file11-39');">func read(buf *bytes.Buffer, in string) error</span></td>
-							<td class="cov">92.3%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  62 );">func New(r reader.Reader) *Generator</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  66 );">func (g *Generator) Generate(input *string, inputFiles *string, output *string, theme *string, include *string, exclude *string, excludeFunc *string) (*Option, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 92.9%; background-color: hsla(99, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">92.9%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  94 );">func (g *Generator) readOptionFile() (*optionConfig, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 70%; background-color: hsla(50, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">70%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  113 );">func (g *Generator) stringValue(arg *string, opt string) string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  120 );">func (g *Generator) stringsValue(arg *string, opt []string) []string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  127 );">func (g *Generator) getValidatedOption(opt *optionConfig) (*Option, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  134 );">func (g *Generator) validate(opt *optionConfig) error</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  157 );">func (g *Generator) validateFilter(f string, values []string) optionErrors</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  171 );">func (g *Generator) validateExcludeFunc(values []string) optionErrors</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  195 );">func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  221 );">func (g *Generator) isEmpty(s string) bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  225 );">func (g *Generator) convertInputFilesOption(values []string) []string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  237 );">func (g *Generator) convertFilterValue(values []string) []string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 11 ,  252 );">func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOption</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
 
 					<div class="source">
-						<pre><ol><li id="file11-1">package profile
+						<pre><ol><li id="file11-1">package option
 </li><li id="file11-2">
 </li><li id="file11-3">import (
-</li><li id="file11-4">        "bufio"
-</li><li id="file11-5">        "bytes"
-</li><li id="file11-6">        "io"
-</li><li id="file11-7">        "os"
+</li><li id="file11-4">        "fmt"
+</li><li id="file11-5">        "io"
+</li><li id="file11-6">        "regexp"
+</li><li id="file11-7">        "strings"
 </li><li id="file11-8">
-</li><li id="file11-9">        "github.com/masakurapa/gover-html/internal/option"
-</li><li id="file11-10">)
-</li><li id="file11-11">
-</li><li id="file11-12">var (
-</li><li id="file11-13">        newline = []byte("\n")
-</li><li id="file11-14">)
-</li><li id="file11-15">
-</li><li id="file11-16">func Read(opt option.Option) (io.Reader, error) <span class="cov1">{
-</span></li><li id="file11-17"><span class="cov1">        // InputFilesが指定されていない場合だけInputを使う
-</span></li><li id="file11-18"><span class="cov1">        if len(opt.InputFiles) == 0 </span><span class="cov1">{
-</span></li><li id="file11-19"><span class="cov1">                b, err := os.ReadFile(opt.Input)
-</span></li><li id="file11-20"><span class="cov1">                if err != nil </span><span class="cov0">{
-</span></li><li id="file11-21"><span class="cov0">                        return nil, err
-</span></li><li id="file11-22"><span class="cov0">                }</span>
-</li><li id="file11-23">                <span class="cov1">return bytes.NewReader(b), nil</span>
-</li><li id="file11-24">        }
-</li><li id="file11-25">
-</li><li id="file11-26">        // 1行目は "mode: set" を固定にする
-</li><li id="file11-27">        <span class="cov1">buf := bytes.NewBuffer([]byte("mode: set"))
-</span></li><li id="file11-28"><span class="cov1">        buf.Write(newline)
-</span></li><li id="file11-29"><span class="cov1">
-</span></li><li id="file11-30"><span class="cov1">        for _, in := range opt.InputFiles </span><span class="cov1">{
-</span></li><li id="file11-31"><span class="cov1">                if err := read(buf, in); err != nil </span><span class="cov0">{
-</span></li><li id="file11-32"><span class="cov0">                        return nil, err
-</span></li><li id="file11-33"><span class="cov0">                }</span>
-</li><li id="file11-34">        }
-</li><li id="file11-35">
-</li><li id="file11-36">        <span class="cov1">return buf, nil</span>
-</li><li id="file11-37">}
-</li><li id="file11-38">
-</li><li id="file11-39">func read(buf *bytes.Buffer, in string) error <span class="cov1">{
-</span></li><li id="file11-40"><span class="cov1">        f, err := os.Open(in)
-</span></li><li id="file11-41"><span class="cov1">        if err != nil </span><span class="cov0">{
-</span></li><li id="file11-42"><span class="cov0">                return err
-</span></li><li id="file11-43"><span class="cov0">        }</span>
-</li><li id="file11-44">        <span class="cov1">defer f.Close()
-</span></li><li id="file11-45"><span class="cov1">
-</span></li><li id="file11-46"><span class="cov1">        // 1行目には "mode: xxx" が入っているはずなので無視して2行目から読み込む
-</span></li><li id="file11-47"><span class="cov1">        skip := true
-</span></li><li id="file11-48"><span class="cov1">        r := bufio.NewScanner(f)
-</span></li><li id="file11-49"><span class="cov1">        for r.Scan() </span><span class="cov1">{
-</span></li><li id="file11-50"><span class="cov1">                if skip </span><span class="cov1">{
-</span></li><li id="file11-51"><span class="cov1">                        skip = false
-</span></li><li id="file11-52"><span class="cov1">                        continue</span>
-</li><li id="file11-53">                }
-</li><li id="file11-54">                <span class="cov1">buf.Write(r.Bytes())
-</span></li><li id="file11-55"><span class="cov1">                buf.Write(newline)</span>
-</li><li id="file11-56">        }
+</li><li id="file11-9">        "github.com/masakurapa/gover-html/internal/reader"
+</li><li id="file11-10">
+</li><li id="file11-11">        "gopkg.in/yaml.v2"
+</li><li id="file11-12">)
+</li><li id="file11-13">
+</li><li id="file11-14">const (
+</li><li id="file11-15">        fileName = ".gover.yml"
+</li><li id="file11-16">
+</li><li id="file11-17">        optionSeparator = ","
+</li><li id="file11-18">
+</li><li id="file11-19">        inputDefault  = "coverage.out"
+</li><li id="file11-20">        outputDefault = "coverage.html"
+</li><li id="file11-21">
+</li><li id="file11-22">        themeDark    = "dark"
+</li><li id="file11-23">        themeLight   = "light"
+</li><li id="file11-24">        themeDefault = themeDark
+</li><li id="file11-25">)
+</li><li id="file11-26">
+</li><li id="file11-27">var (
+</li><li id="file11-28">        // 関数除外設定の検証用の正規表現（ここでは緩い検証にする）
+</li><li id="file11-29">        excludeFuncFormat = regexp.MustCompile(`^\((.+)\)\.([a-zA-Z].+)$`)
+</li><li id="file11-30">)
+</li><li id="file11-31">
+</li><li id="file11-32">type optionConfig struct {
+</li><li id="file11-33">        Input       string
+</li><li id="file11-34">        InputFiles  []string `yaml:"input-files"`
+</li><li id="file11-35">        Output      string
+</li><li id="file11-36">        Theme       string
+</li><li id="file11-37">        Include     []string // include fire or directories
+</li><li id="file11-38">        Exclude     []string // exclude fire or directories
+</li><li id="file11-39">        ExcludeFunc []string `yaml:"exclude-func"` // exclude functions
+</li><li id="file11-40">}
+</li><li id="file11-41">
+</li><li id="file11-42">type Option struct {
+</li><li id="file11-43">        Input       string
+</li><li id="file11-44">        InputFiles  []string
+</li><li id="file11-45">        Output      string
+</li><li id="file11-46">        Theme       string
+</li><li id="file11-47">        Include     []string            // include fire or directories
+</li><li id="file11-48">        Exclude     []string            // exclude fire or directories
+</li><li id="file11-49">        ExcludeFunc []ExcludeFuncOption // exclude functions
+</li><li id="file11-50">}
+</li><li id="file11-51">
+</li><li id="file11-52">type ExcludeFuncOption struct {
+</li><li id="file11-53">        Path   string
+</li><li id="file11-54">        Struct string
+</li><li id="file11-55">        Func   string
+</li><li id="file11-56">}
 </li><li id="file11-57">
-</li><li id="file11-58">        <span class="cov1">return nil</span>
-</li><li id="file11-59">}
+</li><li id="file11-58">type Generator struct {
+</li><li id="file11-59">        r reader.Reader
+</li><li id="file11-60">}
+</li><li id="file11-61">
+</li><li id="file11-62">func New(r reader.Reader) *Generator <span class="cov1">{
+</span></li><li id="file11-63"><span class="cov1">        return &amp;Generator{r: r}
+</span></li><li id="file11-64"><span class="cov1">}</span>
+</li><li id="file11-65">
+</li><li id="file11-66">func (g *Generator) Generate(
+</li><li id="file11-67">        input *string,
+</li><li id="file11-68">        inputFiles *string,
+</li><li id="file11-69">        output *string,
+</li><li id="file11-70">        theme *string,
+</li><li id="file11-71">        include *string,
+</li><li id="file11-72">        exclude *string,
+</li><li id="file11-73">        excludeFunc *string,
+</li><li id="file11-74">) (*Option, error) <span class="cov1">{
+</span></li><li id="file11-75"><span class="cov1">        opt := &amp;optionConfig{}
+</span></li><li id="file11-76"><span class="cov1">        if g.r.Exists(fileName) </span><span class="cov1">{
+</span></li><li id="file11-77"><span class="cov1">                fileOpt, err := g.readOptionFile()
+</span></li><li id="file11-78"><span class="cov1">                if err != nil </span><span class="cov0">{
+</span></li><li id="file11-79"><span class="cov0">                        return nil, err
+</span></li><li id="file11-80"><span class="cov0">                }</span>
+</li><li id="file11-81">                <span class="cov1">opt = fileOpt</span>
+</li><li id="file11-82">        }
+</li><li id="file11-83">
+</li><li id="file11-84">        <span class="cov1">opt.Input = g.stringValue(input, opt.Input)
+</span></li><li id="file11-85"><span class="cov1">        opt.InputFiles = g.stringsValue(inputFiles, opt.InputFiles)
+</span></li><li id="file11-86"><span class="cov1">        opt.Output = g.stringValue(output, opt.Output)
+</span></li><li id="file11-87"><span class="cov1">        opt.Theme = g.stringValue(theme, opt.Theme)
+</span></li><li id="file11-88"><span class="cov1">        opt.Include = g.stringsValue(include, opt.Include)
+</span></li><li id="file11-89"><span class="cov1">        opt.Exclude = g.stringsValue(exclude, opt.Exclude)
+</span></li><li id="file11-90"><span class="cov1">        opt.ExcludeFunc = g.stringsValue(excludeFunc, opt.ExcludeFunc)
+</span></li><li id="file11-91"><span class="cov1">        return g.getValidatedOption(opt)</span>
+</li><li id="file11-92">}
+</li><li id="file11-93">
+</li><li id="file11-94">func (g *Generator) readOptionFile() (*optionConfig, error) <span class="cov1">{
+</span></li><li id="file11-95"><span class="cov1">        r, err := g.r.Read(fileName)
+</span></li><li id="file11-96"><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li id="file11-97"><span class="cov0">                return nil, err
+</span></li><li id="file11-98"><span class="cov0">        }</span>
+</li><li id="file11-99">
+</li><li id="file11-100">        <span class="cov1">b, err := io.ReadAll(r)
+</span></li><li id="file11-101"><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li id="file11-102"><span class="cov0">                return nil, err
+</span></li><li id="file11-103"><span class="cov0">        }</span>
+</li><li id="file11-104">
+</li><li id="file11-105">        <span class="cov1">opt := optionConfig{}
+</span></li><li id="file11-106"><span class="cov1">        if err := yaml.Unmarshal(b, &amp;opt); err != nil </span><span class="cov0">{
+</span></li><li id="file11-107"><span class="cov0">                return nil, err
+</span></li><li id="file11-108"><span class="cov0">        }</span>
+</li><li id="file11-109">
+</li><li id="file11-110">        <span class="cov1">return &amp;opt, nil</span>
+</li><li id="file11-111">}
+</li><li id="file11-112">
+</li><li id="file11-113">func (g *Generator) stringValue(arg *string, opt string) string <span class="cov1">{
+</span></li><li id="file11-114"><span class="cov1">        if arg == nil </span><span class="cov1">{
+</span></li><li id="file11-115"><span class="cov1">                return opt
+</span></li><li id="file11-116"><span class="cov1">        }</span>
+</li><li id="file11-117">        <span class="cov1">return *arg</span>
+</li><li id="file11-118">}
+</li><li id="file11-119">
+</li><li id="file11-120">func (g *Generator) stringsValue(arg *string, opt []string) []string <span class="cov1">{
+</span></li><li id="file11-121"><span class="cov1">        if arg == nil </span><span class="cov1">{
+</span></li><li id="file11-122"><span class="cov1">                return opt
+</span></li><li id="file11-123"><span class="cov1">        }</span>
+</li><li id="file11-124">        <span class="cov1">return strings.Split(*arg, optionSeparator)</span>
+</li><li id="file11-125">}
+</li><li id="file11-126">
+</li><li id="file11-127">func (g *Generator) getValidatedOption(opt *optionConfig) (*Option, error) <span class="cov1">{
+</span></li><li id="file11-128"><span class="cov1">        if err := g.validate(opt); err != nil </span><span class="cov1">{
+</span></li><li id="file11-129"><span class="cov1">                return nil, err
+</span></li><li id="file11-130"><span class="cov1">        }</span>
+</li><li id="file11-131">        <span class="cov1">return g.getOptionWithDefaultValue(opt), nil</span>
+</li><li id="file11-132">}
+</li><li id="file11-133">
+</li><li id="file11-134">func (g *Generator) validate(opt *optionConfig) error <span class="cov1">{
+</span></li><li id="file11-135"><span class="cov1">        errs := make(optionErrors, 0)
+</span></li><li id="file11-136"><span class="cov1">
+</span></li><li id="file11-137"><span class="cov1">        if !g.isEmpty(opt.Theme) &amp;&amp; opt.Theme != themeDark &amp;&amp; opt.Theme != themeLight </span><span class="cov1">{
+</span></li><li id="file11-138"><span class="cov1">                errs = append(errs, fmt.Errorf("theme must be %q or %q", themeDark, themeLight))
+</span></li><li id="file11-139"><span class="cov1">        }</span>
+</li><li id="file11-140">
+</li><li id="file11-141">        <span class="cov1">if es := g.validateFilter("include", opt.Include); len(es) &gt; 0 </span><span class="cov1">{
+</span></li><li id="file11-142"><span class="cov1">                errs = append(errs, es...)
+</span></li><li id="file11-143"><span class="cov1">        }</span>
+</li><li id="file11-144">        <span class="cov1">if es := g.validateFilter("exclude", opt.Exclude); len(es) &gt; 0 </span><span class="cov1">{
+</span></li><li id="file11-145"><span class="cov1">                errs = append(errs, es...)
+</span></li><li id="file11-146"><span class="cov1">        }</span>
+</li><li id="file11-147">        <span class="cov1">if es := g.validateExcludeFunc(opt.ExcludeFunc); len(es) &gt; 0 </span><span class="cov1">{
+</span></li><li id="file11-148"><span class="cov1">                errs = append(errs, es...)
+</span></li><li id="file11-149"><span class="cov1">        }</span>
+</li><li id="file11-150">
+</li><li id="file11-151">        <span class="cov1">if len(errs) &gt; 0 </span><span class="cov1">{
+</span></li><li id="file11-152"><span class="cov1">                return &amp;errs
+</span></li><li id="file11-153"><span class="cov1">        }</span>
+</li><li id="file11-154">        <span class="cov1">return nil</span>
+</li><li id="file11-155">}
+</li><li id="file11-156">
+</li><li id="file11-157">func (g *Generator) validateFilter(f string, values []string) optionErrors <span class="cov1">{
+</span></li><li id="file11-158"><span class="cov1">        errs := make(optionErrors, 0)
+</span></li><li id="file11-159"><span class="cov1">        for _, v := range values </span><span class="cov1">{
+</span></li><li id="file11-160"><span class="cov1">                if g.isEmpty(v) </span><span class="cov1">{
+</span></li><li id="file11-161"><span class="cov1">                        continue</span>
+</li><li id="file11-162">                }
+</li><li id="file11-163">
+</li><li id="file11-164">                <span class="cov1">if strings.HasPrefix(v, "/") </span><span class="cov1">{
+</span></li><li id="file11-165"><span class="cov1">                        errs = append(errs, fmt.Errorf("%s value %q must not be an absolute path", f, v))
+</span></li><li id="file11-166"><span class="cov1">                }</span>
+</li><li id="file11-167">        }
+</li><li id="file11-168">        <span class="cov1">return errs</span>
+</li><li id="file11-169">}
+</li><li id="file11-170">
+</li><li id="file11-171">func (g *Generator) validateExcludeFunc(values []string) optionErrors <span class="cov1">{
+</span></li><li id="file11-172"><span class="cov1">        errs := make(optionErrors, 0)
+</span></li><li id="file11-173"><span class="cov1">        for _, v := range values </span><span class="cov1">{
+</span></li><li id="file11-174"><span class="cov1">                if g.isEmpty(v) </span><span class="cov1">{
+</span></li><li id="file11-175"><span class="cov1">                        continue</span>
+</li><li id="file11-176">                }
+</li><li id="file11-177">
+</li><li id="file11-178">                <span class="cov1">if strings.HasPrefix(v, "(/") </span><span class="cov1">{
+</span></li><li id="file11-179"><span class="cov1">                        errs = append(errs, fmt.Errorf("exclude-func value %q must not be an absolute path", v))
+</span></li><li id="file11-180"><span class="cov1">                        continue</span>
+</li><li id="file11-181">                }
+</li><li id="file11-182">
+</li><li id="file11-183">                // ()が含まれない場合は関数名のみとみなしてOK
+</li><li id="file11-184">                <span class="cov1">if !strings.Contains(v, "(") &amp;&amp; !strings.Contains(v, ")") </span><span class="cov1">{
+</span></li><li id="file11-185"><span class="cov1">                        continue</span>
+</li><li id="file11-186">                }
+</li><li id="file11-187">
+</li><li id="file11-188">                <span class="cov1">if !excludeFuncFormat.MatchString(v) </span><span class="cov1">{
+</span></li><li id="file11-189"><span class="cov1">                        errs = append(errs, fmt.Errorf("exclude-func value %q format is invalid", v))
+</span></li><li id="file11-190"><span class="cov1">                }</span>
+</li><li id="file11-191">        }
+</li><li id="file11-192">        <span class="cov1">return errs</span>
+</li><li id="file11-193">}
+</li><li id="file11-194">
+</li><li id="file11-195">func (g *Generator) getOptionWithDefaultValue(opt *optionConfig) *Option <span class="cov1">{
+</span></li><li id="file11-196"><span class="cov1">        newOpt := &amp;Option{
+</span></li><li id="file11-197"><span class="cov1">                Input:   opt.Input,
+</span></li><li id="file11-198"><span class="cov1">                Output:  opt.Output,
+</span></li><li id="file11-199"><span class="cov1">                Theme:   opt.Theme,
+</span></li><li id="file11-200"><span class="cov1">                Include: opt.Include,
+</span></li><li id="file11-201"><span class="cov1">                Exclude: opt.Exclude,
+</span></li><li id="file11-202"><span class="cov1">        }
+</span></li><li id="file11-203"><span class="cov1">
+</span></li><li id="file11-204"><span class="cov1">        if g.isEmpty(newOpt.Input) </span><span class="cov1">{
+</span></li><li id="file11-205"><span class="cov1">                newOpt.Input = inputDefault
+</span></li><li id="file11-206"><span class="cov1">        }</span>
+</li><li id="file11-207">        <span class="cov1">if g.isEmpty(newOpt.Output) </span><span class="cov1">{
+</span></li><li id="file11-208"><span class="cov1">                newOpt.Output = outputDefault
+</span></li><li id="file11-209"><span class="cov1">        }</span>
+</li><li id="file11-210">        <span class="cov1">if g.isEmpty(newOpt.Theme) </span><span class="cov1">{
+</span></li><li id="file11-211"><span class="cov1">                newOpt.Theme = themeDefault
+</span></li><li id="file11-212"><span class="cov1">        }</span>
+</li><li id="file11-213">
+</li><li id="file11-214">        <span class="cov1">newOpt.InputFiles = g.convertInputFilesOption(opt.InputFiles)
+</span></li><li id="file11-215"><span class="cov1">        newOpt.Include = g.convertFilterValue(newOpt.Include)
+</span></li><li id="file11-216"><span class="cov1">        newOpt.Exclude = g.convertFilterValue(newOpt.Exclude)
+</span></li><li id="file11-217"><span class="cov1">        newOpt.ExcludeFunc = g.convertExcludeFuncOption(opt.ExcludeFunc)
+</span></li><li id="file11-218"><span class="cov1">        return newOpt</span>
+</li><li id="file11-219">}
+</li><li id="file11-220">
+</li><li id="file11-221">func (g *Generator) isEmpty(s string) bool <span class="cov1">{
+</span></li><li id="file11-222"><span class="cov1">        return s == ""
+</span></li><li id="file11-223"><span class="cov1">}</span>
+</li><li id="file11-224">
+</li><li id="file11-225">func (g *Generator) convertInputFilesOption(values []string) []string <span class="cov1">{
+</span></li><li id="file11-226"><span class="cov1">        ret := make([]string, 0, len(values))
+</span></li><li id="file11-227"><span class="cov1">        for _, v := range values </span><span class="cov1">{
+</span></li><li id="file11-228"><span class="cov1">                s := strings.TrimSpace(v)
+</span></li><li id="file11-229"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
+</span></li><li id="file11-230"><span class="cov1">                        continue</span>
+</li><li id="file11-231">                }
+</li><li id="file11-232">                <span class="cov1">ret = append(ret, s)</span>
+</li><li id="file11-233">        }
+</li><li id="file11-234">        <span class="cov1">return ret</span>
+</li><li id="file11-235">}
+</li><li id="file11-236">
+</li><li id="file11-237">func (g *Generator) convertFilterValue(values []string) []string <span class="cov1">{
+</span></li><li id="file11-238"><span class="cov1">        ret := make([]string, 0, len(values))
+</span></li><li id="file11-239"><span class="cov1">        for _, v := range values </span><span class="cov1">{
+</span></li><li id="file11-240"><span class="cov1">                s := strings.TrimSpace(v)
+</span></li><li id="file11-241"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
+</span></li><li id="file11-242"><span class="cov1">                        continue</span>
+</li><li id="file11-243">                }
+</li><li id="file11-244">
+</li><li id="file11-245">                <span class="cov1">s = strings.TrimPrefix(s, "./")
+</span></li><li id="file11-246"><span class="cov1">                s = strings.TrimSuffix(s, "/")
+</span></li><li id="file11-247"><span class="cov1">                ret = append(ret, s)</span>
+</li><li id="file11-248">        }
+</li><li id="file11-249">        <span class="cov1">return ret</span>
+</li><li id="file11-250">}
+</li><li id="file11-251">
+</li><li id="file11-252">func (g *Generator) convertExcludeFuncOption(values []string) []ExcludeFuncOption <span class="cov1">{
+</span></li><li id="file11-253"><span class="cov1">        ret := make([]ExcludeFuncOption, 0, len(values))
+</span></li><li id="file11-254"><span class="cov1">        for _, v := range values </span><span class="cov1">{
+</span></li><li id="file11-255"><span class="cov1">                s := strings.TrimSpace(v)
+</span></li><li id="file11-256"><span class="cov1">                if g.isEmpty(s) </span><span class="cov1">{
+</span></li><li id="file11-257"><span class="cov1">                        continue</span>
+</li><li id="file11-258">                }
+</li><li id="file11-259">
+</li><li id="file11-260">                // ()が含まれない場合は関数名のみとみなして終了
+</li><li id="file11-261">                <span class="cov1">if !strings.Contains(s, "(") &amp;&amp; !strings.Contains(s, ")") </span><span class="cov1">{
+</span></li><li id="file11-262"><span class="cov1">                        ret = append(ret, ExcludeFuncOption{Func: s})
+</span></li><li id="file11-263"><span class="cov1">                        continue</span>
+</li><li id="file11-264">                }
+</li><li id="file11-265">
+</li><li id="file11-266">                // excludeFuncFormat = regexp.MustCompile(`^\(.+\)\.([a-zA-Z].+)$`)
+</li><li id="file11-267">
+</li><li id="file11-268">                <span class="cov1">matches := excludeFuncFormat.FindStringSubmatch(s)
+</span></li><li id="file11-269"><span class="cov1">                optPath := strings.TrimSuffix(strings.TrimPrefix(matches[1], "./"), "/")
+</span></li><li id="file11-270"><span class="cov1">
+</span></li><li id="file11-271"><span class="cov1">                var path, structName string
+</span></li><li id="file11-272"><span class="cov1">                idx := strings.LastIndex(optPath, ".")
+</span></li><li id="file11-273"><span class="cov1">
+</span></li><li id="file11-274"><span class="cov1">                if idx == -1 </span><span class="cov1">{
+</span></li><li id="file11-275"><span class="cov1">                        // ファイル名で指定していない or 構造体名未指定
+</span></li><li id="file11-276"><span class="cov1">                        path = optPath
+</span></li><li id="file11-277"><span class="cov1">                }</span> else<span class="cov1"> {
+</span></li><li id="file11-278"><span class="cov1">                        s := optPath[idx+1:]
+</span></li><li id="file11-279"><span class="cov1">                        if s == "go" </span><span class="cov1">{
+</span></li><li id="file11-280"><span class="cov1">                                // ファイル名のみ指定している
+</span></li><li id="file11-281"><span class="cov1">                                path = optPath
+</span></li><li id="file11-282"><span class="cov1">                        }</span> else<span class="cov1"> {
+</span></li><li id="file11-283"><span class="cov1">                                path = optPath[:idx]
+</span></li><li id="file11-284"><span class="cov1">                                structName = s
+</span></li><li id="file11-285"><span class="cov1">                        }</span>
+</li><li id="file11-286">                }
+</li><li id="file11-287">
+</li><li id="file11-288">                <span class="cov1">if path == "*" </span><span class="cov1">{
+</span></li><li id="file11-289"><span class="cov1">                        path = ""
+</span></li><li id="file11-290"><span class="cov1">                }</span>
+</li><li id="file11-291">
+</li><li id="file11-292">                <span class="cov1">ret = append(ret, ExcludeFuncOption{
+</span></li><li id="file11-293"><span class="cov1">                        Path:   strings.TrimSuffix(strings.TrimPrefix(path, "./"), "/"),
+</span></li><li id="file11-294"><span class="cov1">                        Struct: structName,
+</span></li><li id="file11-295"><span class="cov1">                        Func:   matches[2],
+</span></li><li id="file11-296"><span class="cov1">                })</span>
+</li><li id="file11-297">        }
+</li><li id="file11-298">        <span class="cov1">return ret</span>
+</li><li id="file11-299">}
+</li></ol></pre>
+					</div>
+				</div>
+				
+				<div id="file8"  style="display: none">
+					<table>
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
+						<tr>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 92.3%; background-color: hsla(97, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">92.3%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 8 ,  48 );">func (prof *Profile) IsRelativeOrAbsolute() bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 8 ,  53 );">func (prof *Profile) RemoveModulePathFromFileName() string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 8 ,  58 );">func (prof *Profile) FilePath() string</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 8 ,  66 );">func (blocks *Blocks) Coverage() float64</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(120, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">100%</div>
+								</div>
+							</td>
+						</tr>
+						
+					</table>
+
+					<div class="source">
+						<pre><ol><li id="file8-1">package profile
+</li><li id="file8-2">
+</li><li id="file8-3">import (
+</li><li id="file8-4">        "math"
+</li><li id="file8-5">        "path"
+</li><li id="file8-6">        "path/filepath"
+</li><li id="file8-7">        "strings"
+</li><li id="file8-8">)
+</li><li id="file8-9">
+</li><li id="file8-10">// Profiles is a type that represents a slice of Profile
+</li><li id="file8-11">type Profiles []Profile
+</li><li id="file8-12">
+</li><li id="file8-13">// Profile is profiling data for each file
+</li><li id="file8-14">type Profile struct {
+</li><li id="file8-15">        ID         int
+</li><li id="file8-16">        ModulePath string
+</li><li id="file8-17">        Dir        string
+</li><li id="file8-18">        FileName   string
+</li><li id="file8-19">        Blocks     Blocks
+</li><li id="file8-20">        Functions  Functions
+</li><li id="file8-21">}
+</li><li id="file8-22">
+</li><li id="file8-23">// Functions is a type that represents a slice of Function
+</li><li id="file8-24">type Functions []Function
+</li><li id="file8-25">
+</li><li id="file8-26">// Function is single func of profiling data
+</li><li id="file8-27">type Function struct {
+</li><li id="file8-28">        Name      string
+</li><li id="file8-29">        StartLine int
+</li><li id="file8-30">        StartCol  int
+</li><li id="file8-31">        Blocks    Blocks
+</li><li id="file8-32">}
+</li><li id="file8-33">
+</li><li id="file8-34">// Blocks is a type that represents a slice of Block
+</li><li id="file8-35">type Blocks []Block
+</li><li id="file8-36">
+</li><li id="file8-37">// Block is single block of profiling data
+</li><li id="file8-38">type Block struct {
+</li><li id="file8-39">        StartLine int
+</li><li id="file8-40">        StartCol  int
+</li><li id="file8-41">        EndLine   int
+</li><li id="file8-42">        EndCol    int
+</li><li id="file8-43">        NumState  int
+</li><li id="file8-44">        Count     int
+</li><li id="file8-45">}
+</li><li id="file8-46">
+</li><li id="file8-47">// IsRelativeOrAbsolute returns true if FileName is relative path or absolute path
+</li><li id="file8-48">func (prof *Profile) IsRelativeOrAbsolute() bool <span class="cov1">{
+</span></li><li id="file8-49"><span class="cov1">        return strings.HasPrefix(prof.FileName, ".") || filepath.IsAbs(prof.FileName)
+</span></li><li id="file8-50"><span class="cov1">}</span>
+</li><li id="file8-51">
+</li><li id="file8-52">// RemoveModulePathFromFileName returns FileName with ModulePath removed
+</li><li id="file8-53">func (prof *Profile) RemoveModulePathFromFileName() string <span class="cov0">{
+</span></li><li id="file8-54"><span class="cov0">        return strings.TrimPrefix(strings.TrimPrefix(prof.FileName, prof.ModulePath), "/")
+</span></li><li id="file8-55"><span class="cov0">}</span>
+</li><li id="file8-56">
+</li><li id="file8-57">// FilePath returns readable file path
+</li><li id="file8-58">func (prof *Profile) FilePath() string <span class="cov1">{
+</span></li><li id="file8-59"><span class="cov1">        if prof.IsRelativeOrAbsolute() </span><span class="cov1">{
+</span></li><li id="file8-60"><span class="cov1">                return prof.FileName
+</span></li><li id="file8-61"><span class="cov1">        }</span>
+</li><li id="file8-62">        <span class="cov1">return filepath.Join(prof.Dir, path.Base(prof.FileName))</span>
+</li><li id="file8-63">}
+</li><li id="file8-64">
+</li><li id="file8-65">// Coverage returns covered ratio for file
+</li><li id="file8-66">func (blocks *Blocks) Coverage() float64 <span class="cov1">{
+</span></li><li id="file8-67"><span class="cov1">        var total, covered int64
+</span></li><li id="file8-68"><span class="cov1">        for _, b := range *blocks </span><span class="cov1">{
+</span></li><li id="file8-69"><span class="cov1">                total += int64(b.NumState)
+</span></li><li id="file8-70"><span class="cov1">                if b.Count &gt; 0 </span><span class="cov1">{
+</span></li><li id="file8-71"><span class="cov1">                        covered += int64(b.NumState)
+</span></li><li id="file8-72"><span class="cov1">                }</span>
+</li><li id="file8-73">        }
+</li><li id="file8-74">
+</li><li id="file8-75">        <span class="cov1">if total == 0 </span><span class="cov1">{
+</span></li><li id="file8-76"><span class="cov1">                return 0
+</span></li><li id="file8-77"><span class="cov1">        }</span>
+</li><li id="file8-78">
+</li><li id="file8-79">        <span class="cov1">return math.Round((float64(covered)/float64(total)*100)*10) / 10</span>
+</li><li id="file8-80">}
+</li></ol></pre>
+					</div>
+				</div>
+				
+				<div id="file9"  style="display: none">
+					<table>
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
+						<tr>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 87.5%; background-color: hsla(82, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">87.5%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 9 ,  16 );">func Read(opt option.Option) (io.Reader, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 81.8%; background-color: hsla(65, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">81.8%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 9 ,  39 );">func read(buf *bytes.Buffer, in string) error</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 92.3%; background-color: hsla(97, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">92.3%</div>
+								</div>
+							</td>
+						</tr>
+						
+					</table>
+
+					<div class="source">
+						<pre><ol><li id="file9-1">package profile
+</li><li id="file9-2">
+</li><li id="file9-3">import (
+</li><li id="file9-4">        "bufio"
+</li><li id="file9-5">        "bytes"
+</li><li id="file9-6">        "io"
+</li><li id="file9-7">        "os"
+</li><li id="file9-8">
+</li><li id="file9-9">        "github.com/masakurapa/gover-html/internal/option"
+</li><li id="file9-10">)
+</li><li id="file9-11">
+</li><li id="file9-12">var (
+</li><li id="file9-13">        newline = []byte("\n")
+</li><li id="file9-14">)
+</li><li id="file9-15">
+</li><li id="file9-16">func Read(opt option.Option) (io.Reader, error) <span class="cov1">{
+</span></li><li id="file9-17"><span class="cov1">        // InputFilesが指定されていない場合だけInputを使う
+</span></li><li id="file9-18"><span class="cov1">        if len(opt.InputFiles) == 0 </span><span class="cov1">{
+</span></li><li id="file9-19"><span class="cov1">                b, err := os.ReadFile(opt.Input)
+</span></li><li id="file9-20"><span class="cov1">                if err != nil </span><span class="cov0">{
+</span></li><li id="file9-21"><span class="cov0">                        return nil, err
+</span></li><li id="file9-22"><span class="cov0">                }</span>
+</li><li id="file9-23">                <span class="cov1">return bytes.NewReader(b), nil</span>
+</li><li id="file9-24">        }
+</li><li id="file9-25">
+</li><li id="file9-26">        // 1行目は "mode: set" を固定にする
+</li><li id="file9-27">        <span class="cov1">buf := bytes.NewBuffer([]byte("mode: set"))
+</span></li><li id="file9-28"><span class="cov1">        buf.Write(newline)
+</span></li><li id="file9-29"><span class="cov1">
+</span></li><li id="file9-30"><span class="cov1">        for _, in := range opt.InputFiles </span><span class="cov1">{
+</span></li><li id="file9-31"><span class="cov1">                if err := read(buf, in); err != nil </span><span class="cov0">{
+</span></li><li id="file9-32"><span class="cov0">                        return nil, err
+</span></li><li id="file9-33"><span class="cov0">                }</span>
+</li><li id="file9-34">        }
+</li><li id="file9-35">
+</li><li id="file9-36">        <span class="cov1">return buf, nil</span>
+</li><li id="file9-37">}
+</li><li id="file9-38">
+</li><li id="file9-39">func read(buf *bytes.Buffer, in string) error <span class="cov1">{
+</span></li><li id="file9-40"><span class="cov1">        f, err := os.Open(in)
+</span></li><li id="file9-41"><span class="cov1">        if err != nil </span><span class="cov0">{
+</span></li><li id="file9-42"><span class="cov0">                return err
+</span></li><li id="file9-43"><span class="cov0">        }</span>
+</li><li id="file9-44">        <span class="cov1">defer f.Close()
+</span></li><li id="file9-45"><span class="cov1">
+</span></li><li id="file9-46"><span class="cov1">        // 1行目には "mode: xxx" が入っているはずなので無視して2行目から読み込む
+</span></li><li id="file9-47"><span class="cov1">        skip := true
+</span></li><li id="file9-48"><span class="cov1">        r := bufio.NewScanner(f)
+</span></li><li id="file9-49"><span class="cov1">        for r.Scan() </span><span class="cov1">{
+</span></li><li id="file9-50"><span class="cov1">                if skip </span><span class="cov1">{
+</span></li><li id="file9-51"><span class="cov1">                        skip = false
+</span></li><li id="file9-52"><span class="cov1">                        continue</span>
+</li><li id="file9-53">                }
+</li><li id="file9-54">                <span class="cov1">buf.Write(r.Bytes())
+</span></li><li id="file9-55"><span class="cov1">                buf.Write(newline)</span>
+</li><li id="file9-56">        }
+</li><li id="file9-57">
+</li><li id="file9-58">        <span class="cov1">return nil</span>
+</li><li id="file9-59">}
 </li></ol></pre>
 					</div>
 				</div>
 				
 				<div id="file2"  style="display: none">
 					<table>
-						<tr><th colspan="2">Coverages</th></tr>
-						<tr><td class="total">Total</td><td class="cov">0%</td></tr>
-						
+						<tr><th>Function</th><th style="text-align: right">Coverage</th></tr>
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file2-17');">func New() Reader</span></td>
-							<td class="cov">0%</td>
+							<td class="total">Total Coverage</td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file2-21');">func (r *fileReader) Read(file string) (io.Reader, error)</span></td>
-							<td class="cov">0%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 2 ,  17 );">func New() Reader</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
 						</tr>
 						
 						<tr>
-							<td class="fnc"><span class="clickable" onclick="scrollById('file2-25');">func (r *fileReader) Exists(file string) bool</span></td>
-							<td class="cov">0%</td>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 2 ,  21 );">func (r *fileReader) Read(file string) (io.Reader, error)</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="fnc"><span class="clickable" onclick="scrollToLine( 2 ,  25 );">func (r *fileReader) Exists(file string) bool</span></td>
+							<td class="cov">
+								<div class="cov-cell">
+									<div class="cov-bg" style="width: 100%; background-color: hsla(0, 70%, 50%, 0.4)"></div>
+									<div class="cov-text">0%</div>
+								</div>
+							</td>
 						</tr>
 						
 					</table>
@@ -2055,9 +3063,6 @@
 		</div>
 
 		<script>
-			
-			const scrollWidth = document.getElementById('tree').scrollWidth;
-
 			let current;
 			let currentTree;
 			updateByQuery();
@@ -2066,13 +3071,59 @@
 				updateByQuery();
 			})
 
+			window.addEventListener('hashchange', function(e) {
+				handleHashChange();
+			})
+
+			window.addEventListener('load', function() {
+				handleHashChange();
+				setupLineNumberClicks();
+			})
+
 			function updateByQuery() {
 				const searchParams = new URLSearchParams(window.location.search);
 				const n = searchParams.get('n');
 				const i = searchParams.get('i');
 				if (n && i) {
 					change(n, i);
-				} 
+				}
+				
+				setTimeout(handleHashChange, 100);
+			}
+
+			function handleHashChange() {
+				const hash = window.location.hash;
+				if (hash) {
+					
+					const rangeMatch = hash.match(/#file(\d+)-L(\d+)-L(\d+)/);
+					if (rangeMatch) {
+						const fileId = rangeMatch[1];
+						const startLine = parseInt(rangeMatch[2]);
+						const endLine = parseInt(rangeMatch[3]);
+						
+						
+						highlightLineRange(fileId, startLine, endLine);
+						
+						
+						const startElm = document.getElementById('file' + fileId + '-' + startLine);
+						if (startElm) {
+							startElm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						}
+					} else {
+						
+						const elm = document.getElementById(hash.substring(1));
+						if (elm) {
+							elm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							
+							clearHighlights();
+							
+							elm.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+							setTimeout(() => {
+								elm.style.backgroundColor = '';
+							}, 1500);
+						}
+					}
+				}
 			}
 
 			function select(n) {
@@ -2085,30 +3136,55 @@
 					return;
 				}
 				current.style.display = 'block';
-				scrollById('coverage');
+				
+				setTimeout(setupLineNumberClicks, 100);
 			}
+
 			function selectTree(n, indent) {
 				if (currentTree) {
 					currentTree.classList.remove('current');
 				}
 
 				currentTree = document.getElementById('tree' + n);
-				if (!current) {
+				if (!currentTree) {
 					return;
 				}
 				currentTree.classList.add('current');
-				currentTree.style.width = scrollWidth - (indent * 30 + 8) + 'px';
 			}
+
 			function scrollById(id) {
 				const elm = document.getElementById(id);
-				const rect = elm.getBoundingClientRect();
-				document.documentElement.scrollTop = rect.top + window.pageYOffset;
+				if (elm) {
+					elm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
 			}
+
+			function scrollToLine(fileId, lineNum) {
+				const lineId = 'file' + fileId + '-' + lineNum;
+				
+				const url = new URL(window.location.href);
+				url.hash = lineId;
+				history.pushState("", "", url);
+				
+				
+				scrollById(lineId);
+				
+				
+				const elm = document.getElementById(lineId);
+				if (elm) {
+					elm.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+					setTimeout(() => {
+						elm.style.backgroundColor = '';
+					}, 1500);
+				}
+			}
+
 			function change(n, i) {
 				select(n);
 				selectTree(n, i);
 				updateUrl(n, i)
 			}
+
 			function updateUrl(n, i) {
 				const url = new URL(window.location.href);
 				if( !url.searchParams.get('n') ) {
@@ -2122,6 +3198,77 @@
 						history.pushState("", "", url);
 					}
 				}
+			}
+
+			let lastClickedLine = null;
+
+			function setupLineNumberClicks() {
+				
+				setTimeout(() => {
+					document.querySelectorAll('li').forEach(li => {
+						const id = li.id;
+						if (id && id.includes('-')) {
+							
+							li.addEventListener('click', function(e) {
+								if (e.target === li || window.getComputedStyle(e.target, ':before').getPropertyValue('content')) {
+									const parts = id.split('-');
+									const fileId = parts[0].replace('file', '');
+									const lineNum = parseInt(parts[1]);
+									
+									if (e.shiftKey && lastClickedLine && lastClickedLine.fileId === fileId) {
+										
+										const startLine = Math.min(lastClickedLine.lineNum, lineNum);
+										const endLine = Math.max(lastClickedLine.lineNum, lineNum);
+										
+										
+										const url = new URL(window.location.href);
+										url.hash = 'file' + fileId + '-L' + startLine + '-L' + endLine;
+										history.pushState("", "", url);
+										
+										
+										highlightLineRange(fileId, startLine, endLine);
+									} else {
+										
+										const url = new URL(window.location.href);
+										url.hash = id;
+										history.pushState("", "", url);
+										
+										
+										clearHighlights();
+										
+										
+										li.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+										setTimeout(() => {
+											if (!li.classList.contains('range-highlight')) {
+												li.style.backgroundColor = '';
+											}
+										}, 1500);
+										
+										lastClickedLine = { fileId, lineNum };
+									}
+								}
+							});
+						}
+					});
+				}, 100);
+			}
+
+			function highlightLineRange(fileId, startLine, endLine) {
+				clearHighlights();
+				for (let i = startLine; i <= endLine; i++) {
+					const li = document.getElementById('file' + fileId + '-' + i);
+					if (li) {
+						li.classList.add('range-highlight');
+						li.style.backgroundColor = 'rgba(59, 130, 246, 0.15)';
+					}
+				}
+			}
+
+			function clearHighlights() {
+				document.querySelectorAll('.range-highlight').forEach(li => {
+					li.classList.remove('range-highlight');
+					li.style.backgroundColor = '';
+				});
 			}
 		</script>
 	</body>

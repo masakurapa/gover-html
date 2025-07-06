@@ -7,15 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22.4
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
           version: v1.54.2
           args: --config=.golangci.yml
@@ -26,17 +26,17 @@ jobs:
       - lint
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22.4
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Test
         run: make cover
       - name: Upload math result for test
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverprofile
           path: coverage.out
@@ -47,15 +47,15 @@ jobs:
       - test
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22.4
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Download math result for test
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coverprofile
       - name: Coverage
@@ -66,7 +66,7 @@ jobs:
           ./gover-html -i coverage.out -o gover-html_light.html -theme=light
           go tool cover -html=coverage.out -o go-tool-cover.html
       - name: Upload math result for test
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverages
           path: |
@@ -81,15 +81,15 @@ jobs:
       - coverage
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: 1.22.4
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Download math result for test
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: coverages
       - name: Display structure of downloaded files
@@ -101,7 +101,7 @@ jobs:
           mv gover-html_light.html ./public/gover-html_light.html
           mv go-tool-cover.html ./public/go-tool-cover.html
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
